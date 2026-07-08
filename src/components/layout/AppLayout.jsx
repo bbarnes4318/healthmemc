@@ -1,0 +1,148 @@
+import React, { useState } from "react";
+import { Outlet, Link, useLocation } from "react-router-dom";
+import { base44 } from "@/api/base44Client";
+import {
+  Home, Stethoscope, HeartPulse, Users, Pill, FileText,
+  Sparkles, Shield, User, Menu, X, LogOut, Activity, Phone
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const navItems = [
+  { path: "/", label: "Home", icon: Home },
+  { path: "/ai-doctor", label: "AI Doctor", icon: Stethoscope },
+  { path: "/ai-nurse", label: "AI Nurse", icon: HeartPulse },
+  { path: "/specialists", label: "Specialists", icon: Users },
+  { path: "/pharmacy", label: "Pharmacy", icon: Pill },
+  { path: "/records", label: "Records", icon: FileText },
+  { path: "/wellness", label: "Wellness", icon: Sparkles },
+  { path: "/dashboard", label: "Dashboard", icon: Activity },
+  { path: "/profile", label: "Profile", icon: User },
+];
+
+export default function AppLayout() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+
+  const handleLogout = () => {
+    base44.auth.logout("/login");
+  };
+
+  return (
+    <div className="min-h-screen bg-background flex">
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-border fixed h-full z-30">
+        <div className="p-6 border-b border-border">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center">
+              <Activity className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h1 className="font-display font-bold text-base leading-tight">AI HealthOne</h1>
+              <p className="text-[10px] text-muted-foreground leading-tight">Health Intelligence</p>
+            </div>
+          </Link>
+        </div>
+        <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  isActive
+                    ? "bg-sky-50 text-sky-700"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                }`}
+              >
+                <item.icon className={`w-[18px] h-[18px] ${isActive ? "text-sky-600" : ""}`} />
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+        <div className="p-3 border-t border-border">
+          <Link
+            to="/emergency"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-all mb-1"
+          >
+            <Phone className="w-[18px] h-[18px]" />
+            Emergency
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-all w-full"
+          >
+            <LogOut className="w-[18px] h-[18px]" />
+            Sign Out
+          </button>
+        </div>
+      </aside>
+
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-border flex items-center justify-between px-4 z-40">
+        <Link to="/" className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center">
+            <Activity className="w-4 h-4 text-white" />
+          </div>
+          <span className="font-display font-bold text-sm">AI HealthOne</span>
+        </Link>
+        <Button variant="ghost" size="icon" onClick={() => setMobileOpen(!mobileOpen)}>
+          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </Button>
+      </div>
+
+      {/* Mobile Menu Overlay */}
+      {mobileOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/40" onClick={() => setMobileOpen(false)}>
+          <div className="absolute left-0 top-0 bottom-0 w-72 bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6 border-b border-border flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center">
+                  <Activity className="w-5 h-5 text-white" />
+                </div>
+                <h1 className="font-display font-bold">AI HealthOne</h1>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setMobileOpen(false)}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+            <nav className="p-3 space-y-0.5">
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setMobileOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                      isActive ? "bg-sky-50 text-sky-700" : "text-gray-600 hover:bg-gray-50"
+                    }`}
+                  >
+                    <item.icon className={`w-[18px] h-[18px] ${isActive ? "text-sky-600" : ""}`} />
+                    {item.label}
+                  </Link>
+                );
+              })}
+              <Link
+                to="/emergency"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-all"
+              >
+                <Phone className="w-[18px] h-[18px]" />
+                Emergency
+              </Link>
+            </nav>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <main className="flex-1 lg:ml-64 min-h-screen">
+        <div className="pt-14 lg:pt-0">
+          <Outlet />
+        </div>
+      </main>
+    </div>
+  );
+}

@@ -1,0 +1,48 @@
+{
+  "name": "Medication",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "dosage": {
+      "type": "string"
+    },
+    "frequency": {
+      "type": "string"
+    },
+    "time_of_day": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "prescribing_provider": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "refill_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "name",
+    "dosage",
+    "frequency"
+  ]
+}

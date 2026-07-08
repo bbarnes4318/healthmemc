@@ -1,0 +1,141 @@
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Pill, Search, Loader2, AlertTriangle, Info, RefreshCw,
+  Shield, ArrowRight, CheckCircle
+} from "lucide-react";
+import { motion } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+
+export default function Pharmacy() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [interactionDrugs, setInteractionDrugs] = useState("");
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("lookup");
+
+  const searchMedication = async () => {
+    if (!searchQuery.trim()) return;
+    setLoading(true);
+    setResult(null);
+    try {
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `Provide comprehensive information about the medication "${searchQuery}". Include: generic name, brand names, drug class, common dosages, indications, side effects (common and serious), warnings, contraindications, and generic alternatives if available. Format with clear headers. Add a disclaimer that this is for informational purposes only.`,
+        add_context_from_internet: true,
+        model: "gemini_3_flash"
+      });
+      setResult(response);
+    } catch (err) { console.error(err); }
+    setLoading(false);
+  };
+
+  const checkInteractions = async () => {
+    if (!interactionDrugs.trim()) return;
+    setLoading(true);
+    setResult(null);
+    try {
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `Check for drug interactions between the following medications: ${interactionDrugs}. List each interaction with severity (major, moderate, minor), describe what happens, and give clinical significance. If no interactions found, say so. Include a disclaimer to consult a pharmacist or physician.`,
+        add_context_from_internet: true,
+        model: "gemini_3_flash"
+      });
+      setResult(response);
+    } catch (err) { console.error(err); }
+    setLoading(false);
+  };
+
+  return (
+    <div className="p-4 lg:p-8 max-w-3xl mx-auto">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mx-auto mb-4">
+            <Pill className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-2xl font-display font-bold">AI Pharmacy</h1>
+          <p className="text-muted-foreground mt-1 text-sm">Medication information, interactions, and safety</p>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid grid-cols-2 mb-6">
+            <TabsTrigger value="lookup">Medication Lookup</TabsTrigger>
+            <TabsTrigger value="interactions">Drug Interactions</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="lookup">
+            <Card className="p-5">
+              <h3 className="font-semibold text-sm mb-3">Search for a medication</h3>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter medication name (e.g., Lisinopril)"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") searchMedication(); }}
+                />
+                <Button onClick={searchMedication} disabled={!searchQuery.trim() || loading} className="bg-amber-600 hover:bg-amber-700">
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                </Button>
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="interactions">
+            <Card className="p-5">
+              <h3 className="font-semibold text-sm mb-3">Check drug interactions</h3>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter medications separated by commas (e.g., Aspirin, Warfarin)"
+                  value={interactionDrugs}
+                  onChange={(e) => setInteractionDrugs(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") checkInteractions(); }}
+                />
+                <Button onClick={checkInteractions} disabled={!interactionDrugs.trim() || loading} className="bg-amber-600 hover:bg-amber-700">
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <AlertTriangle className="w-4 h-4" />}
+                </Button>
+              </div>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        {loading && (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-6 h-6 animate-spin text-amber-600" />
+          </div>
+        )}
+
+        {result && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+            <Card className="p-5 mt-6">
+              <ReactMarkdown className="prose prose-sm max-w-none">{result}</ReactMarkdown>
+            </Card>
+            <div className="flex items-start gap-2 p-4 bg-amber-50 rounded-xl border border-amber-200 mt-4">
+              <Shield className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+              <p className="text-xs text-amber-800">
+                This information is for educational purposes only. Always consult your pharmacist or physician before making medication decisions.
+              </p>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Quick Links */}
+        <div className="grid grid-cols-2 gap-3 mt-6">
+          {[
+            { label: "Side Effects", icon: AlertTriangle, desc: "Common & serious" },
+            { label: "Generic Alternatives", icon: RefreshCw, desc: "Cost-saving options" },
+            { label: "Dosage Guide", icon: Info, desc: "Proper usage" },
+            { label: "Allergy Check", icon: Shield, desc: "Safety screening" },
+          ].map((item) => (
+            <Card key={item.label} className="p-4 cursor-pointer hover:shadow-md transition-all" onClick={() => { setSearchQuery(item.label); setActiveTab("lookup"); }}>
+              <item.icon className="w-5 h-5 text-amber-600 mb-2" />
+              <h4 className="text-sm font-semibold">{item.label}</h4>
+              <p className="text-xs text-muted-foreground">{item.desc}</p>
+            </Card>
+          ))}
+        </div>
+      </motion.div>
+    </div>
+  );
+}

@@ -1,0 +1,103 @@
+{
+  "name": "HealthProfile",
+  "type": "object",
+  "properties": {
+    "date_of_birth": {
+      "type": "string",
+      "format": "date"
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "male",
+        "female",
+        "other",
+        "prefer_not_to_say"
+      ]
+    },
+    "height_cm": {
+      "type": "number"
+    },
+    "weight_kg": {
+      "type": "number"
+    },
+    "blood_type": {
+      "type": "string",
+      "enum": [
+        "A+",
+        "A-",
+        "B+",
+        "B-",
+        "AB+",
+        "AB-",
+        "O+",
+        "O-",
+        "unknown"
+      ]
+    },
+    "allergies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "chronic_conditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "current_medications": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "emergency_contact_name": {
+      "type": "string"
+    },
+    "emergency_contact_phone": {
+      "type": "string"
+    },
+    "emergency_contact_relationship": {
+      "type": "string"
+    },
+    "insurance_provider": {
+      "type": "string"
+    },
+    "insurance_id": {
+      "type": "string"
+    },
+    "health_score": {
+      "type": "number"
+    },
+    "membership_tier": {
+      "type": "string",
+      "enum": [
+        "free",
+        "basic",
+        "family",
+        "chronic_care",
+        "premium"
+      ],
+      "default": "free"
+    },
+    "notification_medications": {
+      "type": "boolean",
+      "default": true
+    },
+    "notification_appointments": {
+      "type": "boolean",
+      "default": true
+    },
+    "notification_screenings": {
+      "type": "boolean",
+      "default": true
+    },
+    "notification_wellness": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": []
+}

@@ -1,0 +1,38 @@
+{
+  "name": "MedicalRecord",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "visit_summary",
+        "lab_results",
+        "imaging",
+        "vaccination",
+        "prescription",
+        "allergy",
+        "other"
+      ]
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "provider": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "file_url": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "category"
+  ]
+}

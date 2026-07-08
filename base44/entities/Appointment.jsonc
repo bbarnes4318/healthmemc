@@ -1,0 +1,43 @@
+{
+  "name": "Appointment",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "ai_consultation",
+        "follow_up",
+        "screening",
+        "vaccination",
+        "checkup",
+        "specialist"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "completed",
+        "cancelled"
+      ],
+      "default": "scheduled"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "provider": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "date"
+  ]
+}

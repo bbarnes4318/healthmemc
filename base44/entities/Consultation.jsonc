@@ -1,0 +1,122 @@
+{
+  "name": "Consultation",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "ai_doctor",
+        "ai_nurse",
+        "ai_specialist"
+      ]
+    },
+    "specialty": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "in_progress",
+        "completed",
+        "escalated"
+      ],
+      "default": "in_progress"
+    },
+    "symptoms": {
+      "type": "string"
+    },
+    "conversation_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "report": {
+      "type": "object",
+      "properties": {
+        "diagnoses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "confidence": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "recommended_tests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "recommended_treatments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "medication_review": {
+          "type": "string"
+        },
+        "lifestyle_recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "complementary_care": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "follow_up_plan": {
+          "type": "string"
+        },
+        "emergency_warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "summary": {
+          "type": "string"
+        }
+      }
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "moderate",
+        "high",
+        "emergency"
+      ]
+    }
+  },
+  "required": [
+    "type"
+  ]
+}

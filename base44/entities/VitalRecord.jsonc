@@ -1,0 +1,39 @@
+{
+  "name": "VitalRecord",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "blood_pressure",
+        "heart_rate",
+        "oxygen_saturation",
+        "blood_glucose",
+        "weight",
+        "sleep_hours",
+        "activity_minutes",
+        "temperature"
+      ]
+    },
+    "value": {
+      "type": "number"
+    },
+    "secondary_value": {
+      "type": "number"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "value"
+  ]
+}
