@@ -1,0 +1,34 @@
+{
+  "name": "MedicationLog",
+  "type": "object",
+  "properties": {
+    "medication_name": {
+      "type": "string"
+    },
+    "scheduled_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "taken",
+        "missed",
+        "skipped"
+      ],
+      "default": "taken"
+    },
+    "taken_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "medication_name",
+    "scheduled_date",
+    "status"
+  ]
+}

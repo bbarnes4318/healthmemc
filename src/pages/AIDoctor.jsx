@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
+import { generateReportPdf } from "@/lib/generateReportPdf";
 
 export default function AIDoctor() {
   const [step, setStep] = useState("input"); // input, consulting, report
@@ -236,12 +237,22 @@ IMPORTANT: Include appropriate disclaimers that this is AI-generated and should 
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           <Card className="p-6 bg-gradient-to-br from-sky-500 to-blue-600 text-white border-0">
-            <div className="flex items-center gap-3">
-              <FileText className="w-8 h-8" />
-              <div>
-                <h2 className="text-xl font-display font-bold">Health Report</h2>
-                <p className="text-sky-100 text-sm">{new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <FileText className="w-8 h-8" />
+                <div>
+                  <h2 className="text-xl font-display font-bold">Health Report</h2>
+                  <p className="text-sky-100 text-sm">{new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</p>
+                </div>
               </div>
+              <Button
+                variant="secondary"
+                className="bg-white/20 text-white hover:bg-white/30 border-0"
+                onClick={() => generateReportPdf(report, symptoms)}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download PDF
+              </Button>
             </div>
           </Card>
 

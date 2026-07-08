@@ -59,8 +59,15 @@
     "emergency_contact_phone": {
       "type": "string"
     },
+    "emergency_contact_email": {
+      "type": "string"
+    },
     "emergency_contact_relationship": {
       "type": "string"
+    },
+    "auto_alert_contacts": {
+      "type": "boolean",
+      "default": false
     },
     "insurance_provider": {
       "type": "string"

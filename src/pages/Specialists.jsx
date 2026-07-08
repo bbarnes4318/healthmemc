@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
+import AppointmentCalendar from "@/components/specialists/AppointmentCalendar";
 
 const specialties = [
   { name: "Cardiology", icon: Heart, color: "from-red-500 to-rose-600", desc: "Heart & cardiovascular" },
@@ -73,6 +74,8 @@ Continue the conversation as a ${selectedSpecialty.name} specialist.`
             <h1 className="text-2xl font-display font-bold">AI Specialists</h1>
             <p className="text-muted-foreground mt-1 text-sm">Select a specialty for focused clinical guidance</p>
           </div>
+
+          <AppointmentCalendar />
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
             {specialties.map((spec) => (
