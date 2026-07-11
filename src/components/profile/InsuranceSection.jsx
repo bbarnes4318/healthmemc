@@ -177,16 +177,37 @@ export default function InsuranceSection() {
   };
 
   const handleMailPhysicalCard = async () => {
-    setMailingCard(true);
-    try {
-      // Payment will be handled by the checkout flow; this records the request
-      await base44.entities.InsuranceCard.update(cards[0].id, { notes: (cards[0].notes ? cards[0].notes + "\n" : "") + `[${new Date().toLocaleDateString()}] Physical card mailing requested.]` });
-      toast({ title: "Physical card request submitted", description: "Your physical ID card will be mailed within 5-7 business days." });
-      setMailDialogOpen(false);
-    } catch (err) {
-      toast({ title: "Failed to submit request", variant: "destructive" });
+    const isFreeTier = profile?.membership_tier && ["family", "chronic_care", "premium"].includes(profile.membership_tier);
+
+    if (isFreeTier) {
+      setMailingCard(true);
+      try {
+        await base44.entities.InsuranceCard.update(cards[0].id, {
+          notes: (cards[0].notes ? cards[0].notes + "\n" : "") + `[${new Date().toLocaleDateString()}] Physical card mailing requested (free with ${profile.membership_tier} plan).`,
+        });
+        toast({ title: "Physical card request submitted", description: "Your physical ID card will be mailed within 5-7 business days." });
+        setMailDialogOpen(false);
+      } catch (err) {
+        toast({ title: "Failed to submit request", variant: "destructive" });
+      }
+      setMailingCard(false);
+    } else {
+      setMailingCard(true);
+      try {
+        const response = await base44.functions.invoke("create-checkout", {
+          item_name: "Physical Medical ID Card",
+          price: "19.99",
+        });
+        if (response.data?.redirectUrl) {
+          window.location.href = response.data.redirectUrl;
+        } else {
+          toast({ title: "Failed to start checkout", variant: "destructive" });
+        }
+      } catch (err) {
+        toast({ title: "Failed to start checkout", variant: "destructive" });
+      }
+      setMailingCard(false);
     }
-    setMailingCard(false);
   };
 
   const handleSave = async () => {

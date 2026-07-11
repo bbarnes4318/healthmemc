@@ -38,6 +38,7 @@ import ClinicianView from '@/pages/ClinicianView';
 import HealthLocator from '@/pages/HealthLocator';
 import Settings from '@/pages/Settings';
 import CaregiverDashboard from '@/pages/CaregiverDashboard';
+import ThankYou from '@/pages/ThankYou';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -66,6 +67,7 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/clinician-view" element={<ClinicianView />} />
+      <Route path="/thank-you" element={<ThankYou />} />
 
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route element={<AppLayout />}>
