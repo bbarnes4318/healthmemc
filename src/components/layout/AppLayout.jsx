@@ -3,7 +3,8 @@ import { Outlet, Link, useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import {
   Home, Stethoscope, HeartPulse, Users, Pill, FileText,
-  Sparkles, Shield, User, Menu, X, LogOut, Activity, Phone
+  Sparkles, Shield, User, Menu, X, LogOut, Activity, Phone,
+  Smile, Dumbbell, Heart, LifeBuoy, PawPrint
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -12,6 +13,11 @@ const navItems = [
   { path: "/ai-doctor", label: "AI Doctor", icon: Stethoscope },
   { path: "/ai-nurse", label: "AI Nurse", icon: HeartPulse },
   { path: "/specialists", label: "Specialists", icon: Users },
+  { path: "/dental-care", label: "Dental Care", icon: Smile },
+  { path: "/physical-therapy", label: "Physical Therapy", icon: Dumbbell },
+  { path: "/senior-care", label: "Senior Care", icon: Heart },
+  { path: "/assisted-living", label: "Assisted Living", icon: LifeBuoy },
+  { path: "/pet-care", label: "Pet Care", icon: PawPrint },
   { path: "/pharmacy", label: "Pharmacy", icon: Pill },
   { path: "/records", label: "Records", icon: FileText },
   { path: "/wellness", label: "Wellness", icon: Sparkles },

@@ -7,9 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Shield, Bell, Heart, Loader2, Save, Crown } from "lucide-react";
+import { User, Shield, Bell, Heart, Loader2, Save, Crown, CreditCard } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
+import InsuranceSection from "@/components/profile/InsuranceSection";
 
 const membershipTiers = [
   { value: "free", label: "Free", desc: "Basic health information", price: "Free" },
@@ -109,10 +110,11 @@ export default function Profile() {
       </div>
 
       <Tabs defaultValue="personal">
-        <TabsList className="grid grid-cols-4 mb-6">
+        <TabsList className="grid grid-cols-3 sm:grid-cols-5 mb-6">
           <TabsTrigger value="personal"><User className="w-3.5 h-3.5 mr-1.5" /> Personal</TabsTrigger>
           <TabsTrigger value="emergency"><Shield className="w-3.5 h-3.5 mr-1.5" /> Emergency</TabsTrigger>
           <TabsTrigger value="notifications"><Bell className="w-3.5 h-3.5 mr-1.5" /> Alerts</TabsTrigger>
+          <TabsTrigger value="insurance"><CreditCard className="w-3.5 h-3.5 mr-1.5" /> Insurance</TabsTrigger>
           <TabsTrigger value="membership"><Crown className="w-3.5 h-3.5 mr-1.5" /> Plan</TabsTrigger>
         </TabsList>
 
@@ -209,6 +211,12 @@ export default function Profile() {
                 </div>
               ))}
             </Card>
+          </motion.div>
+        </TabsContent>
+
+        <TabsContent value="insurance">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <InsuranceSection />
           </motion.div>
         </TabsContent>
 

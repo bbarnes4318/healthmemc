@@ -26,6 +26,11 @@ import Wellness from '@/pages/Wellness';
 import HealthDashboard from '@/pages/HealthDashboard';
 import Emergency from '@/pages/Emergency';
 import Profile from '@/pages/Profile';
+import AIDentalCare from '@/pages/AIDentalCare';
+import AIPhysicalTherapy from '@/pages/AIPhysicalTherapy';
+import AISeniorCare from '@/pages/AISeniorCare';
+import AIAssistedLiving from '@/pages/AIAssistedLiving';
+import AIVeterinary from '@/pages/AIVeterinary';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -60,6 +65,11 @@ const AuthenticatedApp = () => {
           <Route path="/ai-doctor" element={<AIDoctor />} />
           <Route path="/ai-nurse" element={<AINurse />} />
           <Route path="/specialists" element={<Specialists />} />
+          <Route path="/dental-care" element={<AIDentalCare />} />
+          <Route path="/physical-therapy" element={<AIPhysicalTherapy />} />
+          <Route path="/senior-care" element={<AISeniorCare />} />
+          <Route path="/assisted-living" element={<AIAssistedLiving />} />
+          <Route path="/pet-care" element={<AIVeterinary />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />
           <Route path="/wellness" element={<Wellness />} />

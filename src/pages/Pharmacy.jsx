@@ -6,11 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Pill, Search, Loader2, AlertTriangle, Info, RefreshCw,
-  Shield, ArrowRight, CheckCircle, Activity
+  Shield, ArrowRight, CheckCircle, Activity, Bell
 } from "lucide-react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import AdherenceTracker from "@/components/pharmacy/AdherenceTracker";
+import MedicationReminders from "@/components/pharmacy/MedicationReminders";
 
 export default function Pharmacy() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -61,10 +62,11 @@ export default function Pharmacy() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-3 mb-6">
-            <TabsTrigger value="lookup">Medication Lookup</TabsTrigger>
-            <TabsTrigger value="interactions">Drug Interactions</TabsTrigger>
+          <TabsList className="grid grid-cols-2 sm:grid-cols-4 mb-6">
+            <TabsTrigger value="lookup">Lookup</TabsTrigger>
+            <TabsTrigger value="interactions">Interactions</TabsTrigger>
             <TabsTrigger value="adherence"><Activity className="w-3.5 h-3.5 mr-1" />Adherence</TabsTrigger>
+            <TabsTrigger value="reminders"><Bell className="w-3.5 h-3.5 mr-1" />Reminders</TabsTrigger>
           </TabsList>
 
           <TabsContent value="lookup">
@@ -103,6 +105,10 @@ export default function Pharmacy() {
 
           <TabsContent value="adherence">
             <AdherenceTracker />
+          </TabsContent>
+
+          <TabsContent value="reminders">
+            <MedicationReminders />
           </TabsContent>
         </Tabs>
 

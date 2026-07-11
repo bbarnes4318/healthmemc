@@ -1,0 +1,63 @@
+{
+  "name": "InsuranceCard",
+  "type": "object",
+  "properties": {
+    "provider_name": {
+      "type": "string"
+    },
+    "policy_number": {
+      "type": "string"
+    },
+    "group_number": {
+      "type": "string"
+    },
+    "subscriber_name": {
+      "type": "string"
+    },
+    "plan_name": {
+      "type": "string"
+    },
+    "plan_type": {
+      "type": "string",
+      "enum": [
+        "hmo",
+        "ppo",
+        "epo",
+        "pos",
+        "medicare",
+        "medicaid",
+        "other"
+      ]
+    },
+    "effective_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "termination_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "copay_amount": {
+      "type": "number"
+    },
+    "deductible_amount": {
+      "type": "number"
+    },
+    "customer_service_phone": {
+      "type": "string"
+    },
+    "card_front_url": {
+      "type": "string"
+    },
+    "card_back_url": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "provider_name",
+    "policy_number"
+  ]
+}

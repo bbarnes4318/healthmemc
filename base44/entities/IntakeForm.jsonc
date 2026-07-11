@@ -1,0 +1,60 @@
+{
+  "name": "IntakeForm",
+  "type": "object",
+  "properties": {
+    "specialty": {
+      "type": "string"
+    },
+    "appointment_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "chief_complaint": {
+      "type": "string"
+    },
+    "symptom_duration": {
+      "type": "string"
+    },
+    "symptom_severity": {
+      "type": "string",
+      "enum": [
+        "mild",
+        "moderate",
+        "severe"
+      ]
+    },
+    "current_medications": {
+      "type": "string"
+    },
+    "allergies": {
+      "type": "string"
+    },
+    "medical_history": {
+      "type": "string"
+    },
+    "surgical_history": {
+      "type": "string"
+    },
+    "family_history": {
+      "type": "string"
+    },
+    "lifestyle_notes": {
+      "type": "string"
+    },
+    "questions_for_provider": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "completed"
+      ],
+      "default": "completed"
+    }
+  },
+  "required": [
+    "specialty",
+    "chief_complaint"
+  ]
+}

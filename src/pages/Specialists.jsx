@@ -10,6 +10,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import AppointmentCalendar from "@/components/specialists/AppointmentCalendar";
+import IntakeFormModal from "@/components/specialists/IntakeFormModal";
 
 const specialties = [
   { name: "Cardiology", icon: Heart, color: "from-red-500 to-rose-600", desc: "Heart & cardiovascular" },
@@ -28,18 +29,36 @@ export default function Specialists() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [intakeData, setIntakeData] = useState(null);
+  const [showIntake, setShowIntake] = useState(false);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const startConsultation = async (specialty) => {
+  const handleSpecialtyClick = (specialty) => {
     setSelectedSpecialty(specialty);
-    setLoading(true);
-    const greetMsg = { role: "assistant", content: `Welcome! I'm your AI ${specialty.name} specialist. How can I help you today? Please describe your symptoms or concerns.` };
-    setMessages([greetMsg]);
-    setLoading(false);
+    setShowIntake(true);
+  };
+
+  const beginConsultation = (intake = null) => {
+    setIntakeData(intake);
+    let greeting = `Welcome! I'm your AI ${selectedSpecialty.name} specialist. How can I help you today? Please describe your symptoms or concerns.`;
+    if (intake) {
+      greeting = `Welcome! I'm your AI ${selectedSpecialty.name} specialist. I've reviewed your pre-consultation intake form — your chief complaint is "${intake.chief_complaint}". Can you tell me more about when this started and how it's been progressing?`;
+    }
+    setMessages([{ role: "assistant", content: greeting }]);
+  };
+
+  const handleIntakeComplete = (data) => {
+    setShowIntake(false);
+    beginConsultation(data);
+  };
+
+  const handleIntakeSkip = () => {
+    setShowIntake(false);
+    beginConsultation(null);
   };
 
   const sendMessage = async () => {
@@ -51,8 +70,9 @@ export default function Specialists() {
 
     try {
       const conversationText = newMessages.map((m) => `${m.role === "user" ? "Patient" : `AI ${selectedSpecialty.name} Specialist`}: ${m.content}`).join("\n\n");
+      const intakeContext = intakeData ? `\n\nPatient pre-consultation intake:\n- Chief Complaint: ${intakeData.chief_complaint}\n- Duration: ${intakeData.symptom_duration || "N/A"}\n- Severity: ${intakeData.symptom_severity || "N/A"}\n- Current Medications: ${intakeData.current_medications || "N/A"}\n- Allergies: ${intakeData.allergies || "N/A"}\n- Medical History: ${intakeData.medical_history || "N/A"}\n` : "";
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an AI ${selectedSpecialty.name} specialist. Use focused clinical pathways for ${selectedSpecialty.name}. Be thorough but accessible. Recommend referral to a human specialist when appropriate. Do not provide definitive diagnoses.
+        prompt: `You are an AI ${selectedSpecialty.name} specialist. Use focused clinical pathways for ${selectedSpecialty.name}. Be thorough but accessible. Recommend referral to a human specialist when appropriate. Do not provide definitive diagnoses.${intakeContext}
 
 ${conversationText}
 
@@ -82,7 +102,7 @@ Continue the conversation as a ${selectedSpecialty.name} specialist.`
               <Card
                 key={spec.name}
                 className="p-5 cursor-pointer hover:shadow-md transition-all hover:-translate-y-0.5"
-                onClick={() => startConsultation(spec)}
+                onClick={() => handleSpecialtyClick(spec)}
               >
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${spec.color} flex items-center justify-center mb-3`}>
                   <spec.icon className="w-6 h-6 text-white" />
@@ -156,6 +176,13 @@ Continue the conversation as a ${selectedSpecialty.name} specialist.`
           </Button>
         </div>
       </div>
+      <IntakeFormModal
+        open={showIntake}
+        onOpenChange={(v) => { if (!v) handleIntakeSkip(); }}
+        specialty={selectedSpecialty}
+        onComplete={handleIntakeComplete}
+        onSkip={handleIntakeSkip}
+      />
     </div>
   );
 }

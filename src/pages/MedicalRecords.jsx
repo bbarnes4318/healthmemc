@@ -19,6 +19,7 @@ const categories = [
   { value: "vaccination", label: "Vaccination" },
   { value: "prescription", label: "Prescription" },
   { value: "allergy", label: "Allergy" },
+  { value: "intake_form", label: "Intake Form" },
   { value: "other", label: "Other" },
 ];
 
@@ -29,6 +30,7 @@ const categoryColors = {
   vaccination: "bg-amber-100 text-amber-700",
   prescription: "bg-rose-100 text-rose-700",
   allergy: "bg-red-100 text-red-700",
+  intake_form: "bg-indigo-100 text-indigo-700",
   other: "bg-gray-100 text-gray-700",
 };
 

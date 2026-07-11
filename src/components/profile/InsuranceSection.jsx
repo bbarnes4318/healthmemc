@@ -1,0 +1,311 @@
+import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { CreditCard, Plus, Loader2, Trash2, Upload, Lock, Calendar, Phone } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+
+const planTypes = [
+  { value: "hmo", label: "HMO" },
+  { value: "ppo", label: "PPO" },
+  { value: "epo", label: "EPO" },
+  { value: "pos", label: "POS" },
+  { value: "medicare", label: "Medicare" },
+  { value: "medicaid", label: "Medicaid" },
+  { value: "other", label: "Other" },
+];
+
+const emptyForm = {
+  provider_name: "",
+  policy_number: "",
+  group_number: "",
+  subscriber_name: "",
+  plan_name: "",
+  plan_type: "ppo",
+  effective_date: "",
+  termination_date: "",
+  copay_amount: "",
+  deductible_amount: "",
+  customer_service_phone: "",
+  card_front_url: "",
+  card_back_url: "",
+  notes: "",
+};
+
+export default function InsuranceSection() {
+  const [cards, setCards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [uploadingFront, setUploadingFront] = useState(false);
+  const [uploadingBack, setUploadingBack] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    loadCards();
+  }, []);
+
+  const loadCards = async () => {
+    try {
+      const data = await base44.entities.InsuranceCard.list("-created_date", 50);
+      setCards(data);
+    } catch (err) { console.error(err); }
+    setLoading(false);
+  };
+
+  const handleUpload = async (e, side) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (side === "front") setUploadingFront(true);
+    else setUploadingBack(true);
+    try {
+      const result = await base44.integrations.Core.UploadFile({ file });
+      setForm((prev) => ({ ...prev, [`card_${side}_url`]: result.file_url }));
+    } catch (err) { console.error(err); }
+    if (side === "front") setUploadingFront(false);
+    else setUploadingBack(false);
+  };
+
+  const handleSave = async () => {
+    if (!form.provider_name.trim() || !form.policy_number.trim()) return;
+    setSaving(true);
+    try {
+      const data = {
+        ...form,
+        copay_amount: form.copay_amount ? parseFloat(form.copay_amount) : undefined,
+        deductible_amount: form.deductible_amount ? parseFloat(form.deductible_amount) : undefined,
+      };
+      await base44.entities.InsuranceCard.create(data);
+      setForm(emptyForm);
+      setDialogOpen(false);
+      loadCards();
+      toast({ title: "Insurance card saved", description: "Your insurance information has been stored securely." });
+    } catch (err) { console.error(err); }
+    setSaving(false);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await base44.entities.InsuranceCard.delete(id);
+      setCards(cards.filter((c) => c.id !== id));
+      toast({ title: "Insurance card deleted" });
+    } catch (err) { console.error(err); }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-6 h-6 animate-spin text-sky-600" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Lock className="w-4 h-4 text-muted-foreground" />
+          <p className="text-xs text-muted-foreground">Your insurance information is stored securely and privately.</p>
+        </div>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-sky-600 hover:bg-sky-700" size="sm">
+              <Plus className="w-4 h-4 mr-1.5" /> Add Card
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Add Insurance Card</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3 mt-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">Provider Name *</Label>
+                  <Input placeholder="e.g., Blue Cross" value={form.provider_name} onChange={(e) => setForm({ ...form, provider_name: e.target.value })} />
+                </div>
+                <div>
+                  <Label className="text-xs">Policy Number *</Label>
+                  <Input placeholder="Policy #" value={form.policy_number} onChange={(e) => setForm({ ...form, policy_number: e.target.value })} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">Group Number</Label>
+                  <Input placeholder="Group #" value={form.group_number} onChange={(e) => setForm({ ...form, group_number: e.target.value })} />
+                </div>
+                <div>
+                  <Label className="text-xs">Subscriber Name</Label>
+                  <Input placeholder="Full name" value={form.subscriber_name} onChange={(e) => setForm({ ...form, subscriber_name: e.target.value })} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">Plan Name</Label>
+                  <Input placeholder="e.g., Gold PPO" value={form.plan_name} onChange={(e) => setForm({ ...form, plan_name: e.target.value })} />
+                </div>
+                <div>
+                  <Label className="text-xs">Plan Type</Label>
+                  <Select value={form.plan_type} onValueChange={(v) => setForm({ ...form, plan_type: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {planTypes.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">Effective Date</Label>
+                  <Input type="date" value={form.effective_date} onChange={(e) => setForm({ ...form, effective_date: e.target.value })} />
+                </div>
+                <div>
+                  <Label className="text-xs">Termination Date</Label>
+                  <Input type="date" value={form.termination_date} onChange={(e) => setForm({ ...form, termination_date: e.target.value })} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">Copay ($)</Label>
+                  <Input type="number" placeholder="25" value={form.copay_amount} onChange={(e) => setForm({ ...form, copay_amount: e.target.value })} />
+                </div>
+                <div>
+                  <Label className="text-xs">Deductible ($)</Label>
+                  <Input type="number" placeholder="1500" value={form.deductible_amount} onChange={(e) => setForm({ ...form, deductible_amount: e.target.value })} />
+                </div>
+              </div>
+              <div>
+                <Label className="text-xs">Customer Service Phone</Label>
+                <Input placeholder="1-800-..." value={form.customer_service_phone} onChange={(e) => setForm({ ...form, customer_service_phone: e.target.value })} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">Card Front Image</Label>
+                  <label className="flex items-center justify-center gap-2 px-4 py-6 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted transition text-sm">
+                    {uploadingFront ? <Loader2 className="w-4 h-4 animate-spin" /> : form.card_front_url ? <img src={form.card_front_url} alt="Front" className="max-h-16 object-contain" /> : <><Upload className="w-4 h-4" /> Upload front</>}
+                    <input type="file" accept="image/*" className="hidden" onChange={(e) => handleUpload(e, "front")} />
+                  </label>
+                </div>
+                <div>
+                  <Label className="text-xs">Card Back Image</Label>
+                  <label className="flex items-center justify-center gap-2 px-4 py-6 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted transition text-sm">
+                    {uploadingBack ? <Loader2 className="w-4 h-4 animate-spin" /> : form.card_back_url ? <img src={form.card_back_url} alt="Back" className="max-h-16 object-contain" /> : <><Upload className="w-4 h-4" /> Upload back</>}
+                    <input type="file" accept="image/*" className="hidden" onChange={(e) => handleUpload(e, "back")} />
+                  </label>
+                </div>
+              </div>
+              <Textarea placeholder="Additional notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className="resize-none" />
+              <Button onClick={handleSave} disabled={!form.provider_name.trim() || !form.policy_number.trim() || saving} className="w-full bg-sky-600 hover:bg-sky-700">
+                {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Lock className="w-4 h-4 mr-2" />}
+                Save Securely
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {cards.length === 0 ? (
+        <Card className="p-12 text-center">
+          <CreditCard className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
+          <p className="text-muted-foreground text-sm">No insurance cards saved yet</p>
+          <p className="text-xs text-muted-foreground mt-1">Add your insurance provider info and card images for quick access.</p>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {cards.map((card) => (
+            <Card key={card.id} className="p-5">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-sky-100 flex items-center justify-center shrink-0">
+                    <CreditCard className="w-5 h-5 text-sky-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-sm">{card.provider_name}</h3>
+                    {card.plan_name && <p className="text-xs text-muted-foreground">{card.plan_name}</p>}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {card.plan_type && (
+                    <span className="text-xs bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full font-medium uppercase">
+                      {planTypes.find((t) => t.value === card.plan_type)?.label || card.plan_type}
+                    </span>
+                  )}
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDelete(card.id)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div>
+                  <p className="text-xs text-muted-foreground">Policy Number</p>
+                  <p className="font-medium">{card.policy_number}</p>
+                </div>
+                {card.group_number && (
+                  <div>
+                    <p className="text-xs text-muted-foreground">Group Number</p>
+                    <p className="font-medium">{card.group_number}</p>
+                  </div>
+                )}
+                {card.subscriber_name && (
+                  <div>
+                    <p className="text-xs text-muted-foreground">Subscriber</p>
+                    <p className="font-medium">{card.subscriber_name}</p>
+                  </div>
+                )}
+                {card.copay_amount != null && (
+                  <div>
+                    <p className="text-xs text-muted-foreground">Copay</p>
+                    <p className="font-medium">${card.copay_amount}</p>
+                  </div>
+                )}
+                {card.deductible_amount != null && (
+                  <div>
+                    <p className="text-xs text-muted-foreground">Deductible</p>
+                    <p className="font-medium">${card.deductible_amount}</p>
+                  </div>
+                )}
+                {card.customer_service_phone && (
+                  <div>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1"><Phone className="w-3 h-3" /> Phone</p>
+                    <p className="font-medium">{card.customer_service_phone}</p>
+                  </div>
+                )}
+                {card.effective_date && (
+                  <div>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1"><Calendar className="w-3 h-3" /> Effective</p>
+                    <p className="font-medium">{new Date(card.effective_date).toLocaleDateString()}</p>
+                  </div>
+                )}
+              </div>
+
+              {(card.card_front_url || card.card_back_url) && (
+                <div className="flex gap-3 mt-3">
+                  {card.card_front_url && (
+                    <a href={card.card_front_url} target="_blank" rel="noopener noreferrer" className="flex-1">
+                      <img src={card.card_front_url} alt="Card front" className="w-full h-24 object-cover rounded-lg border hover:opacity-80 transition" />
+                      <p className="text-xs text-center text-muted-foreground mt-1">Front</p>
+                    </a>
+                  )}
+                  {card.card_back_url && (
+                    <a href={card.card_back_url} target="_blank" rel="noopener noreferrer" className="flex-1">
+                      <img src={card.card_back_url} alt="Card back" className="w-full h-24 object-cover rounded-lg border hover:opacity-80 transition" />
+                      <p className="text-xs text-center text-muted-foreground mt-1">Back</p>
+                    </a>
+                  )}
+                </div>
+              )}
+
+              {card.notes && <p className="text-xs text-muted-foreground mt-3 pt-3 border-t">{card.notes}</p>}
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
