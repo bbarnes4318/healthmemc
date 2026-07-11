@@ -5,10 +5,11 @@ import {
   Home, Stethoscope, HeartPulse, Users, Pill, FileText,
   Sparkles, Shield, User, Menu, X, LogOut, Activity, Phone,
   Smile, Dumbbell, Heart, LifeBuoy, PawPrint, Bell, BellRing, ClipboardCheck,
-  KeyRound, MapPin, Settings as SettingsIcon
+  KeyRound, MapPin, Settings as SettingsIcon, Users as UsersIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/layout/GlobalSearch";
+import ProfileSwitcher from "@/components/layout/ProfileSwitcher";
 import { useRecordNotifications } from "@/hooks/useRecordNotifications";
 
 const navItems = [
@@ -27,6 +28,7 @@ const navItems = [
   { path: "/dashboard", label: "Dashboard", icon: Activity },
   { path: "/provider-dashboard", label: "Provider", icon: ClipboardCheck },
   { path: "/clinician-dashboard", label: "Clinician Access", icon: KeyRound },
+  { path: "/caregiver-dashboard", label: "Caregiver", icon: UsersIcon },
   { path: "/health-locator", label: "Find Care", icon: MapPin },
   { path: "/settings", label: "Settings", icon: SettingsIcon },
   { path: "/profile", label: "Profile", icon: User },
@@ -182,8 +184,11 @@ export default function AppLayout() {
           </div>
         )}
         <div className="pt-14 lg:pt-0">
-          <div className="sticky top-14 lg:top-0 z-20 bg-white border-b border-border px-4 py-2.5">
-            <GlobalSearch />
+          <div className="sticky top-14 lg:top-0 z-20 bg-white border-b border-border px-4 py-2.5 flex items-center justify-between gap-3">
+            <div className="flex-1 max-w-xl">
+              <GlobalSearch />
+            </div>
+            <ProfileSwitcher />
           </div>
           <Outlet />
         </div>

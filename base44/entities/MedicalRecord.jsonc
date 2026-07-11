@@ -30,6 +30,9 @@
     },
     "file_url": {
       "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
     }
   },
   "required": [

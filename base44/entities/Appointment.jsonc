@@ -34,6 +34,9 @@
     },
     "provider": {
       "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
     }
   },
   "required": [

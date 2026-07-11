@@ -1,0 +1,57 @@
+{
+  "name": "FamilyMember",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "relationship": {
+      "type": "string",
+      "enum": [
+        "child",
+        "parent",
+        "spouse",
+        "sibling",
+        "grandparent",
+        "other"
+      ]
+    },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date"
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "male",
+        "female",
+        "other",
+        "prefer_not_to_say"
+      ]
+    },
+    "photo_url": {
+      "type": "string"
+    },
+    "blood_type": {
+      "type": "string",
+      "enum": [
+        "A+",
+        "A-",
+        "B+",
+        "B-",
+        "AB+",
+        "AB-",
+        "O+",
+        "O-",
+        "unknown"
+      ]
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "relationship"
+  ]
+}

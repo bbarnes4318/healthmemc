@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import AdherenceTracker from "@/components/pharmacy/AdherenceTracker";
 import MedicationReminders from "@/components/pharmacy/MedicationReminders";
+import MedicationManager from "@/components/pharmacy/MedicationManager";
 
 export default function Pharmacy() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -62,12 +63,17 @@ export default function Pharmacy() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2 sm:grid-cols-4 mb-6">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-5 mb-6">
+            <TabsTrigger value="medications"><Pill className="w-3.5 h-3.5 mr-1" />My Meds</TabsTrigger>
             <TabsTrigger value="lookup">Lookup</TabsTrigger>
             <TabsTrigger value="interactions">Interactions</TabsTrigger>
             <TabsTrigger value="adherence"><Activity className="w-3.5 h-3.5 mr-1" />Adherence</TabsTrigger>
             <TabsTrigger value="reminders"><Bell className="w-3.5 h-3.5 mr-1" />Reminders</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="medications">
+            <MedicationManager />
+          </TabsContent>
 
           <TabsContent value="lookup">
             <Card className="p-5">

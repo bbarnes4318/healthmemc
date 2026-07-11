@@ -9,28 +9,32 @@ import {
   CartesianGrid, Legend, Cell
 } from "recharts";
 import { format, subDays, isSameDay } from "date-fns";
+import { useFamilyMember } from "@/context/FamilyMemberContext";
 
 export default function AdherenceTracker() {
   const [medications, setMedications] = useState([]);
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
+  const { currentMemberId } = useFamilyMember();
 
   const today = format(new Date(), "yyyy-MM-dd");
 
   const loadData = async () => {
     try {
+      const medFilter = currentMemberId ? { family_member_id: currentMemberId, active: true } : { active: true };
       const [meds, allLogs] = await Promise.all([
-        base44.entities.Medication.filter({ active: true }),
+        base44.entities.Medication.filter(medFilter),
         base44.entities.MedicationLog.filter({}),
       ]);
+      const filteredLogs = currentMemberId ? allLogs.filter((l) => l.family_member_id === currentMemberId) : allLogs;
       setMedications(meds);
-      setLogs(allLogs);
+      setLogs(filteredLogs);
     } catch (err) { console.error(err); }
     setLoading(false);
   };
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { loadData(); }, [currentMemberId]);
 
   const todayLogs = useMemo(
     () => logs.filter((l) => l.scheduled_date === today),
@@ -76,6 +80,7 @@ export default function AdherenceTracker() {
           scheduled_date: today,
           status,
           taken_at: status === "taken" ? new Date().toISOString() : null,
+          family_member_id: currentMemberId || undefined,
         });
       }
 
@@ -161,14 +166,19 @@ export default function AdherenceTracker() {
                 animate={{ opacity: 1, x: 0 }}
                 className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
               >
-                <div>
-                  <p className="text-sm font-medium">{med.name}</p>
-                  <p className="text-xs text-muted-foreground">{med.dosage} · {med.frequency}</p>
+                <div className="flex items-center gap-3">
+                  {med.photo_url && (
+                    <img src={med.photo_url} alt={med.name} className="w-10 h-10 rounded-lg object-cover" />
+                  )}
+                  <div>
+                    <p className="text-sm font-medium">{med.name}</p>
+                    <p className="text-xs text-muted-foreground">{med.dosage} · {med.frequency}</p>
                   {log?.taken_at && (
                     <p className="text-xs text-green-600 mt-0.5">
                       Taken at {format(new Date(log.taken_at), "h:mm a")}
                     </p>
                   )}
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <Button

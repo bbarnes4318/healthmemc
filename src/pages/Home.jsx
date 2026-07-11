@@ -8,6 +8,7 @@ import {
   Activity, Calendar, Bell, Phone, TrendingUp, Clock, ChevronRight, Shield
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useFamilyMember } from "@/context/FamilyMemberContext";
 
 const quickActions = [
   { label: "Start AI Doctor Visit", icon: Stethoscope, path: "/ai-doctor", color: "from-sky-500 to-blue-600", desc: "Describe symptoms & get insights" },
@@ -24,16 +25,19 @@ export default function Home() {
   const [appointments, setAppointments] = useState([]);
   const [medications, setMedications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { currentMemberId, currentMemberName } = useFamilyMember();
 
   useEffect(() => {
     const load = async () => {
       try {
         const u = await base44.auth.me();
         setUser(u);
+        const apptFilter = currentMemberId ? { family_member_id: currentMemberId, status: "scheduled" } : { status: "scheduled" };
+        const medFilter = currentMemberId ? { family_member_id: currentMemberId, active: true } : { active: true };
         const [profiles, appts, meds] = await Promise.all([
           base44.entities.HealthProfile.filter({ created_by_id: u.id }),
-          base44.entities.Appointment.filter({ status: "scheduled" }, "-date", 3),
-          base44.entities.Medication.filter({ active: true }),
+          base44.entities.Appointment.filter(apptFilter, "-date", 3),
+          base44.entities.Medication.filter(medFilter),
         ]);
         if (profiles.length > 0) setProfile(profiles[0]);
         setAppointments(appts);
@@ -42,7 +46,7 @@ export default function Home() {
       setLoading(false);
     };
     load();
-  }, []);
+  }, [currentMemberId]);
 
   if (loading) {
     return (
@@ -53,7 +57,7 @@ export default function Home() {
   }
 
   const healthScore = profile?.health_score || 78;
-  const firstName = user?.full_name?.split(" ")[0] || "there";
+  const firstName = currentMemberName !== "You" ? currentMemberName : (user?.full_name?.split(" ")[0] || "there");
 
   return (
     <div className="p-4 lg:p-8 max-w-6xl mx-auto space-y-6">

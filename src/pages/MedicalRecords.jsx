@@ -12,7 +12,9 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import MedicalTimeline from "@/components/records/MedicalTimeline";
+import RecordInsights from "@/components/records/RecordInsights";
 import { generateRecordPdf } from "@/lib/generateRecordPdf";
+import { useFamilyMember } from "@/context/FamilyMemberContext";
 
 const categories = [
   { value: "visit_summary", label: "Visit Summary" },
@@ -47,15 +49,17 @@ export default function MedicalRecords() {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [viewMode, setViewMode] = useState("list");
+  const { currentMemberId } = useFamilyMember();
 
   useEffect(() => {
     loadRecords();
-  }, []);
+  }, [currentMemberId]);
 
   const loadRecords = async () => {
     try {
       const data = await base44.entities.MedicalRecord.list("-date", 100);
-      setRecords(data);
+      const filtered = currentMemberId ? data.filter((r) => r.family_member_id === currentMemberId) : data;
+      setRecords(filtered);
     } catch (err) { console.error(err); }
     setLoading(false);
   };
@@ -78,6 +82,7 @@ export default function MedicalRecords() {
       await base44.entities.MedicalRecord.create({
         ...form,
         file_url: fileUrl || undefined,
+        family_member_id: currentMemberId || undefined,
       });
       setForm({ title: "", category: "visit_summary", date: "", provider: "", notes: "" });
       setFileUrl(null);
@@ -152,6 +157,9 @@ export default function MedicalRecords() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* AI Insights */}
+      {viewMode === "list" && <RecordInsights records={records} />}
 
       {/* View Toggle + Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
