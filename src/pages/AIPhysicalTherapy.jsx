@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import AIServicePage from "@/components/services/AIServicePage";
-import { Dumbbell, Bone, Activity, Move, Stethoscope, AlignCenter } from "lucide-react";
+import ExerciseTracker from "@/components/pt/ExerciseTracker";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dumbbell, Bone, Activity, Move, Stethoscope, AlignCenter, ClipboardList } from "lucide-react";
 
 const config = {
   title: "AI Physical Therapy",
@@ -22,5 +24,25 @@ const config = {
 };
 
 export default function AIPhysicalTherapy() {
-  return <AIServicePage config={config} />;
+  const [activeTab, setActiveTab] = useState("consult");
+
+  return (
+    <div>
+      <div className="sticky top-14 lg:top-0 z-10 bg-white border-b border-border px-4 py-2">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid grid-cols-2 max-w-xs mx-auto">
+            <TabsTrigger value="consult"><Dumbbell className="w-3.5 h-3.5 mr-1.5" />AI Consult</TabsTrigger>
+            <TabsTrigger value="tracker"><ClipboardList className="w-3.5 h-3.5 mr-1.5" />Exercise Tracker</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+      {activeTab === "consult" ? (
+        <AIServicePage config={config} />
+      ) : (
+        <div className="p-4 lg:p-8 max-w-3xl mx-auto">
+          <ExerciseTracker />
+        </div>
+      )}
+    </div>
+  );
 }

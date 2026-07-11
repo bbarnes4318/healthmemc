@@ -1,0 +1,63 @@
+{
+  "name": "ExerciseLog",
+  "type": "object",
+  "properties": {
+    "exercise_name": {
+      "type": "string"
+    },
+    "body_part": {
+      "type": "string",
+      "enum": [
+        "knee",
+        "shoulder",
+        "hip",
+        "spine",
+        "ankle",
+        "wrist",
+        "neck",
+        "full_body",
+        "other"
+      ]
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "default": "medium"
+    },
+    "sets": {
+      "type": "number"
+    },
+    "reps": {
+      "type": "number"
+    },
+    "duration_minutes": {
+      "type": "number"
+    },
+    "rom_degrees": {
+      "type": "number"
+    },
+    "pain_level": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "exercise_name",
+    "body_part",
+    "difficulty",
+    "date"
+  ]
+}

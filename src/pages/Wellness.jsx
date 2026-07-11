@@ -9,6 +9,8 @@ import {
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import WellnessCharts from "@/components/wellness/WellnessCharts";
+import NutritionLog from "@/components/wellness/NutritionLog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const programs = [
   { name: "Nutrition Plans", icon: Apple, color: "from-green-500 to-emerald-600", desc: "Personalized dietary guidance" },
@@ -25,6 +27,7 @@ export default function Wellness() {
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("programs");
 
   const loadProgram = async (program) => {
     setSelectedProgram(program);
@@ -87,9 +90,20 @@ export default function Wellness() {
           <p className="text-muted-foreground mt-1 text-sm">Holistic health programs for mind, body, and spirit</p>
         </div>
 
-        <WellnessCharts />
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList className="grid grid-cols-2 w-full max-w-xs mx-auto">
+            <TabsTrigger value="programs"><Sparkles className="w-3.5 h-3.5 mr-1.5" />Programs</TabsTrigger>
+            <TabsTrigger value="nutrition"><Apple className="w-3.5 h-3.5 mr-1.5" />Nutrition</TabsTrigger>
+          </TabsList>
+        </Tabs>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {activeTab === "nutrition" ? (
+          <NutritionLog />
+        ) : (
+          <>
+            <WellnessCharts />
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {programs.map((program, i) => (
             <motion.div key={program.name} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 * i }}>
               <Card
@@ -105,6 +119,8 @@ export default function Wellness() {
             </motion.div>
           ))}
         </div>
+          </>
+        )}
       </motion.div>
     </div>
   );
