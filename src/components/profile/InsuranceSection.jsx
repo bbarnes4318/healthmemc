@@ -455,14 +455,14 @@ export default function InsuranceSection() {
                   <Label className="text-xs">Card Front Image</Label>
                   <label className="flex items-center justify-center gap-2 px-4 py-6 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted transition text-sm">
                     {uploadingFront ? <Loader2 className="w-4 h-4 animate-spin" /> : form.card_front_url ? <img src={form.card_front_url} alt="Front" className="max-h-16 object-contain" /> : <><Upload className="w-4 h-4" /> Upload front</>}
-                    <input type="file" accept="image/*" className="hidden" onChange={(e) => handleUpload(e, "front")} />
+                    <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => handleUpload(e, "front")} />
                   </label>
                 </div>
                 <div>
                   <Label className="text-xs">Card Back Image</Label>
                   <label className="flex items-center justify-center gap-2 px-4 py-6 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted transition text-sm">
                     {uploadingBack ? <Loader2 className="w-4 h-4 animate-spin" /> : form.card_back_url ? <img src={form.card_back_url} alt="Back" className="max-h-16 object-contain" /> : <><Upload className="w-4 h-4" /> Upload back</>}
-                    <input type="file" accept="image/*" className="hidden" onChange={(e) => handleUpload(e, "back")} />
+                    <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => handleUpload(e, "back")} />
                   </label>
                 </div>
               </div>
@@ -474,7 +474,7 @@ export default function InsuranceSection() {
                   className="w-full border-sky-300 text-sky-700 hover:bg-sky-50"
                 >
                   {scanning ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <ScanLine className="w-4 h-4 mr-2" />}
-                  {scanning ? "Scanning card..." : "Auto-Extract Details from Card"}
+                  {scanning ? "Scanning card..." : "Scan Card & Auto-Extract Details"}
                 </Button>
               )}
               <Textarea placeholder="Additional notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className="resize-none" />

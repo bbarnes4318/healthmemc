@@ -26,7 +26,18 @@ export default function AIDoctor() {
   const [consultation, setConsultation] = useState(null);
   const [fileUrl, setFileUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [insuranceCard, setInsuranceCard] = useState(null);
   const chatEndRef = useRef(null);
+
+  useEffect(() => {
+    const loadInsurance = async () => {
+      try {
+        const cards = await base44.entities.InsuranceCard.list("-created_date", 1);
+        if (cards.length > 0) setInsuranceCard(cards[0]);
+      } catch (e) { console.error(e); }
+    };
+    loadInsurance();
+  }, []);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -57,6 +68,7 @@ export default function AIDoctor() {
 
 Patient's symptoms: ${symptoms}
 ${fileUrl ? `The patient has also uploaded a document for reference.` : ""}
+${insuranceCard ? `Patient's insurance: ${insuranceCard.provider_name} (${insuranceCard.plan_type?.toUpperCase() || "Unknown"} plan). Policy #: ${insuranceCard.policy_number}. Copay: $${insuranceCard.copay_amount || "N/A"}. This information helps you understand the patient's coverage and access to care — factor this into any care recommendations later (e.g., in-network providers, covered treatments).` : ""}
 
 Important: You are gathering information only. Do not diagnose yet. Ask about duration, severity, triggers, related symptoms, medical history, and current medications.`,
         model: "claude_sonnet_4_6"

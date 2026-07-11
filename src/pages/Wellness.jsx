@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import WellnessCharts from "@/components/wellness/WellnessCharts";
 import NutritionLog from "@/components/wellness/NutritionLog";
+import RecipeSuggester from "@/components/wellness/RecipeSuggester";
 import StepTracker from "@/components/wellness/StepTracker";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -100,7 +101,10 @@ export default function Wellness() {
         </Tabs>
 
         {activeTab === "nutrition" ? (
-          <NutritionLog />
+          <div className="space-y-4">
+            <RecipeSuggester />
+            <NutritionLog />
+          </div>
         ) : activeTab === "activity" ? (
           <StepTracker />
         ) : (
