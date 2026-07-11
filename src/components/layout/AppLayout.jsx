@@ -23,6 +23,7 @@ const navItems = [
   { path: "/senior-care", label: "Senior Care", icon: Heart },
   { path: "/assisted-living", label: "Assisted Living", icon: LifeBuoy },
   { path: "/pet-care", label: "Pet Care", icon: PawPrint },
+  { path: "/sports-medicine", label: "Sports Medicine", icon: Dumbbell },
   { path: "/pharmacy", label: "Pharmacy", icon: Pill },
   { path: "/records", label: "Records", icon: FileText },
   { path: "/wellness", label: "Wellness", icon: Sparkles },

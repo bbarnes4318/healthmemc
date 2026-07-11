@@ -31,6 +31,7 @@ import AIPhysicalTherapy from '@/pages/AIPhysicalTherapy';
 import AISeniorCare from '@/pages/AISeniorCare';
 import AIAssistedLiving from '@/pages/AIAssistedLiving';
 import AIVeterinary from '@/pages/AIVeterinary';
+import AIProSportsMedicine from '@/pages/AIProSportsMedicine';
 import ProviderDashboard from '@/pages/ProviderDashboard';
 import ClinicianDashboard from '@/pages/ClinicianDashboard';
 import ClinicianView from '@/pages/ClinicianView';
@@ -77,6 +78,7 @@ const AuthenticatedApp = () => {
           <Route path="/senior-care" element={<AISeniorCare />} />
           <Route path="/assisted-living" element={<AIAssistedLiving />} />
           <Route path="/pet-care" element={<AIVeterinary />} />
+          <Route path="/sports-medicine" element={<AIProSportsMedicine />} />
           <Route path="/provider-dashboard" element={<ProviderDashboard />} />
           <Route path="/clinician-dashboard" element={<ClinicianDashboard />} />
           <Route path="/health-locator" element={<HealthLocator />} />
