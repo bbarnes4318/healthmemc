@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 import CheckInButton from "@/components/CheckInButton";
 import WellnessStreakCards from "@/components/wellness/WellnessStreakCards";
+import PricingPlans from "@/components/about/PricingPlans";
 
 const quickActions = [
   { label: "Start AI Doctor Visit", icon: Stethoscope, path: "/ai-doctor", color: "from-sky-500 to-blue-600", desc: "Describe symptoms & get insights" },
@@ -267,6 +268,9 @@ export default function Home() {
           Health Me Medical Center provides health information and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider for medical concerns.
         </p>
       </div>
+
+      {/* Membership Plans */}
+      <PricingPlans currentTier={profile?.membership_tier || "free"} />
     </div>
   );
 }

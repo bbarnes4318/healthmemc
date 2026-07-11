@@ -31,6 +31,15 @@
     "alert_sent": {
       "type": "boolean",
       "default": false
+    },
+    "receipt_url": {
+      "type": "string"
+    },
+    "receipt_amount": {
+      "type": "number"
+    },
+    "pharmacy_name": {
+      "type": "string"
     }
   },
   "required": [

@@ -49,8 +49,13 @@ export default function AboutUs() {
         </div>
         <div className="relative max-w-4xl mx-auto px-4 py-16 lg:py-24 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center mx-auto mb-5">
-              <HeartPulse className="w-9 h-9 text-white" />
+            <div className="relative mx-auto mb-5">
+              <div className="absolute inset-0 bg-white/20 rounded-3xl blur-xl" />
+              <img
+                src="https://media.base44.com/images/public/6a4dfc16013374d3269a9096/3f23b1c41_generated_image.png"
+                alt="Health Me Medical Center logo"
+                className="relative w-20 h-20 rounded-2xl object-cover shadow-2xl shadow-sky-900/30 ring-1 ring-white/30"
+              />
             </div>
             <h1 className="text-3xl lg:text-4xl font-display font-bold mb-3">Health Me Medical Center</h1>
             <p className="text-lg text-sky-100 max-w-2xl mx-auto">

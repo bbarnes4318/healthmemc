@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Pill, Search, Loader2, AlertTriangle, Info, RefreshCw,
-  Shield, ArrowRight, CheckCircle, Activity, Bell, Package, BarChart3
+  Shield, ArrowRight, CheckCircle, Activity, Bell, Package, BarChart3, Receipt
 } from "lucide-react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -16,6 +16,7 @@ import MedicationSupplyAlert from "@/components/pharmacy/MedicationSupplyAlert";
 import MedicationReminders from "@/components/pharmacy/MedicationReminders";
 import MedicationManager from "@/components/pharmacy/MedicationManager";
 import RefillActionPanel from "@/components/pharmacy/RefillActionPanel";
+import PharmacyExpenseTracker from "@/components/pharmacy/PharmacyExpenseTracker";
 
 export default function Pharmacy() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -73,9 +74,10 @@ export default function Pharmacy() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2 sm:grid-cols-7 mb-6">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-8 mb-6">
             <TabsTrigger value="medications"><Pill className="w-3.5 h-3.5 mr-1" />My Meds</TabsTrigger>
             <TabsTrigger value="refills"><Package className="w-3.5 h-3.5 mr-1" />Refills</TabsTrigger>
+            <TabsTrigger value="receipts"><Receipt className="w-3.5 h-3.5 mr-1" />Receipts</TabsTrigger>
             <TabsTrigger value="analytics"><BarChart3 className="w-3.5 h-3.5 mr-1" />Analytics</TabsTrigger>
             <TabsTrigger value="lookup">Lookup</TabsTrigger>
             <TabsTrigger value="interactions">Interactions</TabsTrigger>
@@ -89,6 +91,10 @@ export default function Pharmacy() {
 
           <TabsContent value="refills">
             <RefillActionPanel />
+          </TabsContent>
+
+          <TabsContent value="receipts">
+            <PharmacyExpenseTracker />
           </TabsContent>
 
           <TabsContent value="analytics">
