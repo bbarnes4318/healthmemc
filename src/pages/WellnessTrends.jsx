@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ export default function WellnessTrends() {
 
   const days = range === "weekly" ? 7 : 30;
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const filter = currentMemberId ? { family_member_id: currentMemberId } : {};
       const medFilter = currentMemberId ? { family_member_id: currentMemberId, active: true } : { active: true };
@@ -31,18 +31,20 @@ export default function WellnessTrends() {
         base44.entities.WellnessLog.filter(filter),
         base44.entities.NutritionLog.filter(filter),
         base44.entities.ExerciseLog.filter(filter),
-        base44.entities.VitalRecord.list("-recorded_at", 500),
-        base44.entities.MedicationLog.filter({}),
+        currentMemberId
+          ? base44.entities.VitalRecord.filter({ family_member_id: currentMemberId }, "-recorded_at", 500)
+          : base44.entities.VitalRecord.list("-recorded_at", 500),
+        currentMemberId
+          ? base44.entities.MedicationLog.filter({ family_member_id: currentMemberId })
+          : base44.entities.MedicationLog.filter({}),
         base44.entities.Medication.filter(medFilter),
       ]);
-      const memberVitals = currentMemberId ? vitals.filter((v) => v.family_member_id === currentMemberId) : vitals;
-      const memberMedLogs = currentMemberId ? medLogs.filter((l) => l.family_member_id === currentMemberId) : medLogs;
-      setRawData({ water, nutrition, exercise, vitals: memberVitals, medLogs: memberMedLogs, medications });
+      setRawData({ water, nutrition, exercise, vitals, medLogs, medications });
     } catch (e) { console.error(e); }
     setLoading(false);
-  };
+  }, [currentMemberId]);
 
-  useEffect(() => { loadData(); }, [currentMemberId]);
+  useEffect(() => { loadData(); }, [loadData]);
 
   const chartData = useMemo(() => {
     if (!rawData) return [];

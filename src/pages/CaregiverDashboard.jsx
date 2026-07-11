@@ -36,10 +36,10 @@ function MemberCard({ member, isSelf, alwaysExpanded }) {
           base44.entities.Medication.filter({ ...filter, active: true }),
           base44.entities.MedicationLog.filter(filter),
           base44.entities.Appointment.filter({ ...filter, status: "scheduled" }, "-date", 5),
-          base44.entities.VitalRecord.list("-recorded_at", 20),
+          isSelf
+            ? base44.entities.VitalRecord.list("-recorded_at", 20)
+            : base44.entities.VitalRecord.filter({ family_member_id: member.id }, "-recorded_at", 20),
         ]);
-
-        const memberVitals = isSelf ? vitals : vitals.filter((v) => v.family_member_id === member.id);
 
         const today = format(new Date(), "yyyy-MM-dd");
         const last7 = Array.from({ length: 7 }).map((_, i) => {
@@ -57,7 +57,7 @@ function MemberCard({ member, isSelf, alwaysExpanded }) {
 
         const upcomingAppts = appts.filter((a) => new Date(a.date) >= new Date());
 
-        setData({ meds, logs, appts: upcomingAppts, vitals: memberVitals, adherence, last7 });
+        setData({ meds, logs, appts: upcomingAppts, vitals, adherence, last7 });
       } catch (e) { console.error(e); }
       setLoading(false);
     };

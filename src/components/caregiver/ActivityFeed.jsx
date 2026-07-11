@@ -43,6 +43,8 @@ export default function ActivityFeed() {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const memberIds = members.map((m) => m.id).join(",");
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -105,7 +107,7 @@ export default function ActivityFeed() {
       setLoading(false);
     };
     load();
-  }, [members]);
+  }, [memberIds]);
 
   if (loading) {
     return (

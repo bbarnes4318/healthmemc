@@ -43,13 +43,14 @@ export default function Home() {
           base44.entities.HealthProfile.filter({ created_by_id: u.id }),
           base44.entities.Appointment.filter(apptFilter, "-date", 3),
           base44.entities.Medication.filter(medFilter),
-          base44.entities.VitalRecord.list("-recorded_at", 50),
+          currentMemberId
+            ? base44.entities.VitalRecord.filter({ family_member_id: currentMemberId }, "-recorded_at", 50)
+            : base44.entities.VitalRecord.list("-recorded_at", 50),
         ]);
         if (profiles.length > 0) setProfile(profiles[0]);
         setAppointments(appts);
         setMedications(meds);
-        const memberVitals = currentMemberId ? vitalData.filter((v) => v.family_member_id === currentMemberId) : vitalData;
-        setVitals(memberVitals);
+        setVitals(vitalData);
       } catch (e) { console.error(e); }
       setLoading(false);
     };

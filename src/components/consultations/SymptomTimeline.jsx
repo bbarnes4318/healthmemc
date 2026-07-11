@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, History, ChevronDown, ChevronUp, Stethoscope, Activity, Download } from "lucide-react";
+import { Loader2, History, ChevronDown, ChevronUp, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { generateReportPdf } from "@/lib/generateReportPdf";

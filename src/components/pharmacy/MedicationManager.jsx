@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
-import { Pill, Plus, Loader2, Upload, Trash2, Camera, Image as ImageIcon, AlertTriangle } from "lucide-react";
+import { Pill, Plus, Loader2, Upload, Trash2, Camera } from "lucide-react";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 import DrugInteractionAlert from "@/components/pharmacy/DrugInteractionAlert";
 

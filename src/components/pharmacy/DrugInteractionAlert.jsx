@@ -13,7 +13,6 @@ import { AlertTriangle, ShieldAlert, X } from "lucide-react";
 
 export default function DrugInteractionAlert({ open, interactions, newMedName, onConfirm, onCancel }) {
   const hasSevere = interactions?.some((i) => i.severity === "severe");
-  const hasModerate = interactions?.some((i) => i.severity === "moderate");
 
   return (
     <AlertDialog open={open} onOpenChange={(v) => { if (!v) onCancel(); }}>

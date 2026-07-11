@@ -27,13 +27,14 @@ export default function WellnessStreakCards() {
       const medFilter = currentMemberId ? { family_member_id: currentMemberId, active: true } : { active: true };
       const [water, meds, exercise, medList] = await Promise.all([
         base44.entities.WellnessLog.filter(filter),
-        base44.entities.MedicationLog.filter({}),
+        currentMemberId
+          ? base44.entities.MedicationLog.filter({ family_member_id: currentMemberId })
+          : base44.entities.MedicationLog.filter({}),
         base44.entities.ExerciseLog.filter(filter),
         base44.entities.Medication.filter(medFilter),
       ]);
-      const memberMeds = currentMemberId ? meds.filter((l) => l.family_member_id === currentMemberId) : meds;
       setWaterLogs(water);
-      setMedLogs(memberMeds);
+      setMedLogs(meds);
       setExerciseLogs(exercise);
       setMedications(medList);
     } catch (e) { console.error(e); }
