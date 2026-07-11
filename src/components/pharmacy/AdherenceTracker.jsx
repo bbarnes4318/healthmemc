@@ -78,6 +78,22 @@ export default function AdherenceTracker() {
           taken_at: status === "taken" ? new Date().toISOString() : null,
         });
       }
+
+      if (status === "missed") {
+        try {
+          const contacts = await base44.entities.TrustedContact.filter({ status: "active", alert_missed_medications: true });
+          if (contacts.length > 0) {
+            await Promise.all(contacts.map((c) =>
+              base44.integrations.Core.SendEmail({
+                to: c.email,
+                subject: "Missed Medication Alert — Health Me Medical Center",
+                body: `This is an automated alert from Health Me Medical Center.\n\nA medication dose was marked as missed:\n\nMedication: ${med.name}\nDosage: ${med.dosage}\nFrequency: ${med.frequency}\nScheduled Date: ${format(new Date(), "MMMM d, yyyy")}\nTime Marked: ${new Date().toLocaleTimeString()}\n\nPlease follow up with the patient to ensure they take their medication.\n\n— Health Me Medical Center`,
+              })
+            ));
+          }
+        } catch (e) { console.error("Failed to send missed dose alert:", e); }
+      }
+
       await loadData();
     } catch (err) { console.error(err); }
     setActionLoading(null);

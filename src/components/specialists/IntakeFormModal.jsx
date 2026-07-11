@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Loader2, ClipboardList, SkipForward } from "lucide-react";
 import TemplateLibrary from "@/components/specialists/TemplateLibrary";
+import QuickTemplates from "@/components/specialists/QuickTemplates";
 
 const emptyForm = {
   chief_complaint: "",
@@ -79,7 +80,8 @@ export default function IntakeFormModal({ open, onOpenChange, specialty, onCompl
         <div className="space-y-3 mt-2">
           <p className="text-xs text-muted-foreground">Fill out this quick form so your AI specialist has context before your consultation. This will be saved to your medical records.</p>
 
-          <div className="flex items-center gap-2 p-3 bg-violet-50 rounded-lg border border-violet-100">
+          <div className="space-y-2 p-3 bg-violet-50 rounded-lg border border-violet-100">
+            <QuickTemplates onLoadTemplate={(data) => setForm(data)} />
             <TemplateLibrary form={form} onLoadTemplate={(data) => setForm(data)} />
           </div>
 

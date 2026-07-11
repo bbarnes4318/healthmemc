@@ -7,10 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Shield, Bell, Heart, Loader2, Save, Crown, CreditCard } from "lucide-react";
+import { User, Shield, Bell, Heart, Loader2, Save, Crown, CreditCard, FileDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 import InsuranceSection from "@/components/profile/InsuranceSection";
+import { generateHealthSummaryPdf } from "@/lib/generateHealthSummaryPdf";
 
 const membershipTiers = [
   { value: "free", label: "Free", desc: "Basic health information", price: "Free" },
@@ -73,6 +74,28 @@ export default function Profile() {
     };
     load();
   }, []);
+
+  const [generatingPdf, setGeneratingPdf] = useState(false);
+
+  const handleDownloadSummary = async () => {
+    setGeneratingPdf(true);
+    try {
+      const [records, medications, vitals, consultations, appointments, insuranceCards] = await Promise.all([
+        base44.entities.MedicalRecord.list("-date", 100),
+        base44.entities.Medication.filter({ active: true }),
+        base44.entities.VitalRecord.list("-recorded_at", 100),
+        base44.entities.Consultation.list("-created_date", 20),
+        base44.entities.Appointment.list("-date", 20),
+        base44.entities.InsuranceCard.list("-created_date", 10),
+      ]);
+      generateHealthSummaryPdf({ user, profile, records, medications, vitals, consultations, appointments, insuranceCards });
+      toast({ title: "Health summary downloaded", description: "Your comprehensive PDF report is ready." });
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Failed to generate summary", variant: "destructive" });
+    }
+    setGeneratingPdf(false);
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -245,10 +268,14 @@ export default function Profile() {
         </TabsContent>
       </Tabs>
 
-      <div className="mt-6">
-        <Button onClick={handleSave} disabled={saving} className="w-full bg-sky-600 hover:bg-sky-700" size="lg">
+      <div className="mt-6 flex flex-col sm:flex-row gap-3">
+        <Button onClick={handleSave} disabled={saving} className="flex-1 bg-sky-600 hover:bg-sky-700" size="lg">
           {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
           Save Profile
+        </Button>
+        <Button onClick={handleDownloadSummary} disabled={generatingPdf} variant="outline" className="flex-1" size="lg">
+          {generatingPdf ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <FileDown className="w-4 h-4 mr-2" />}
+          Download Health Summary
         </Button>
       </div>
     </div>

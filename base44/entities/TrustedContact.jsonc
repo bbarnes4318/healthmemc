@@ -1,0 +1,52 @@
+{
+  "name": "TrustedContact",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "relationship": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "family",
+        "caregiver",
+        "friend",
+        "other"
+      ],
+      "default": "family"
+    },
+    "alert_missed_medications": {
+      "type": "boolean",
+      "default": true
+    },
+    "alert_emergencies": {
+      "type": "boolean",
+      "default": true
+    },
+    "alert_appointments": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "name",
+    "email"
+  ]
+}

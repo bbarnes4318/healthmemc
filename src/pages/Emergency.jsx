@@ -41,14 +41,20 @@ export default function Emergency() {
   };
 
   const handleEmergency = async () => {
-    if (!autoAlert || !profile?.emergency_contact_email) return;
+    if (!autoAlert) return;
     setSending(true);
     try {
-      await base44.integrations.Core.SendEmail({
-        to: profile.emergency_contact_email,
-        subject: "EMERGENCY ALERT — Health Me Medical Center",
-        body: `This is an automated emergency alert from Health Me Medical Center.\n\nThe user ${profile.emergency_contact_relationship ? `(${profile.emergency_contact_relationship})` : ""} has triggered the emergency button at ${new Date().toLocaleString()}.\n\nEmergency contact on file:\nName: ${profile.emergency_contact_name || "N/A"}\nPhone: ${profile.emergency_contact_phone || "N/A"}\n\nPlease reach out immediately to check on them. If this is a life-threatening situation, call 911.\n\n— Health Me Medical Center`,
-      });
+      const recipients = [];
+      if (profile?.emergency_contact_email) recipients.push(profile.emergency_contact_email);
+
+      const contacts = await base44.entities.TrustedContact.filter({ status: "active", alert_emergencies: true });
+      contacts.forEach((c) => { if (c.email) recipients.push(c.email); });
+
+      const body = `This is an automated emergency alert from Health Me Medical Center.\n\nThe user ${profile.emergency_contact_relationship ? `(${profile.emergency_contact_relationship})` : ""} has triggered the emergency button at ${new Date().toLocaleString()}.\n\nEmergency contact on file:\nName: ${profile.emergency_contact_name || "N/A"}\nPhone: ${profile.emergency_contact_phone || "N/A"}\n\nPlease reach out immediately to check on them. If this is a life-threatening situation, call 911.\n\n— Health Me Medical Center`;
+
+      await Promise.all(recipients.map((to) =>
+        base44.integrations.Core.SendEmail({ to, subject: "EMERGENCY ALERT — Health Me Medical Center", body })
+      ));
       setAlertSent(true);
       setTimeout(() => setAlertSent(false), 10000);
     } catch (err) { console.error(err); }

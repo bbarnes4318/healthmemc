@@ -35,6 +35,7 @@ import ProviderDashboard from '@/pages/ProviderDashboard';
 import ClinicianDashboard from '@/pages/ClinicianDashboard';
 import ClinicianView from '@/pages/ClinicianView';
 import HealthLocator from '@/pages/HealthLocator';
+import Settings from '@/pages/Settings';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -78,6 +79,7 @@ const AuthenticatedApp = () => {
           <Route path="/provider-dashboard" element={<ProviderDashboard />} />
           <Route path="/clinician-dashboard" element={<ClinicianDashboard />} />
           <Route path="/health-locator" element={<HealthLocator />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />
           <Route path="/wellness" element={<Wellness />} />
