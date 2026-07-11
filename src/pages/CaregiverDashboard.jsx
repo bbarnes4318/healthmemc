@@ -21,8 +21,8 @@ const vitalLabels = {
   temperature: "Temperature",
 };
 
-function MemberCard({ member, isSelf }) {
-  const [expanded, setExpanded] = useState(false);
+function MemberCard({ member, isSelf, alwaysExpanded }) {
+  const [expanded, setExpanded] = useState(alwaysExpanded || false);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -114,9 +114,11 @@ function MemberCard({ member, isSelf }) {
           </div>
           <p className="text-[10px] text-muted-foreground">adherence</p>
         </div>
-        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setExpanded(!expanded)}>
-          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-        </Button>
+        {!alwaysExpanded && (
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setExpanded(!expanded)}>
+            {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </Button>
+        )}
       </div>
 
       {expanded && (
@@ -195,6 +197,13 @@ function MemberCard({ member, isSelf }) {
 
 export default function CaregiverDashboard() {
   const { members, loading } = useFamilyMember();
+  const [selected, setSelected] = useState("all");
+
+  const allOptions = [
+    { id: "all", name: "All", isSelf: false },
+    { id: "self", name: "You", isSelf: true },
+    ...members.map((m) => ({ id: m.id, name: m.name, isSelf: false, photo: m.photo_url, relationship: m.relationship })),
+  ];
 
   return (
     <div className="p-4 lg:p-8 max-w-4xl mx-auto">
@@ -220,16 +229,46 @@ export default function CaregiverDashboard() {
         <AlertConfigPanel />
       </div>
 
+      {/* Member Toggle Selector */}
+      {!loading && (
+        <div className="mb-6">
+          <p className="text-xs font-semibold text-muted-foreground mb-2">Select a family member to view their details:</p>
+          <div className="flex items-center gap-2 overflow-x-auto pb-2">
+            {allOptions.map((opt) => {
+              const isActive = selected === opt.id;
+              return (
+                <button
+                  key={opt.id}
+                  onClick={() => setSelected(opt.id)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-full border-2 transition whitespace-nowrap ${isActive ? "bg-violet-600 border-violet-600 text-white" : "bg-card border-border hover:bg-muted text-gray-600"}`}
+                >
+                  {opt.photo ? (
+                    <img src={opt.photo} alt="" className="w-5 h-5 rounded-full object-cover" />
+                  ) : (
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center ${isActive ? "bg-white/20" : "bg-violet-100"}`}>
+                      <Users className="w-3 h-3" />
+                    </div>
+                  )}
+                  <span className="text-xs font-medium">{opt.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-start gap-2 p-4 bg-violet-50 rounded-xl border border-violet-200 mb-6">
         <AlertCircle className="w-4 h-4 text-violet-600 mt-0.5 shrink-0" />
         <p className="text-xs text-violet-800">
-          This view consolidates medication adherence, appointments, and vital trends for all family member profiles. Expand any card for detailed information.
+          {selected === "all"
+            ? "This view consolidates medication adherence, appointments, and vital trends for all family member profiles. Expand any card for detailed information."
+            : "Showing detailed medication logs, upcoming appointments, and vitals for the selected family member."}
         </p>
       </div>
 
       {loading ? (
         <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-violet-600" /></div>
-      ) : (
+      ) : selected === "all" ? (
         <div className="space-y-3">
           <MemberCard member={null} isSelf={true} />
           {members.map((m) => (
@@ -243,6 +282,10 @@ export default function CaregiverDashboard() {
             </Card>
           )}
         </div>
+      ) : selected === "self" ? (
+        <MemberCard member={null} isSelf={true} alwaysExpanded />
+      ) : (
+        <MemberCard member={members.find((m) => m.id === selected)} isSelf={false} alwaysExpanded />
       )}
     </div>
   );

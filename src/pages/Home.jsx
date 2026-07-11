@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
+import CheckInButton from "@/components/CheckInButton";
 
 const quickActions = [
   { label: "Start AI Doctor Visit", icon: Stethoscope, path: "/ai-doctor", color: "from-sky-500 to-blue-600", desc: "Describe symptoms & get insights" },
@@ -80,7 +81,8 @@ export default function Home() {
               <p className="text-sky-100 text-sm font-medium">Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 17 ? "afternoon" : "evening"},</p>
               <h1 className="text-2xl lg:text-3xl font-display font-bold mt-1">{firstName} 👋</h1>
               <p className="text-sky-100 text-sm mt-2">Smarter Healthcare. Anytime. Anywhere.</p>
-              <div className="flex gap-3 mt-5">
+              <div className="flex gap-3 mt-5 flex-wrap">
+                <CheckInButton />
                 <Link to="/ai-doctor">
                   <Button className="bg-white text-sky-700 hover:bg-sky-50 font-semibold shadow-lg shadow-sky-700/20">
                     <Stethoscope className="w-4 h-4 mr-2" />

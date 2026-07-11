@@ -139,6 +139,9 @@ export default function AppLayout() {
                 <X className="w-5 h-5" />
               </Button>
             </div>
+            <div className="px-3 pt-3">
+              <ProfileSwitcher />
+            </div>
             <nav className="p-3 space-y-0.5">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.path;
