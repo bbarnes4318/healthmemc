@@ -10,6 +10,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import { generateReportPdf } from "@/lib/generateReportPdf";
+import SymptomTimeline from "@/components/consultations/SymptomTimeline";
 
 export default function AIDoctor() {
   const [step, setStep] = useState("input"); // input, consulting, report
@@ -226,6 +227,8 @@ IMPORTANT: Include appropriate disclaimers that this is AI-generated and should 
               This is an AI health assistant and does not replace professional medical advice. If you're experiencing a medical emergency, call 911 or your local emergency number immediately.
             </p>
           </div>
+
+          <SymptomTimeline />
         </motion.div>
       </div>
     );

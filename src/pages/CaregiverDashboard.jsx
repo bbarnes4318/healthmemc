@@ -8,6 +8,7 @@ import { Loader2, Users, Pill, Calendar, TrendingUp, AlertCircle, CheckCircle, X
 import RefillAlertBanner from "@/components/pharmacy/RefillAlertBanner";
 import AlertConfigPanel from "@/components/caregiver/AlertConfigPanel";
 import CaregiverVisitLog from "@/components/caregiver/CaregiverVisitLog";
+import ActivityFeed from "@/components/caregiver/ActivityFeed";
 import { format, subDays } from "date-fns";
 import { motion } from "framer-motion";
 
@@ -232,6 +233,10 @@ export default function CaregiverDashboard() {
 
       <div className="mb-6">
         <CaregiverVisitLog />
+      </div>
+
+      <div className="mb-6">
+        <ActivityFeed />
       </div>
 
       {/* Member Toggle Selector */}
