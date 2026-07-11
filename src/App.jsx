@@ -45,6 +45,7 @@ import DoctorRecordsPortal from '@/pages/DoctorRecordsPortal';
 import DoctorDirectory from '@/pages/DoctorDirectory';
 import WellnessTrends from '@/pages/WellnessTrends';
 import SpecialistFeedback from '@/pages/SpecialistFeedback';
+import AboutUs from '@/pages/AboutUs';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -97,6 +98,7 @@ const AuthenticatedApp = () => {
           <Route path="/doctor-directory" element={<DoctorDirectory />} />
           <Route path="/wellness-trends" element={<WellnessTrends />} />
           <Route path="/specialist-feedback" element={<SpecialistFeedback />} />
+          <Route path="/about" element={<AboutUs />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />

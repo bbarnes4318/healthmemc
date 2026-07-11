@@ -6,7 +6,7 @@ import {
   Sparkles, Shield, User, Menu, X, LogOut, Activity, Phone,
   Smile, Dumbbell, Heart, LifeBuoy, PawPrint, Bell, BellRing, ClipboardCheck,
   KeyRound, MapPin, Settings as SettingsIcon, Users as UsersIcon, History, Siren,
-  Share2, TrendingUp, Contact, Star
+  Share2, TrendingUp, Contact, Star, Info
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/layout/GlobalSearch";
@@ -41,6 +41,7 @@ const navItems = [
   { path: "/health-locator", label: "Find Care", icon: MapPin },
   { path: "/settings", label: "Settings", icon: SettingsIcon },
   { path: "/profile", label: "Profile", icon: User },
+  { path: "/about", label: "About Us", icon: Info },
 ];
 
 export default function AppLayout() {
