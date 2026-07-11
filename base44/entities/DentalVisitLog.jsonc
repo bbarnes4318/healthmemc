@@ -9,6 +9,23 @@
       "type": "string",
       "format": "date"
     },
+    "procedure_type": {
+      "type": "string",
+      "enum": [
+        "cleaning",
+        "filling",
+        "root_canal",
+        "extraction",
+        "crown",
+        "bridge",
+        "implant",
+        "whitening",
+        "x_ray",
+        "examination",
+        "other"
+      ],
+      "default": "examination"
+    },
     "procedure_notes": {
       "type": "string"
     },
@@ -30,6 +47,9 @@
       "format": "date"
     },
     "follow_up_notes": {
+      "type": "string"
+    },
+    "recovery_instructions": {
       "type": "string"
     },
     "cost": {

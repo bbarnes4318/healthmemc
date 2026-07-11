@@ -23,7 +23,7 @@ const vitalLabels = {
 };
 
 export function generateHealthSummaryPdf(data) {
-  const { user, profile, records, medications, vitals, consultations, appointments, insuranceCards } = data;
+  const { user, profile, records, medications, medicationLogs, vitals, consultations, appointments, insuranceCards } = data;
   const doc = new jsPDF();
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
@@ -262,6 +262,30 @@ export function generateHealthSummaryPdf(data) {
         y += 55; // chart height + spacing
       }
       y += 3;
+    });
+    y += 2;
+  }
+
+  // Pharmacy History & Medication Adherence
+  if (medicationLogs?.length > 0) {
+    addSectionTitle(`Pharmacy History & Adherence (${medicationLogs.length} logs)`);
+    const byMed = {};
+    medicationLogs.forEach((log) => {
+      const name = log.medication_name || "Unknown";
+      if (!byMed[name]) byMed[name] = [];
+      byMed[name].push(log);
+    });
+    Object.keys(byMed).forEach((name) => {
+      const logs = byMed[name].sort((a, b) => new Date(b.scheduled_date) - new Date(a.scheduled_date));
+      const taken = logs.filter((l) => l.status === "taken").length;
+      const missed = logs.filter((l) => l.status === "missed").length;
+      const adherence = logs.length > 0 ? Math.round((taken / logs.length) * 100) : 0;
+      ensureSpace(14);
+      addText(`${name}`, 10, "bold", [40, 40, 40]);
+      addText(`   Adherence: ${adherence}%  |  Taken: ${taken}  |  Missed: ${missed}  |  Total logs: ${logs.length}`, 9, "normal", [80, 80, 80]);
+      if (logs[0]?.pharmacy_name) addText(`   Pharmacy: ${logs[0].pharmacy_name}`, 9, "normal", [80, 80, 80]);
+      if (logs[0]?.receipt_amount != null) addText(`   Latest receipt amount: $${logs[0].receipt_amount}`, 9, "normal", [80, 80, 80]);
+      y += 2;
     });
     y += 2;
   }

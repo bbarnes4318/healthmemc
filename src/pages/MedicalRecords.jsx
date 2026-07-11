@@ -15,6 +15,7 @@ import MedicalTimeline from "@/components/records/MedicalTimeline";
 import LabComparison from "@/components/records/LabComparison";
 import RecordInsights from "@/components/records/RecordInsights";
 import { generateRecordPdf } from "@/lib/generateRecordPdf";
+import BulkExportButton from "@/components/records/BulkExportButton";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 
 const categories = [
@@ -137,12 +138,14 @@ export default function MedicalRecords() {
           <h1 className="text-2xl font-display font-bold">Medical Records</h1>
           <p className="text-sm text-muted-foreground mt-0.5">{records.length} records stored securely</p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-sky-600 hover:bg-sky-700">
-              <Plus className="w-4 h-4 mr-2" /> Add Record
-            </Button>
-          </DialogTrigger>
+        <div className="flex items-center gap-2">
+          <BulkExportButton />
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-sky-600 hover:bg-sky-700">
+                <Plus className="w-4 h-4 mr-2" /> Add Record
+              </Button>
+            </DialogTrigger>
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Add Medical Record</DialogTitle>
@@ -170,6 +173,7 @@ export default function MedicalRecords() {
             </div>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* AI Insights */}

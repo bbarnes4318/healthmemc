@@ -8,19 +8,38 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, Loader2, Trash2, Calendar, Stethoscope, Bone as Tooth, Clock, DollarSign, X } from "lucide-react";
+import { Plus, Loader2, Trash2, Calendar, Stethoscope, Bone as Tooth, Clock, DollarSign, X, HeartPulse } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const procedureTypes = [
+  { value: "cleaning", label: "Cleaning" },
+  { value: "filling", label: "Filling" },
+  { value: "root_canal", label: "Root Canal" },
+  { value: "extraction", label: "Extraction" },
+  { value: "crown", label: "Crown" },
+  { value: "bridge", label: "Bridge" },
+  { value: "implant", label: "Implant" },
+  { value: "whitening", label: "Whitening" },
+  { value: "x_ray", label: "X-Ray" },
+  { value: "examination", label: "Examination" },
+  { value: "other", label: "Other" },
+];
+
+const procedureTypeLabels = Object.fromEntries(procedureTypes.map((p) => [p.value, p.label]));
 
 const emptyForm = {
   dentist_name: "",
   visit_date: format(new Date(), "yyyy-MM-dd"),
+  procedure_type: "examination",
   procedure_notes: "",
   tooth_treated: "",
   tooth_numbers: [],
   follow_up_recommended: false,
   follow_up_date: "",
   follow_up_notes: "",
+  recovery_instructions: "",
   cost: "",
   notes: "",
 };
@@ -106,8 +125,17 @@ export default function DentalVisitLogSection() {
                 </div>
               </div>
               <div>
-                <Label className="text-xs">Procedure Notes</Label>
-                <Textarea placeholder="e.g., Filling on #14, root canal, cleaning..." value={form.procedure_notes} onChange={(e) => setForm({ ...form, procedure_notes: e.target.value })} rows={2} className="resize-none" />
+                <Label className="text-xs">Procedure Type</Label>
+                <Select value={form.procedure_type} onValueChange={(v) => setForm({ ...form, procedure_type: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {procedureTypes.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-xs">Procedure Details</Label>
+                <Textarea placeholder="e.g., Composite filling on #14, deep cleaning upper right quadrant..." value={form.procedure_notes} onChange={(e) => setForm({ ...form, procedure_notes: e.target.value })} rows={2} className="resize-none" />
               </div>
               <div>
                 <Label className="text-xs">Tooth Numbers Treated (1-32)</Label>
@@ -151,6 +179,10 @@ export default function DentalVisitLogSection() {
                 </div>
               )}
               <div>
+                <Label className="text-xs">Recovery Instructions</Label>
+                <Textarea placeholder="e.g., Avoid hard foods for 24hrs, rinse with salt water, take ibuprofen as needed..." value={form.recovery_instructions} onChange={(e) => setForm({ ...form, recovery_instructions: e.target.value })} rows={2} className="resize-none" />
+              </div>
+              <div>
                 <Label className="text-xs">Additional Notes</Label>
                 <Textarea placeholder="Any other details..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className="resize-none" />
               </div>
@@ -190,6 +222,9 @@ export default function DentalVisitLogSection() {
                         <Badge variant="outline" className="text-[10px]"><DollarSign className="w-2.5 h-2.5" />{log.cost}</Badge>
                       )}
                     </div>
+                    {log.procedure_type && (
+                      <Badge variant="outline" className="text-[10px] bg-cyan-50 text-cyan-700 border-cyan-200">{procedureTypeLabels[log.procedure_type] || log.procedure_type}</Badge>
+                    )}
                     {log.procedure_notes && <p className="text-xs text-muted-foreground mt-1">{log.procedure_notes}</p>}
                     {log.tooth_numbers?.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
@@ -206,6 +241,15 @@ export default function DentalVisitLogSection() {
                         <div>
                           <p className="text-xs font-medium text-amber-800">Follow-up recommended{log.follow_up_date ? `: ${format(new Date(log.follow_up_date), "MMM d, yyyy")}` : ""}</p>
                           {log.follow_up_notes && <p className="text-[10px] text-amber-700 mt-0.5">{log.follow_up_notes}</p>}
+                        </div>
+                      </div>
+                    )}
+                    {log.recovery_instructions && (
+                      <div className="mt-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start gap-2">
+                        <HeartPulse className="w-3.5 h-3.5 text-emerald-600 mt-0.5 shrink-0" />
+                        <div>
+                          <p className="text-xs font-medium text-emerald-800">Recovery Instructions</p>
+                          <p className="text-[10px] text-emerald-700 mt-0.5">{log.recovery_instructions}</p>
                         </div>
                       </div>
                     )}
