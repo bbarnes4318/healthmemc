@@ -13,6 +13,7 @@ import ReactMarkdown from "react-markdown";
 import AppointmentCalendar from "@/components/specialists/AppointmentCalendar";
 import IntakeFormModal from "@/components/specialists/IntakeFormModal";
 import { generateClinicalSummaryPdf } from "@/lib/generateClinicalSummaryPdf";
+import SpecialistPrepReport from "@/components/specialists/SpecialistPrepReport";
 
 const specialties = [
   { name: "Cardiology", icon: Heart, color: "from-red-500 to-rose-600", desc: "Heart & cardiovascular" },
@@ -154,6 +155,9 @@ Continue the conversation as a ${selectedSpecialty.name} specialist.`
           </div>
 
           <AppointmentCalendar />
+
+          {/* One-Click Specialist Prep Report */}
+          <SpecialistPrepReport />
 
           {/* Clinical Summary Generator */}
           <Card className="p-5 mb-6 border-sky-200 bg-gradient-to-br from-sky-50 to-blue-50">

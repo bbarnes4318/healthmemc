@@ -1,0 +1,46 @@
+{
+  "name": "SpecialistFeedback",
+  "type": "object",
+  "properties": {
+    "specialist_name": {
+      "type": "string"
+    },
+    "specialty": {
+      "type": "string"
+    },
+    "visit_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "rating": {
+      "type": "number"
+    },
+    "overall_comments": {
+      "type": "string"
+    },
+    "helpful_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "would_recommend": {
+      "type": "boolean"
+    },
+    "visit_reason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "specialist_name",
+    "specialty",
+    "visit_date",
+    "rating"
+  ]
+}

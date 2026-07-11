@@ -44,6 +44,7 @@ import AIEmergencyRoom from '@/pages/AIEmergencyRoom';
 import DoctorRecordsPortal from '@/pages/DoctorRecordsPortal';
 import DoctorDirectory from '@/pages/DoctorDirectory';
 import WellnessTrends from '@/pages/WellnessTrends';
+import SpecialistFeedback from '@/pages/SpecialistFeedback';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -95,6 +96,7 @@ const AuthenticatedApp = () => {
           <Route path="/doctor-records" element={<DoctorRecordsPortal />} />
           <Route path="/doctor-directory" element={<DoctorDirectory />} />
           <Route path="/wellness-trends" element={<WellnessTrends />} />
+          <Route path="/specialist-feedback" element={<SpecialistFeedback />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />
