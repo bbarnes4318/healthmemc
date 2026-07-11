@@ -23,11 +23,13 @@
     "status": {
       "type": "string",
       "enum": [
+        "pending",
         "scheduled",
+        "confirmed",
         "completed",
         "cancelled"
       ],
-      "default": "scheduled"
+      "default": "pending"
     },
     "notes": {
       "type": "string"
@@ -36,6 +38,9 @@
       "type": "string"
     },
     "family_member_id": {
+      "type": "string"
+    },
+    "consultation_id": {
       "type": "string"
     }
   },

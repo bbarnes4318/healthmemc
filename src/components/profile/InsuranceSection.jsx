@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { CreditCard, Plus, Loader2, Trash2, Upload, Lock, Calendar, Phone, ScanLine, IdCard, Download } from "lucide-react";
+import { CreditCard, Plus, Loader2, Trash2, Upload, Lock, Calendar, Phone, ScanLine, IdCard, Download, FileDown, Mail } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { generateMedicalIdCard } from "@/lib/generateMedicalIdCard";
+import { generateInsuranceSummary } from "@/lib/generateInsuranceSummary";
 
 const planTypes = [
   { value: "hmo", label: "HMO" },
@@ -54,6 +55,9 @@ export default function InsuranceSection() {
   const [idPhotoUrl, setIdPhotoUrl] = useState("");
   const [uploadingIdPhoto, setUploadingIdPhoto] = useState(false);
   const [downloadingId, setDownloadingId] = useState(false);
+  const [downloadingSummary, setDownloadingSummary] = useState(null);
+  const [mailDialogOpen, setMailDialogOpen] = useState(false);
+  const [mailingCard, setMailingCard] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -160,6 +164,31 @@ export default function InsuranceSection() {
     setIdDialogOpen(false);
   };
 
+  const handleDownloadSummary = async (card) => {
+    setDownloadingSummary(card.id);
+    try {
+      generateInsuranceSummary({ card, user });
+      toast({ title: "Insurance summary downloaded" });
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Failed to generate summary", variant: "destructive" });
+    }
+    setDownloadingSummary(null);
+  };
+
+  const handleMailPhysicalCard = async () => {
+    setMailingCard(true);
+    try {
+      // Payment will be handled by the checkout flow; this records the request
+      await base44.entities.InsuranceCard.update(cards[0].id, { notes: (cards[0].notes ? cards[0].notes + "\n" : "") + `[${new Date().toLocaleDateString()}] Physical card mailing requested.]` });
+      toast({ title: "Physical card request submitted", description: "Your physical ID card will be mailed within 5-7 business days." });
+      setMailDialogOpen(false);
+    } catch (err) {
+      toast({ title: "Failed to submit request", variant: "destructive" });
+    }
+    setMailingCard(false);
+  };
+
   const handleSave = async () => {
     if (!form.provider_name.trim() || !form.policy_number.trim()) return;
     setSaving(true);
@@ -239,6 +268,42 @@ export default function InsuranceSection() {
               </div>
             </DialogContent>
           </Dialog>
+          <Dialog open={mailDialogOpen} onOpenChange={setMailDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" disabled={cards.length === 0}>
+                <Mail className="w-4 h-4 mr-1.5" /> Mail Physical Card
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-sm">
+              <DialogHeader>
+                <DialogTitle>Mail Physical ID Card</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-2">
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <p className="text-sm font-medium">Physical ID Card</p>
+                  <p className="text-2xl font-bold text-sky-600 mt-1">$19.99</p>
+                  <p className="text-xs text-muted-foreground mt-1">Durable printed card mailed to your address in 5-7 business days.</p>
+                </div>
+                <div className="p-3 bg-sky-50 border border-sky-200 rounded-lg">
+                  <p className="text-xs text-sky-700">
+                    <strong>Membership benefit:</strong> Physical ID cards are included at no extra cost with Family, Chronic Care, and Premium membership plans.
+                  </p>
+                </div>
+                {profile?.membership_tier && ["family", "chronic_care", "premium"].includes(profile.membership_tier) ? (
+                  <Button onClick={handleMailPhysicalCard} disabled={mailingCard} className="w-full bg-sky-600 hover:bg-sky-700">
+                    {mailingCard ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Mail className="w-4 h-4 mr-2" />}
+                    Mail My Card (Free with {profile.membership_tier.replace(/_/g, " ")} plan)
+                  </Button>
+                ) : (
+                  <Button onClick={handleMailPhysicalCard} disabled={mailingCard} className="w-full bg-sky-600 hover:bg-sky-700">
+                    {mailingCard ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Mail className="w-4 h-4 mr-2" />}
+                    Pay $19.99 & Mail Card
+                  </Button>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-sky-600 hover:bg-sky-700" size="sm">
@@ -373,6 +438,16 @@ export default function InsuranceSection() {
                       {planTypes.find((t) => t.value === card.plan_type)?.label || card.plan_type}
                     </span>
                   )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-sky-600 hover:text-sky-700 hover:bg-sky-50"
+                    onClick={() => handleDownloadSummary(card)}
+                    disabled={downloadingSummary === card.id}
+                  >
+                    {downloadingSummary === card.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+                    <span className="hidden sm:inline ml-1">Summary</span>
+                  </Button>
                   <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDelete(card.id)}>
                     <Trash2 className="w-4 h-4" />
                   </Button>
