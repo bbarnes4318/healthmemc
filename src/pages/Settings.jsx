@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Users, Loader2, Shield, Bell } from "lucide-react";
 import TrustedContactForm from "@/components/settings/TrustedContactForm";
 import TrustedContactList from "@/components/settings/TrustedContactList";
+import RecordShareManager from "@/components/settings/RecordShareManager";
 
 export default function Settings() {
   const [contacts, setContacts] = useState([]);
@@ -52,6 +53,10 @@ export default function Settings() {
         ) : (
           <TrustedContactList contacts={contacts} onChanged={load} />
         )}
+      </div>
+
+      <div className="mt-6">
+        <RecordShareManager />
       </div>
     </div>
   );
