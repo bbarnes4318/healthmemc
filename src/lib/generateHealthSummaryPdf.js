@@ -85,6 +85,85 @@ export function generateHealthSummaryPdf(data) {
   doc.text(`Generated: ${new Date().toLocaleString()}`, pageW - m, 28, { align: "right" });
   y = 55;
 
+  // Vital chart drawing helper
+  const drawVitalChart = (records, type, color, doc, x, startY, chartW) => {
+    const chartH = 42;
+    const padding = 6;
+    const plotX = x + padding;
+    const plotY = startY + 10;
+    const plotW = chartW - padding * 2;
+    const plotH = chartH - 10;
+
+    // For blood_pressure, use systolic (value) for the chart
+    const values = records.map((r) => r.value);
+    const minVal = Math.min(...values);
+    const maxVal = Math.max(...values);
+    const valRange = maxVal - minVal || 1;
+
+    ensureSpace(chartH + 8);
+
+    // Chart background
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(plotX, plotY, plotW, plotH, 2, 2, "F");
+
+    // Y-axis labels (min/max)
+    doc.setFontSize(7);
+    doc.setTextColor(150, 150, 150);
+    doc.text(String(Math.round(maxVal)), plotX - 2, plotY + 3, { align: "right" });
+    doc.text(String(Math.round(minVal)), plotX - 2, plotY + plotH, { align: "right" });
+
+    // X-axis: first and last dates
+    if (records.length > 0) {
+      const firstDate = new Date(records[0].recorded_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      const lastDate = new Date(records[records.length - 1].recorded_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      doc.text(firstDate, plotX + 2, plotY + plotH + 5);
+      doc.text(lastDate, plotX + plotW - 2, plotY + plotH + 5, { align: "right" });
+    }
+
+    // Draw line chart
+    doc.setDrawColor(color[0], color[1], color[2]);
+    doc.setLineWidth(0.6);
+    const points = records.map((r, i) => {
+      const px = plotX + (records.length === 1 ? plotW / 2 : (i / (records.length - 1)) * plotW);
+      const py = plotY + plotH - ((r.value - minVal) / valRange) * plotH;
+      return { x: px, y: py };
+    });
+
+    // Draw connecting lines
+    for (let i = 1; i < points.length; i++) {
+      doc.line(points[i - 1].x, points[i - 1].y, points[i].x, points[i].y);
+    }
+
+    // Draw data points
+    points.forEach((p) => {
+      doc.setFillColor(color[0], color[1], color[2]);
+      doc.circle(p.x, p.y, 0.8, "F");
+    });
+
+    // For blood_pressure, also draw diastolic (secondary_value) as a lighter line
+    if (type === "blood_pressure" && records[0].secondary_value != null) {
+      const diastolicValues = records.map((r) => r.secondary_value || 0);
+      const dMin = Math.min(...diastolicValues);
+      const dMax = Math.max(...diastolicValues);
+      const dRange = dMax - dMin || 1;
+
+      doc.setDrawColor(100, 160, 230);
+      doc.setLineWidth(0.4);
+      const dPoints = records.map((r, i) => {
+        const px = plotX + (records.length === 1 ? plotW / 2 : (i / (records.length - 1)) * plotW);
+        const py = plotY + plotH - ((r.secondary_value - dMin) / dRange) * plotH;
+        return { x: px, y: py };
+      });
+      for (let i = 1; i < dPoints.length; i++) {
+        doc.line(dPoints[i - 1].x, dPoints[i - 1].y, dPoints[i].x, dPoints[i].y);
+      }
+      dPoints.forEach((p) => {
+        doc.setFillColor(100, 160, 230);
+        doc.circle(p.x, p.y, 0.6, "F");
+      });
+    }
+  };
+
   // Patient Demographics
   addSectionTitle("Patient Information");
   addField("Name", user?.full_name || "N/A");
@@ -144,29 +223,45 @@ export function generateHealthSummaryPdf(data) {
     y += 2;
   }
 
-  // Recent Vital Signs
+  // Vital Trends with Charts
   if (vitals?.length > 0) {
-    addSectionTitle("Recent Vital Signs");
+    addSectionTitle("Vital Trends");
     const byType = {};
     vitals.forEach((v) => {
       if (!byType[v.type]) byType[v.type] = [];
       byType[v.type].push(v);
     });
+
+    const chartColors = {
+      heart_rate: [220, 38, 38],
+      blood_pressure: [37, 99, 235],
+      oxygen_saturation: [6, 182, 212],
+      blood_glucose: [139, 92, 246],
+      weight: [5, 150, 105],
+      sleep_hours: [99, 102, 241],
+      activity_minutes: [245, 158, 11],
+      temperature: [234, 88, 12],
+      steps: [16, 185, 129],
+    };
+
     Object.keys(byType).forEach((type) => {
-      const records = byType[type].sort((a, b) => new Date(b.recorded_at) - new Date(a.recorded_at));
-      const latest = records[0];
+      const records = byType[type].sort((a, b) => new Date(a.recorded_at) - new Date(b.recorded_at));
+      const latest = records[records.length - 1];
       const label = vitalLabels[type] || type;
       const value = type === "blood_pressure" && latest.secondary_value ? `${latest.value}/${latest.secondary_value}` : latest.value;
       const unit = latest.unit || "";
-      addText(`• ${label}: ${value} ${unit}`, 10, "normal", [40, 40, 40]);
-      addText(`  Last recorded: ${new Date(latest.recorded_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}`, 9, "normal", [120, 120, 120]);
-      if (records.length > 1) {
-        const oldest = records[records.length - 1];
-        const oldVal = type === "blood_pressure" && oldest.secondary_value ? `${oldest.value}/${oldest.secondary_value}` : oldest.value;
-        const trend = latest.value > oldest.value ? "↑ increasing" : latest.value < oldest.value ? "↓ decreasing" : "→ stable";
-        addText(`  Trend: ${trend} (from ${oldVal} ${unit} over ${records.length} readings)`, 9, "normal", [120, 120, 120]);
+      const color = chartColors[type] || [100, 100, 100];
+
+      // Summary line
+      addText(`${label}: ${value} ${unit}  (${records.length} readings)`, 10, "bold", color);
+      y += 2;
+
+      // Draw chart if 2+ readings
+      if (records.length >= 2) {
+        drawVitalChart(records, type, color, doc, m, y, maxW);
+        y += 55; // chart height + spacing
       }
-      y += 1;
+      y += 3;
     });
     y += 2;
   }
