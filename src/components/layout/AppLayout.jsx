@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/layout/GlobalSearch";
 import ProfileSwitcher from "@/components/layout/ProfileSwitcher";
+import RefillAlertBanner from "@/components/pharmacy/RefillAlertBanner";
 import { useRecordNotifications } from "@/hooks/useRecordNotifications";
 
 const navItems = [
@@ -189,6 +190,9 @@ export default function AppLayout() {
               <GlobalSearch />
             </div>
             <ProfileSwitcher />
+          </div>
+          <div className="px-4 pt-3">
+            <RefillAlertBanner compact />
           </div>
           <Outlet />
         </div>

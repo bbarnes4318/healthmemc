@@ -4,7 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
-import { Loader2, Users, Pill, Calendar, TrendingUp, AlertCircle, CheckCircle, XCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, Users, Pill, Calendar, TrendingUp, AlertCircle, CheckCircle, XCircle, ChevronDown, ChevronUp, Bell } from "lucide-react";
+import RefillAlertBanner from "@/components/pharmacy/RefillAlertBanner";
 import { format, subDays } from "date-fns";
 import { motion } from "framer-motion";
 
@@ -204,6 +205,14 @@ export default function CaregiverDashboard() {
           <h1 className="text-xl font-display font-bold">Caregiver Dashboard</h1>
           <p className="text-sm text-muted-foreground">Consolidated health overview for your family</p>
         </div>
+      </div>
+
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <Bell className="w-4 h-4 text-amber-600" />
+          <h2 className="text-sm font-semibold">Refill Alerts</h2>
+        </div>
+        <RefillAlertBanner />
       </div>
 
       <div className="flex items-start gap-2 p-4 bg-violet-50 rounded-xl border border-violet-200 mb-6">
