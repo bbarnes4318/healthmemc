@@ -1,0 +1,46 @@
+{
+  "name": "DentalVisitLog",
+  "type": "object",
+  "properties": {
+    "dentist_name": {
+      "type": "string"
+    },
+    "visit_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "procedure_notes": {
+      "type": "string"
+    },
+    "tooth_treated": {
+      "type": "string"
+    },
+    "tooth_numbers": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    },
+    "follow_up_recommended": {
+      "type": "boolean",
+      "default": false
+    },
+    "follow_up_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "follow_up_notes": {
+      "type": "string"
+    },
+    "cost": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "dentist_name",
+    "visit_date"
+  ]
+}

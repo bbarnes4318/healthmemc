@@ -1,0 +1,60 @@
+{
+  "name": "DentalPainLog",
+  "type": "object",
+  "properties": {
+    "pain_teeth": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    },
+    "gum_pain_areas": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "upper_left",
+          "upper_front",
+          "upper_right",
+          "lower_left",
+          "lower_front",
+          "lower_right"
+        ]
+      }
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "mild",
+        "moderate",
+        "severe"
+      ],
+      "default": "mild"
+    },
+    "pain_type": {
+      "type": "string",
+      "enum": [
+        "aching",
+        "sharp",
+        "throbbing",
+        "sensitivity",
+        "burning",
+        "other"
+      ],
+      "default": "aching"
+    },
+    "duration": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "logged_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "severity"
+  ]
+}

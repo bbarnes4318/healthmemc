@@ -35,6 +35,9 @@
     },
     "visit_reason": {
       "type": "string"
+    },
+    "visit_cost": {
+      "type": "number"
     }
   },
   "required": [

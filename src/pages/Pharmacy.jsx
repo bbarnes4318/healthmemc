@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Pill, Search, Loader2, AlertTriangle, Info, RefreshCw,
-  Shield, Activity, Bell, Package, BarChart3, Receipt
+  Shield, Activity, Bell, Package, BarChart3, Receipt, FileText
 } from "lucide-react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -19,6 +19,7 @@ import RefillActionPanel from "@/components/pharmacy/RefillActionPanel";
 import PharmacyExpenseTracker from "@/components/pharmacy/PharmacyExpenseTracker";
 import OneClickRefillButton from "@/components/pharmacy/OneClickRefillButton";
 import MonthlyExpenseReport from "@/components/pharmacy/MonthlyExpenseReport";
+import MedicationHistoryReport from "@/components/pharmacy/MedicationHistoryReport";
 
 export default function Pharmacy() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -76,7 +77,7 @@ export default function Pharmacy() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2 sm:grid-cols-9 mb-6">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-10 mb-6">
             <TabsTrigger value="medications"><Pill className="w-3.5 h-3.5 mr-1" />My Meds</TabsTrigger>
             <TabsTrigger value="refills"><Package className="w-3.5 h-3.5 mr-1" />Refills</TabsTrigger>
             <TabsTrigger value="receipts"><Receipt className="w-3.5 h-3.5 mr-1" />Receipts</TabsTrigger>
@@ -86,6 +87,7 @@ export default function Pharmacy() {
             <TabsTrigger value="interactions">Interactions</TabsTrigger>
             <TabsTrigger value="adherence"><Activity className="w-3.5 h-3.5 mr-1" />Adherence</TabsTrigger>
             <TabsTrigger value="reminders"><Bell className="w-3.5 h-3.5 mr-1" />Reminders</TabsTrigger>
+            <TabsTrigger value="history"><FileText className="w-3.5 h-3.5 mr-1" />History</TabsTrigger>
           </TabsList>
 
           <TabsContent value="medications">
@@ -151,6 +153,10 @@ export default function Pharmacy() {
 
           <TabsContent value="reminders">
             <MedicationReminders />
+          </TabsContent>
+
+          <TabsContent value="history">
+            <MedicationHistoryReport />
           </TabsContent>
         </Tabs>
 

@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import AIServicePage from "@/components/services/AIServicePage";
-import { Smile, AlertCircle, Droplet, Sparkles, AlertTriangle, Star } from "lucide-react";
+import ToothMap from "@/components/dental/ToothMap";
+import DentalVisitLogSection from "@/components/dental/DentalVisitLogSection";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Smile, AlertCircle, Droplet, Sparkles, AlertTriangle, Star, Bone as ToothIcon, ClipboardList } from "lucide-react";
 
 const config = {
   title: "AI Dental Care",
@@ -22,5 +25,30 @@ const config = {
 };
 
 export default function AIDentalCare() {
-  return <AIServicePage config={config} />;
+  const [activeTab, setActiveTab] = useState("consult");
+
+  return (
+    <div>
+      <div className="sticky top-14 lg:top-0 z-10 bg-white border-b border-border px-4 py-2">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid grid-cols-3 max-w-md mx-auto">
+            <TabsTrigger value="consult"><Smile className="w-3.5 h-3.5 mr-1.5" />AI Consult</TabsTrigger>
+            <TabsTrigger value="toothmap"><ToothIcon className="w-3.5 h-3.5 mr-1.5" />Tooth Map</TabsTrigger>
+            <TabsTrigger value="visits"><ClipboardList className="w-3.5 h-3.5 mr-1.5" />Visit Log</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+      {activeTab === "consult" ? (
+        <AIServicePage config={config} />
+      ) : activeTab === "toothmap" ? (
+        <div className="p-4 lg:p-8 max-w-3xl mx-auto">
+          <ToothMap />
+        </div>
+      ) : (
+        <div className="p-4 lg:p-8 max-w-3xl mx-auto">
+          <DentalVisitLogSection />
+        </div>
+      )}
+    </div>
+  );
 }

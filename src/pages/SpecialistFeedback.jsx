@@ -11,10 +11,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from "@/components/ui/use-toast";
 import {
   Star, Plus, Loader2, Trash2, MessageSquare, ThumbsUp, Tag,
-  Calendar, Stethoscope, Search, X, Quote
+  Calendar, Stethoscope, Search, X, Quote, GitCompare, DollarSign
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import SpecialistComparison from "@/components/specialists/SpecialistComparison";
 
 const specialties = [
   "Cardiology", "Dermatology", "Neurology", "Orthopedics", "Pediatrics",
@@ -39,6 +41,7 @@ const emptyForm = {
   would_recommend: true,
   helpful_notes: [],
   tags: [],
+  visit_cost: "",
 };
 
 export default function SpecialistFeedback() {
@@ -51,6 +54,7 @@ export default function SpecialistFeedback() {
   const [filterSpec, setFilterSpec] = useState("all");
   const [newNote, setNewNote] = useState("");
   const [newTag, setNewTag] = useState("");
+  const [activeTab, setActiveTab] = useState("reviews");
   const { toast } = useToast();
 
   const loadFeedback = async () => {
@@ -67,7 +71,10 @@ export default function SpecialistFeedback() {
     if (!form.specialist_name.trim() || !form.specialty || !form.visit_date) return;
     setSaving(true);
     try {
-      await base44.entities.SpecialistFeedback.create(form);
+      await base44.entities.SpecialistFeedback.create({
+        ...form,
+        visit_cost: form.visit_cost ? parseFloat(form.visit_cost) : undefined,
+      });
       setForm(emptyForm);
       setDialogOpen(false);
       loadFeedback();
@@ -139,6 +146,17 @@ export default function SpecialistFeedback() {
         </div>
       </div>
 
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-5">
+        <TabsList className="grid grid-cols-2 max-w-md">
+          <TabsTrigger value="reviews"><Star className="w-3.5 h-3.5 mr-1.5" />Reviews</TabsTrigger>
+          <TabsTrigger value="compare"><GitCompare className="w-3.5 h-3.5 mr-1.5" />Compare</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      {activeTab === "compare" && <SpecialistComparison />}
+
+      {activeTab === "reviews" && (
+      <>
       {/* Stats */}
       {feedback.length > 0 && (
         <div className="grid grid-cols-3 gap-3 mb-5">
@@ -212,6 +230,10 @@ export default function SpecialistFeedback() {
                   <Label className="text-xs">Reason for Visit</Label>
                   <Input placeholder="Annual checkup" value={form.visit_reason} onChange={(e) => setForm({ ...form, visit_reason: e.target.value })} />
                 </div>
+              </div>
+              <div>
+                <Label className="text-xs">Visit Cost ($)</Label>
+                <Input type="number" placeholder="e.g., 150" value={form.visit_cost} onChange={(e) => setForm({ ...form, visit_cost: e.target.value })} />
               </div>
 
               {/* Star Rating */}
@@ -388,6 +410,8 @@ export default function SpecialistFeedback() {
             </motion.div>
           ))}
         </div>
+      )}
+      </>
       )}
     </div>
   );
