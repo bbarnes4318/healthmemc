@@ -12,6 +12,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import TreatmentAnalysis from "@/components/health/TreatmentAnalysis";
 
 const categories = [
   { value: "hospital", label: "Hospitals & ER", icon: Hospital, color: "bg-red-50 text-red-600" },
@@ -34,6 +35,7 @@ export default function HealthLocator() {
   const [bookingTime, setBookingTime] = useState("");
   const [bookingReason, setBookingReason] = useState("");
   const [booking, setBooking] = useState(false);
+  const [view, setView] = useState("providers");
   const { toast } = useToast();
 
   const useMyLocation = () => {
@@ -126,6 +128,30 @@ export default function HealthLocator() {
         </div>
       </div>
 
+      {/* View Toggle */}
+      <div className="flex gap-2 mb-6">
+        <button
+          onClick={() => setView("providers")}
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition ${
+            view === "providers" ? "bg-sky-600 text-white" : "bg-white border text-gray-600 hover:bg-gray-50"
+          }`}
+        >
+          <MapPin className="w-4 h-4" /> Find Providers
+        </button>
+        <button
+          onClick={() => setView("treatments")}
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition ${
+            view === "treatments" ? "bg-sky-600 text-white" : "bg-white border text-gray-600 hover:bg-gray-50"
+          }`}
+        >
+          <Stethoscope className="w-4 h-4" /> Treatment Analysis
+        </button>
+      </div>
+
+      {view === "treatments" && <TreatmentAnalysis />}
+
+      {view === "providers" && (
+      <>
       {/* Search Form */}
       <Card className="p-4 mb-6">
         <div className="flex flex-col sm:flex-row gap-3">
@@ -300,6 +326,8 @@ export default function HealthLocator() {
           )}
         </DialogContent>
       </Dialog>
+      </>
+      )}
     </div>
   );
 }

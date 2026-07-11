@@ -5,7 +5,7 @@ import {
   Home, Stethoscope, HeartPulse, Users, Pill, FileText,
   Sparkles, Shield, User, Menu, X, LogOut, Activity, Phone,
   Smile, Dumbbell, Heart, LifeBuoy, PawPrint, Bell, BellRing, ClipboardCheck,
-  KeyRound, MapPin, Settings as SettingsIcon, Users as UsersIcon, History
+  KeyRound, MapPin, Settings as SettingsIcon, Users as UsersIcon, History, Siren
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/layout/GlobalSearch";
@@ -24,6 +24,7 @@ const navItems = [
   { path: "/assisted-living", label: "Assisted Living", icon: LifeBuoy },
   { path: "/pet-care", label: "Pet Care", icon: PawPrint },
   { path: "/sports-medicine", label: "Sports Medicine", icon: Dumbbell },
+  { path: "/emergency-room", label: "AI ER", icon: Siren },
   { path: "/pharmacy", label: "Pharmacy", icon: Pill },
   { path: "/records", label: "Records", icon: FileText },
   { path: "/appointment-history", label: "Visit History", icon: History },

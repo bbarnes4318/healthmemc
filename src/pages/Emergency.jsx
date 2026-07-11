@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
   Phone, AlertTriangle, Heart, Users, Shield, ArrowLeft,
-  Bell, Loader2, CheckCircle, Mail
+  Bell, Loader2, CheckCircle, Mail, Send, MapPin
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -16,6 +16,8 @@ export default function Emergency() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [alertSent, setAlertSent] = useState(false);
+  const [location, setLocation] = useState(null);
+  const [locating, setLocating] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -40,17 +42,76 @@ export default function Emergency() {
     }
   };
 
+  const getLocation = () => {
+    return new Promise((resolve) => {
+      if (!navigator.geolocation) return resolve(null);
+      setLocating(true);
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const coords = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
+          const url = `https://www.google.com/maps?q=${coords}`;
+          setLocation({ coords, url });
+          setLocating(false);
+          resolve({ coords, url });
+        },
+        () => { setLocating(false); resolve(null); },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    });
+  };
+
+  const buildMedicalSummary = () => {
+    if (!profile) return "No health profile on file.";
+    const parts = [];
+    if (profile.blood_type && profile.blood_type !== "unknown") parts.push(`Blood Type: ${profile.blood_type}`);
+    if (profile.date_of_birth) parts.push(`DOB: ${new Date(profile.date_of_birth).toLocaleDateString()}`);
+    if (profile.gender) parts.push(`Gender: ${profile.gender}`);
+    if (profile.height_cm) parts.push(`Height: ${profile.height_cm} cm`);
+    if (profile.weight_kg) parts.push(`Weight: ${profile.weight_kg} kg`);
+    if (profile.allergies?.length) parts.push(`Allergies: ${profile.allergies.join(", ")}`);
+    if (profile.chronic_conditions?.length) parts.push(`Chronic Conditions: ${profile.chronic_conditions.join(", ")}`);
+    if (profile.current_medications?.length) parts.push(`Current Medications: ${profile.current_medications.join(", ")}`);
+    return parts.length > 0 ? parts.join("\n") : "No additional medical details on file.";
+  };
+
   const handleEmergency = async () => {
-    if (!autoAlert) return;
     setSending(true);
     try {
+      const loc = await getLocation();
+
       const recipients = [];
       if (profile?.emergency_contact_email) recipients.push(profile.emergency_contact_email);
 
       const contacts = await base44.entities.TrustedContact.filter({ status: "active", alert_emergencies: true });
       contacts.forEach((c) => { if (c.email) recipients.push(c.email); });
 
-      const body = `This is an automated emergency alert from Health Me Medical Center.\n\nThe user ${profile.emergency_contact_relationship ? `(${profile.emergency_contact_relationship})` : ""} has triggered the emergency button at ${new Date().toLocaleString()}.\n\nEmergency contact on file:\nName: ${profile.emergency_contact_name || "N/A"}\nPhone: ${profile.emergency_contact_phone || "N/A"}\n\nPlease reach out immediately to check on them. If this is a life-threatening situation, call 911.\n\n— Health Me Medical Center`;
+      if (recipients.length === 0) {
+        setSending(false);
+        return;
+      }
+
+      const medicalSummary = buildMedicalSummary();
+      const locationStr = loc
+        ? `Current Location: ${loc.coords}\nGoogle Maps: ${loc.url}`
+        : "Location unavailable (device location not accessible)";
+
+      const body = `EMERGENCY ALERT — Health Me Medical Center
+
+The user has triggered the emergency button at ${new Date().toLocaleString()}.
+
+${locationStr}
+
+MEDICAL SUMMARY:
+${medicalSummary}
+
+EMERGENCY CONTACT:
+Name: ${profile?.emergency_contact_name || "N/A"}
+Phone: ${profile?.emergency_contact_phone || "N/A"}
+Relationship: ${profile?.emergency_contact_relationship || "N/A"}
+
+Please reach out immediately to check on them. If this is a life-threatening situation, call 911.
+
+— Health Me Medical Center`;
 
       await Promise.all(recipients.map((to) =>
         base44.integrations.Core.SendEmail({ to, subject: "EMERGENCY ALERT — Health Me Medical Center", body })
@@ -81,20 +142,29 @@ export default function Emergency() {
             <h1 className="text-2xl font-display font-bold">Emergency</h1>
             <p className="text-red-100 mt-1 text-sm">If this is a medical emergency, call immediately</p>
             <div className="flex flex-col items-center gap-3 mt-4">
-              <a href="tel:911" onClick={handleEmergency}>
+              <a href="tel:911" onClick={() => autoAlert && handleEmergency()}>
                 <Button className="bg-white text-red-700 hover:bg-red-50 font-bold text-lg px-8 py-6">
                   <Phone className="w-5 h-5 mr-2" />
                   Call 911
                 </Button>
               </a>
-              {sending && (
+              <Button
+                onClick={handleEmergency}
+                disabled={sending || locating}
+                className="bg-white/20 text-white hover:bg-white/30 border border-white/30 font-semibold px-6 py-3"
+              >
+                {locating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
+                Alert My Contacts
+              </Button>
+              {(sending || locating) && (
                 <p className="text-sm text-red-100 flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" /> Sending alert to emergency contact...
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {locating ? "Capturing location..." : "Sending alert with location & medical summary..."}
                 </p>
               )}
               {alertSent && (
                 <p className="text-sm text-white flex items-center gap-2 bg-white/20 px-3 py-1.5 rounded-full">
-                  <CheckCircle className="w-4 h-4" /> Alert sent to {profile?.emergency_contact_email}
+                  <CheckCircle className="w-4 h-4" /> Emergency alert sent to your contacts with location & medical summary
                 </p>
               )}
             </div>
