@@ -1,0 +1,45 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 8 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Appointment Reminder Workflow",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "appointment_reminder_workflow",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "send_reminders": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "appointmentReminder",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Send appointment reminders",
+            "description": "Email users 24h before confirmed appointments"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Sends email reminders 24 hours before confirmed specialist appointments"
+}

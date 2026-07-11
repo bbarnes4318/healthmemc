@@ -4,7 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   FileText, FlaskConical, Image, Syringe, Pill, AlertCircle,
-  ClipboardList, Stethoscope, Calendar, Download, Loader2, Inbox
+  ClipboardList, Stethoscope, Calendar, Download, Loader2, Inbox,
+  Clock, Video, CheckCircle2
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -25,14 +26,29 @@ const consultationConfig = {
   ai_specialist: { icon: Stethoscope, color: "text-violet-600", bg: "bg-violet-100", label: "AI Specialist Consultation" },
 };
 
+const appointmentConfig = {
+  ai_consultation: { icon: Stethoscope, color: "text-sky-600", bg: "bg-sky-100", label: "AI Consultation" },
+  follow_up: { icon: Clock, color: "text-amber-600", bg: "bg-amber-100", label: "Follow-Up" },
+  screening: { icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-100", label: "Screening" },
+  vaccination: { icon: Syringe, color: "text-amber-600", bg: "bg-amber-100", label: "Vaccination" },
+  checkup: { icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-100", label: "Checkup" },
+  specialist: { icon: Video, color: "text-violet-600", bg: "bg-violet-100", label: "Specialist Appointment" },
+};
+
+const appointmentStatusColors = {
+  pending: "bg-amber-50 text-amber-600",
+  scheduled: "bg-sky-50 text-sky-600",
+  confirmed: "bg-green-50 text-green-600",
+  completed: "bg-emerald-50 text-emerald-600",
+  cancelled: "bg-red-50 text-red-600",
+};
+
 function formatDateGroup(dateStr) {
   const date = new Date(dateStr);
   const today = new Date();
   const yesterday = new Date();
   yesterday.setDate(today.getDate() - 1);
-
   const isSameDay = (a, b) => a.toDateString() === b.toDateString();
-
   if (isSameDay(date, today)) return "Today";
   if (isSameDay(date, yesterday)) return "Yesterday";
   return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
@@ -46,9 +62,10 @@ export default function MedicalTimeline({ onRecordClick }) {
   useEffect(() => {
     const load = async () => {
       try {
-        const [records, consultations] = await Promise.all([
+        const [records, consultations, appointments] = await Promise.all([
           base44.entities.MedicalRecord.list("-date", 200),
           base44.entities.Consultation.list("-created_date", 200),
+          base44.entities.Appointment.list("-date", 200),
         ]);
 
         const recordItems = records.map((r) => ({
@@ -79,7 +96,20 @@ export default function MedicalTimeline({ onRecordClick }) {
           config: consultationConfig[c.type] || { icon: Stethoscope, color: "text-gray-600", bg: "bg-gray-100", label: "Consultation" },
         }));
 
-        const merged = [...recordItems, ...consultationItems].sort((a, b) => b.sortDate - a.sortDate);
+        const appointmentItems = appointments.map((a) => ({
+          id: `appointment-${a.id}`,
+          type: "appointment",
+          date: a.date,
+          sortDate: new Date(a.date),
+          title: a.title,
+          category: a.type,
+          provider: a.provider,
+          notes: a.notes,
+          status: a.status,
+          config: appointmentConfig[a.type] || { icon: Calendar, color: "text-gray-600", bg: "bg-gray-100", label: "Appointment" },
+        }));
+
+        const merged = [...recordItems, ...consultationItems, ...appointmentItems].sort((a, b) => b.sortDate - a.sortDate);
         setItems(merged);
       } catch (err) { console.error(err); }
       setLoading(false);
@@ -99,26 +129,22 @@ export default function MedicalTimeline({ onRecordClick }) {
     return (
       <Card className="p-12 text-center">
         <Inbox className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
-        <p className="text-muted-foreground">No records or consultations yet</p>
-        <p className="text-xs text-muted-foreground mt-1">Your medical history will appear here as a timeline.</p>
+        <p className="text-muted-foreground">No records, consultations, or appointments yet</p>
+        <p className="text-xs text-muted-foreground mt-1">Your full medical history will appear here as a timeline.</p>
       </Card>
     );
   }
 
-  // Group items by date
   let lastGroup = "";
 
   return (
     <div className="relative pl-2">
-      {/* Vertical line */}
       <div className="absolute left-[19px] top-2 bottom-2 w-0.5 bg-border" />
-
       <div className="space-y-1">
         {items.map((item, i) => {
           const groupLabel = formatDateGroup(item.date);
           const showGroupHeader = groupLabel !== lastGroup;
           lastGroup = groupLabel;
-
           const Icon = item.config.icon;
           const isExpanded = expandedId === item.id;
 
@@ -142,12 +168,10 @@ export default function MedicalTimeline({ onRecordClick }) {
                 transition={{ delay: Math.min(i * 0.02, 0.3) }}
                 className="relative flex items-start gap-3 py-2"
               >
-                {/* Node */}
                 <div className={`w-10 h-10 rounded-full ${item.config.bg} flex items-center justify-center shrink-0 z-10 border-2 border-background`}>
-                  <Icon className={`w-4.5 h-4.5 ${item.config.color}`} style={{ width: "18px", height: "18px" }} />
+                  <Icon className={item.config.color} style={{ width: "18px", height: "18px" }} />
                 </div>
 
-                {/* Content */}
                 <div
                   className={`flex-1 min-w-0 cursor-pointer rounded-lg transition-all ${isExpanded ? "bg-white border shadow-sm" : "hover:bg-muted/50"}`}
                   onClick={() => setExpandedId(isExpanded ? null : item.id)}
@@ -165,9 +189,11 @@ export default function MedicalTimeline({ onRecordClick }) {
                           )}
                           {item.status && (
                             <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
-                              item.status === "completed" ? "bg-emerald-50 text-emerald-600" :
-                              item.status === "escalated" ? "bg-red-50 text-red-600" :
-                              "bg-amber-50 text-amber-600"
+                              item.type === "appointment"
+                                ? (appointmentStatusColors[item.status] || "bg-gray-50 text-gray-600")
+                                : item.status === "completed" ? "bg-emerald-50 text-emerald-600" :
+                                item.status === "escalated" ? "bg-red-50 text-red-600" :
+                                "bg-amber-50 text-amber-600"
                             }`}>
                               {item.status}
                             </span>

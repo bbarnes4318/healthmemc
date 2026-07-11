@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 import { Loader2, Users, Pill, Calendar, TrendingUp, AlertCircle, CheckCircle, XCircle, ChevronDown, ChevronUp, Bell } from "lucide-react";
 import RefillAlertBanner from "@/components/pharmacy/RefillAlertBanner";
+import AlertConfigPanel from "@/components/caregiver/AlertConfigPanel";
 import { format, subDays } from "date-fns";
 import { motion } from "framer-motion";
 
@@ -213,6 +214,10 @@ export default function CaregiverDashboard() {
           <h2 className="text-sm font-semibold">Refill Alerts</h2>
         </div>
         <RefillAlertBanner />
+      </div>
+
+      <div className="mb-6">
+        <AlertConfigPanel />
       </div>
 
       <div className="flex items-start gap-2 p-4 bg-violet-50 rounded-xl border border-violet-200 mb-6">

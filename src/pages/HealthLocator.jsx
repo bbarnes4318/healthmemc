@@ -7,8 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Search, MapPin, Phone, Star, Loader2, Navigation, Hospital,
-  Stethoscope, PawPrint, Pill, Clock, Locate
+  Stethoscope, PawPrint, Pill, Clock, Locate, CalendarPlus
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
 
 const categories = [
   { value: "hospital", label: "Hospitals & ER", icon: Hospital, color: "bg-red-50 text-red-600" },
@@ -26,6 +29,12 @@ export default function HealthLocator() {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [bookingProvider, setBookingProvider] = useState(null);
+  const [bookingDate, setBookingDate] = useState("");
+  const [bookingTime, setBookingTime] = useState("");
+  const [bookingReason, setBookingReason] = useState("");
+  const [booking, setBooking] = useState(false);
+  const { toast } = useToast();
 
   const useMyLocation = () => {
     if (!navigator.geolocation) return;
@@ -77,6 +86,33 @@ export default function HealthLocator() {
   };
 
   const selectedCat = categories.find((c) => c.value === category);
+
+  const handleBook = async () => {
+    if (!bookingDate || !bookingTime) return;
+    setBooking(true);
+    try {
+      const dateTime = new Date(`${bookingDate}T${bookingTime}`);
+      await base44.entities.Appointment.create({
+        title: `Appointment at ${bookingProvider.name}`,
+        date: dateTime.toISOString(),
+        type: "specialist",
+        status: "pending",
+        provider: bookingProvider.name,
+        notes: bookingReason || undefined,
+      });
+      toast({
+        title: "Appointment requested",
+        description: `Your appointment with ${bookingProvider.name} has been saved. Call them to confirm.`,
+      });
+      setBookingProvider(null);
+      setBookingDate("");
+      setBookingTime("");
+      setBookingReason("");
+    } catch (e) {
+      toast({ title: "Failed to book appointment", variant: "destructive" });
+    }
+    setBooking(false);
+  };
 
   return (
     <div className="p-4 lg:p-8 max-w-4xl mx-auto">
@@ -189,6 +225,20 @@ export default function HealthLocator() {
                         </Button>
                       </a>
                     )}
+                    {r.phone && (
+                      <a href={`tel:${r.phone}`}>
+                        <Button variant="outline" size="sm" className="h-7 text-xs">
+                          <Phone className="w-3 h-3 mr-1" /> Call
+                        </Button>
+                      </a>
+                    )}
+                    <Button
+                      size="sm"
+                      className="h-7 text-xs bg-sky-600 hover:bg-sky-700"
+                      onClick={() => setBookingProvider(r)}
+                    >
+                      <CalendarPlus className="w-3 h-3 mr-1" /> Book
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -213,6 +263,43 @@ export default function HealthLocator() {
           ))}
         </div>
       )}
+
+      {/* Booking Dialog */}
+      <Dialog open={!!bookingProvider} onOpenChange={(v) => !v && setBookingProvider(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Book Appointment</DialogTitle>
+          </DialogHeader>
+          {bookingProvider && (
+            <div className="space-y-3 mt-2">
+              <div className="p-3 bg-muted/50 rounded-lg">
+                <p className="text-sm font-medium">{bookingProvider.name}</p>
+                {bookingProvider.address && <p className="text-xs text-muted-foreground mt-0.5">{bookingProvider.address}</p>}
+                {bookingProvider.phone && <p className="text-xs text-sky-600 mt-0.5">{bookingProvider.phone}</p>}
+              </div>
+              <div>
+                <Label className="text-xs">Preferred Date</Label>
+                <Input type="date" value={bookingDate} onChange={(e) => setBookingDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
+              </div>
+              <div>
+                <Label className="text-xs">Preferred Time</Label>
+                <Input type="time" value={bookingTime} onChange={(e) => setBookingTime(e.target.value)} />
+              </div>
+              <div>
+                <Label className="text-xs">Reason for Visit (optional)</Label>
+                <Input placeholder="e.g., Annual checkup, specific concern..." value={bookingReason} onChange={(e) => setBookingReason(e.target.value)} />
+              </div>
+              <p className="text-[10px] text-muted-foreground">
+                This saves the appointment to your calendar. Call the provider to confirm your time slot.
+              </p>
+              <Button onClick={handleBook} disabled={!bookingDate || !bookingTime || booking} className="w-full bg-sky-600 hover:bg-sky-700">
+                {booking ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CalendarPlus className="w-4 h-4 mr-2" />}
+                Save Appointment
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

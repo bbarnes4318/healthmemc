@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { CreditCard, Plus, Loader2, Trash2, Upload, Lock, Calendar, Phone, ScanLine, IdCard, Download, FileDown, Mail } from "lucide-react";
+import { CreditCard, Plus, Loader2, Trash2, Upload, Lock, Calendar, Phone, ScanLine, IdCard, Download, FileDown, Mail, ShieldCheck } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { generateMedicalIdCard } from "@/lib/generateMedicalIdCard";
 import { generateInsuranceSummary } from "@/lib/generateInsuranceSummary";
@@ -58,6 +58,8 @@ export default function InsuranceSection() {
   const [downloadingSummary, setDownloadingSummary] = useState(null);
   const [mailDialogOpen, setMailDialogOpen] = useState(false);
   const [mailingCard, setMailingCard] = useState(false);
+  const [checkingCoverage, setCheckingCoverage] = useState(null);
+  const [coverageResult, setCoverageResult] = useState(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -162,6 +164,57 @@ export default function InsuranceSection() {
     }
     setDownloadingId(false);
     setIdDialogOpen(false);
+  };
+
+  const handleCheckCoverage = async (card) => {
+    setCheckingCoverage(card.id);
+    setCoverageResult(null);
+    try {
+      const [appointments, consultations] = await Promise.all([
+        base44.entities.Appointment.filter({ status: "confirmed" }, "-date", 10),
+        base44.entities.Consultation.filter({ status: "in_progress" }, "-created_date", 10),
+      ]);
+      const upcoming = appointments.filter((a) => new Date(a.date) >= new Date());
+      const upcomingList = upcoming.length > 0
+        ? upcoming.map((a) => `${a.title} (${a.type}, ${new Date(a.date).toLocaleDateString()})`).join("; ")
+        : consultations.map((c) => `${c.specialty || c.type} consultation`).join("; ");
+
+      if (!upcomingList) {
+        setCoverageResult({ card_id: card.id, noUpcoming: true });
+        setCheckingCoverage(null);
+        return;
+      }
+
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are a health insurance benefits expert. A patient has the following insurance plan:\n\nProvider: ${card.provider_name}\nPlan: ${card.plan_name || "Not specified"}\nPlan Type: ${card.plan_type || "Unknown"}\nCopay: ${card.copay_amount || "Unknown"}\nDeductible: ${card.deductible_amount || "Unknown"}\n\nThe patient has these upcoming specialist appointments:\n${upcomingList}\n\nBased on typical coverage for this type of insurance plan, assess whether each appointment is likely covered. For each appointment, provide:\n1. Coverage status (likely_covered, may_require_authorization, likely_not_covered)\n2. Estimated copay or cost\n3. Any notes about pre-authorization or referrals needed\n\nBe specific and practical. Add a disclaimer that this is an estimate and the patient should verify with their insurance provider.`,
+        add_context_from_internet: true,
+        model: "gemini_3_flash",
+        response_json_schema: {
+          type: "object",
+          properties: {
+            appointments: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  appointment: { type: "string" },
+                  coverage_status: { type: "string", enum: ["likely_covered", "may_require_authorization", "likely_not_covered"] },
+                  estimated_cost: { type: "string" },
+                  notes: { type: "string" },
+                },
+              },
+            },
+            summary: { type: "string" },
+            disclaimer: { type: "string" },
+          },
+        },
+      });
+      setCoverageResult({ card_id: card.id, ...response });
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Failed to check coverage", variant: "destructive" });
+    }
+    setCheckingCoverage(null);
   };
 
   const handleDownloadSummary = async (card) => {
@@ -462,6 +515,16 @@ export default function InsuranceSection() {
                   <Button
                     variant="ghost"
                     size="sm"
+                    className="h-8 text-violet-600 hover:text-violet-700 hover:bg-violet-50"
+                    onClick={() => handleCheckCoverage(card)}
+                    disabled={checkingCoverage === card.id}
+                  >
+                    {checkingCoverage === card.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+                    <span className="hidden sm:inline ml-1">Coverage</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className="h-8 text-sky-600 hover:text-sky-700 hover:bg-sky-50"
                     onClick={() => handleDownloadSummary(card)}
                     disabled={downloadingSummary === card.id}
@@ -536,6 +599,41 @@ export default function InsuranceSection() {
               )}
 
               {card.notes && <p className="text-xs text-muted-foreground mt-3 pt-3 border-t">{card.notes}</p>}
+
+              {coverageResult?.card_id === card.id && coverageResult.noUpcoming && (
+                <div className="mt-3 p-3 bg-muted/50 rounded-lg text-xs text-muted-foreground">
+                  No confirmed upcoming appointments to check coverage for.
+                </div>
+              )}
+
+              {coverageResult?.card_id === card.id && !coverageResult.noUpcoming && (
+                <div className="mt-3 p-4 bg-violet-50 border border-violet-200 rounded-lg space-y-3">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-violet-600" />
+                    <p className="text-sm font-semibold text-violet-900">Benefit Coverage Check</p>
+                  </div>
+                  {coverageResult.summary && <p className="text-xs text-violet-800">{coverageResult.summary}</p>}
+                  {coverageResult.appointments?.map((apt, i) => (
+                    <div key={i} className="p-3 bg-white rounded-lg border border-violet-100 space-y-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-xs font-medium">{apt.appointment}</p>
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${
+                          apt.coverage_status === "likely_covered" ? "bg-emerald-100 text-emerald-700" :
+                          apt.coverage_status === "may_require_authorization" ? "bg-amber-100 text-amber-700" :
+                          "bg-red-100 text-red-700"
+                        }`}>
+                          {apt.coverage_status?.replace(/_/g, " ")}
+                        </span>
+                      </div>
+                      {apt.estimated_cost && <p className="text-xs text-muted-foreground">Est. cost: {apt.estimated_cost}</p>}
+                      {apt.notes && <p className="text-xs text-muted-foreground italic">{apt.notes}</p>}
+                    </div>
+                  ))}
+                  {coverageResult.disclaimer && (
+                    <p className="text-[10px] text-muted-foreground italic">{coverageResult.disclaimer}</p>
+                  )}
+                </div>
+              )}
             </Card>
           ))}
         </div>

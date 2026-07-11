@@ -8,10 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   FileText, Plus, Upload, Loader2, Calendar, Trash2,
-  Download, Filter, Search, List, GitBranch, FileDown, FlaskConical
+  Download, Filter, Search, List, GitBranch, FileDown, FlaskConical, GitCompare
 } from "lucide-react";
 import { motion } from "framer-motion";
 import MedicalTimeline from "@/components/records/MedicalTimeline";
+import LabComparison from "@/components/records/LabComparison";
 import RecordInsights from "@/components/records/RecordInsights";
 import { generateRecordPdf } from "@/lib/generateRecordPdf";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
@@ -174,6 +175,13 @@ export default function MedicalRecords() {
       {/* AI Insights */}
       {viewMode === "list" && <RecordInsights records={records} />}
 
+      {/* Compare mode hint */}
+      {viewMode === "compare" && (
+        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-700 mb-4">
+          Select two lab reports below to see changes in key values like glucose, cholesterol, and more over time.
+        </div>
+      )}
+
       {/* View Toggle + Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
@@ -209,12 +217,22 @@ export default function MedicalRecords() {
           >
             <GitBranch className="w-3.5 h-3.5 mr-1.5" /> Timeline
           </Button>
+          <Button
+            variant={viewMode === "compare" ? "default" : "ghost"}
+            size="sm"
+            className={`h-8 text-xs ${viewMode === "compare" ? "bg-sky-600 hover:bg-sky-700" : ""}`}
+            onClick={() => setViewMode("compare")}
+          >
+            <GitCompare className="w-3.5 h-3.5 mr-1.5" /> Compare
+          </Button>
         </div>
       </div>
 
       {/* Records List / Timeline */}
       {viewMode === "timeline" ? (
         <MedicalTimeline />
+      ) : viewMode === "compare" ? (
+        <LabComparison />
       ) : filtered.length === 0 ? (
         <Card className="p-12 text-center">
           <FileText className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
