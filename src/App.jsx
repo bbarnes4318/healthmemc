@@ -41,6 +41,8 @@ import CaregiverDashboard from '@/pages/CaregiverDashboard';
 import ThankYou from '@/pages/ThankYou';
 import AppointmentHistory from '@/pages/AppointmentHistory';
 import AIEmergencyRoom from '@/pages/AIEmergencyRoom';
+import DoctorRecordsPortal from '@/pages/DoctorRecordsPortal';
+import WellnessTrends from '@/pages/WellnessTrends';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -89,6 +91,8 @@ const AuthenticatedApp = () => {
           <Route path="/caregiver-dashboard" element={<CaregiverDashboard />} />
           <Route path="/appointment-history" element={<AppointmentHistory />} />
           <Route path="/emergency-room" element={<AIEmergencyRoom />} />
+          <Route path="/doctor-records" element={<DoctorRecordsPortal />} />
+          <Route path="/wellness-trends" element={<WellnessTrends />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />

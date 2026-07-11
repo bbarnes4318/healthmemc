@@ -5,7 +5,8 @@ import {
   Home, Stethoscope, HeartPulse, Users, Pill, FileText,
   Sparkles, Shield, User, Menu, X, LogOut, Activity, Phone,
   Smile, Dumbbell, Heart, LifeBuoy, PawPrint, Bell, BellRing, ClipboardCheck,
-  KeyRound, MapPin, Settings as SettingsIcon, Users as UsersIcon, History, Siren
+  KeyRound, MapPin, Settings as SettingsIcon, Users as UsersIcon, History, Siren,
+  Share2, TrendingUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/layout/GlobalSearch";
@@ -29,9 +30,11 @@ const navItems = [
   { path: "/records", label: "Records", icon: FileText },
   { path: "/appointment-history", label: "Visit History", icon: History },
   { path: "/wellness", label: "Wellness", icon: Sparkles },
+  { path: "/wellness-trends", label: "Trends", icon: TrendingUp },
   { path: "/dashboard", label: "Dashboard", icon: Activity },
   { path: "/provider-dashboard", label: "Provider", icon: ClipboardCheck },
   { path: "/clinician-dashboard", label: "Clinician Access", icon: KeyRound },
+  { path: "/doctor-records", label: "Doctor Records", icon: Share2 },
   { path: "/caregiver-dashboard", label: "Caregiver", icon: UsersIcon },
   { path: "/health-locator", label: "Find Care", icon: MapPin },
   { path: "/settings", label: "Settings", icon: SettingsIcon },

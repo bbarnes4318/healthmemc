@@ -42,6 +42,12 @@
       "type": "boolean",
       "default": false
     },
+    "assigned_record_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "accessed_at": {
       "type": "string",
       "format": "date-time"

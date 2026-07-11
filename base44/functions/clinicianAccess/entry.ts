@@ -29,10 +29,16 @@ Deno.serve(async (req) => {
       share_consultations: grant.share_consultations,
       share_medications: grant.share_medications,
       share_vitals: grant.share_vitals,
+      assigned_record_ids: grant.assigned_record_ids || [],
     };
 
     if (grant.share_records) {
-      result.records = await base44.asServiceRole.entities.MedicalRecord.filter({ created_by_id: grant.created_by_id }, '-date', 50);
+      const allRecords = await base44.asServiceRole.entities.MedicalRecord.filter({ created_by_id: grant.created_by_id }, '-date', 50);
+      if (grant.assigned_record_ids && grant.assigned_record_ids.length > 0) {
+        result.records = allRecords.filter((r) => grant.assigned_record_ids.includes(r.id));
+      } else {
+        result.records = allRecords;
+      }
     }
     if (grant.share_consultations) {
       result.consultations = await base44.asServiceRole.entities.Consultation.filter({ created_by_id: grant.created_by_id }, '-created_date', 20);
