@@ -13,6 +13,7 @@ import {
 import { motion } from "framer-motion";
 import MedicalTimeline from "@/components/records/MedicalTimeline";
 import RecordInsights from "@/components/records/RecordInsights";
+import LabExtractButton from "@/components/records/LabExtractButton";
 import { generateRecordPdf } from "@/lib/generateRecordPdf";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 
@@ -233,6 +234,9 @@ export default function MedicalRecords() {
                   <Button variant="ghost" size="icon" className="h-8 w-8 text-sky-600 hover:text-sky-700" title="Download PDF summary" onClick={() => generateRecordPdf(record)}>
                     <FileDown className="w-4 h-4" />
                   </Button>
+                  {record.category === "lab_results" && record.file_url && (
+                    <LabExtractButton record={record} onExtracted={loadRecords} />
+                  )}
                   {record.file_url && (
                     <a href={record.file_url} target="_blank" rel="noopener noreferrer">
                       <Button variant="ghost" size="icon" className="h-8 w-8">
