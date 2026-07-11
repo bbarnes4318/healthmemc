@@ -1,0 +1,68 @@
+{
+  "name": "HearingTestLog",
+  "type": "object",
+  "properties": {
+    "test_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "ear": {
+      "type": "string",
+      "enum": [
+        "left",
+        "right",
+        "both"
+      ]
+    },
+    "test_type": {
+      "type": "string",
+      "enum": [
+        "self_screening",
+        "audiologist_exam",
+        "phone_app_test"
+      ],
+      "default": "self_screening"
+    },
+    "frequencies_heard": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    },
+    "frequencies_missed": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    },
+    "overall_result": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "mild_loss",
+        "moderate_loss",
+        "severe_loss"
+      ],
+      "default": "normal"
+    },
+    "symptoms": {
+      "type": "string"
+    },
+    "treatment": {
+      "type": "string"
+    },
+    "provider": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "test_date",
+    "ear"
+  ]
+}

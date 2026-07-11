@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import AIServicePage from "@/components/services/AIServicePage";
 import HearingExam from "@/components/ent/HearingExam";
+import HearingHealthLog from "@/components/ent/HearingHealthLog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Ear, Volume2, Wind, AlertTriangle, Ear as EarIcon, Activity } from "lucide-react";
+import { Ear, Volume2, Wind, AlertTriangle, Ear as EarIcon, Activity, ClipboardList } from "lucide-react";
 
 const config = {
   title: "AI Ear & Nose Doctor",
@@ -30,17 +31,22 @@ export default function AIEarNoseDoctor() {
     <div>
       <div className="sticky top-14 lg:top-0 z-10 bg-white border-b border-border px-4 py-2">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2 max-w-md mx-auto">
+          <TabsList className="grid grid-cols-3 max-w-lg mx-auto">
             <TabsTrigger value="consult"><EarIcon className="w-3.5 h-3.5 mr-1.5" />AI Consult</TabsTrigger>
             <TabsTrigger value="exam"><Activity className="w-3.5 h-3.5 mr-1.5" />Hearing Test</TabsTrigger>
+            <TabsTrigger value="log"><ClipboardList className="w-3.5 h-3.5 mr-1.5" />Health Log</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
       {activeTab === "consult" ? (
         <AIServicePage config={config} />
-      ) : (
+      ) : activeTab === "exam" ? (
         <div className="p-4 lg:p-8 max-w-3xl mx-auto">
           <HearingExam />
+        </div>
+      ) : (
+        <div className="p-4 lg:p-8 max-w-4xl mx-auto">
+          <HearingHealthLog />
         </div>
       )}
     </div>

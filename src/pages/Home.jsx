@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Stethoscope, HeartPulse, Users, Pill, FileText, Sparkles,
-  Calendar, Phone, TrendingUp, Clock, ChevronRight, Shield, Dumbbell, History, Home as HomeIcon, Scan
+  Calendar, Phone, TrendingUp, Clock, ChevronRight, Shield, Dumbbell, History, Home as HomeIcon, Scan, Info
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
@@ -104,6 +104,12 @@ export default function Home() {
                   <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
                     <Phone className="w-4 h-4 mr-2" />
                     Emergency
+                  </Button>
+                </Link>
+                <Link to="/about">
+                  <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                    <Info className="w-4 h-4 mr-2" />
+                    About Us
                   </Button>
                 </Link>
               </div>

@@ -1,0 +1,60 @@
+{
+  "name": "EyeExamLog",
+  "type": "object",
+  "properties": {
+    "exam_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "eye": {
+      "type": "string",
+      "enum": [
+        "left",
+        "right",
+        "both"
+      ]
+    },
+    "acuity_numerator": {
+      "type": "number"
+    },
+    "acuity_denominator": {
+      "type": "number",
+      "default": 20
+    },
+    "prescription_sphere": {
+      "type": "number"
+    },
+    "prescription_cylinder": {
+      "type": "number"
+    },
+    "prescription_axis": {
+      "type": "number"
+    },
+    "color_vision_tested": {
+      "type": "boolean",
+      "default": false
+    },
+    "color_vision_normal": {
+      "type": "boolean"
+    },
+    "pressure_left": {
+      "type": "number"
+    },
+    "pressure_right": {
+      "type": "number"
+    },
+    "provider": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "exam_date",
+    "eye"
+  ]
+}
