@@ -1,6 +1,6 @@
 import { jsPDF } from "jspdf";
 
-export function generateReportPdf(report, symptoms) {
+export function generateReportPdf(report, symptoms, severity) {
   const doc = new jsPDF();
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
@@ -40,6 +40,10 @@ export function generateReportPdf(report, symptoms) {
     });
   };
 
+  const addFieldLabel = (label) => {
+    addText(label, 9, "bold", [100, 100, 100]);
+  };
+
   // Header banner
   doc.setFillColor(22, 86, 160);
   doc.rect(0, 0, pageW, 40, "F");
@@ -60,6 +64,32 @@ export function generateReportPdf(report, symptoms) {
     addText(symptoms, 10, "normal", [60, 60, 60]);
   }
 
+  // Clinical Assessment Overview
+  addSectionTitle("Clinical Assessment Overview");
+  const dxCount = report.diagnoses?.length || 0;
+  const highConf = report.diagnoses?.filter((d) => d.confidence === "High").length || 0;
+  const modConf = report.diagnoses?.filter((d) => d.confidence === "Moderate").length || 0;
+  const lowConf = report.diagnoses?.filter((d) => d.confidence === "Low").length || 0;
+  const emergencyCount = report.emergency_warnings?.length || 0;
+  const severityLabel = severity ? severity.charAt(0).toUpperCase() + severity.slice(1) : (emergencyCount > 0 ? "High" : "Low");
+  const severityColor = severityLabel === "Emergency" ? [220, 38, 38] : severityLabel === "High" ? [220, 38, 38] : severityLabel === "Moderate" ? [217, 119, 6] : [22, 163, 74];
+
+  addFieldLabel("Severity Level");
+  addText(severityLabel, 12, "bold", severityColor);
+  y += 1;
+  addFieldLabel("Possible Diagnoses Identified");
+  addText(String(dxCount), 11, "normal", [40, 40, 40]);
+  y += 1;
+  addFieldLabel("Confidence Distribution");
+  addText(`High: ${highConf}    Moderate: ${modConf}    Low: ${lowConf}`, 11, "normal", [40, 40, 40]);
+  y += 1;
+  addFieldLabel("Emergency Warnings");
+  addText(emergencyCount > 0 ? `${emergencyCount} warning(s) — seek immediate medical attention` : "None identified", 11, "normal", emergencyCount > 0 ? [220, 38, 38] : [22, 163, 74]);
+  y += 1;
+  addFieldLabel("Overall Accuracy Assessment");
+  const accuracyScore = dxCount > 0 ? Math.round(((highConf * 100) + (modConf * 60) + (lowConf * 30)) / dxCount) : 0;
+  addText(`${accuracyScore}% confidence score based on ${dxCount} diagnostic ${dxCount === 1 ? "possibility" : "possibilities"}`, 11, "normal", [40, 40, 40]);
+
   // Summary
   if (report.summary) {
     addSectionTitle("Summary");
@@ -69,9 +99,12 @@ export function generateReportPdf(report, symptoms) {
   // Diagnoses
   if (report.diagnoses?.length) {
     addSectionTitle("Possible Diagnoses");
-    report.diagnoses.forEach((d) => {
-      addText(`• ${d.name} (${d.confidence} confidence)`, 10, "bold", [40, 40, 40]);
-      addText(`  ${d.description}`, 9, "normal", [80, 80, 80]);
+    report.diagnoses.forEach((d, i) => {
+      const confColor = d.confidence === "High" ? [22, 163, 74] : d.confidence === "Moderate" ? [217, 119, 6] : [107, 114, 128];
+      const confScore = d.confidence === "High" ? "90-100%" : d.confidence === "Moderate" ? "50-89%" : "20-49%";
+      addText(`${i + 1}. ${d.name}`, 10, "bold", [40, 40, 40]);
+      addText(`   Confidence: ${d.confidence} (${confScore} accuracy)`, 9, "bold", confColor);
+      addText(`   ${d.description}`, 9, "normal", [80, 80, 80]);
       y += 2;
     });
   }

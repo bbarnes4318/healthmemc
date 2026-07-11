@@ -18,6 +18,7 @@ export default function AIDoctor() {
   const [currentInput, setCurrentInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [report, setReport] = useState(null);
+  const [severity, setSeverity] = useState(null);
   const [consultation, setConsultation] = useState(null);
   const [fileUrl, setFileUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -156,6 +157,8 @@ IMPORTANT: Include appropriate disclaimers that this is AI-generated and should 
         },
       });
 
+      const severityLevel = reportData.emergency_warnings?.length > 0 ? "high" : "low";
+      setSeverity(severityLevel);
       setReport(reportData);
       setStep("report");
 
@@ -163,7 +166,7 @@ IMPORTANT: Include appropriate disclaimers that this is AI-generated and should 
         await base44.entities.Consultation.update(consultation.id, {
           status: "completed",
           report: reportData,
-          severity: reportData.emergency_warnings?.length > 0 ? "high" : "low",
+          severity: severityLevel,
         });
       }
     } catch (err) {
@@ -248,7 +251,7 @@ IMPORTANT: Include appropriate disclaimers that this is AI-generated and should 
               <Button
                 variant="secondary"
                 className="bg-white/20 text-white hover:bg-white/30 border-0"
-                onClick={() => generateReportPdf(report, symptoms)}
+                onClick={() => generateReportPdf(report, symptoms, severity)}
               >
                 <Download className="w-4 h-4 mr-2" />
                 Download PDF

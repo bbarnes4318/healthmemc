@@ -75,6 +75,9 @@ export function generateRecordPdf(record) {
   if (record.file_url) {
     addField("Attached File", record.file_url);
   }
+  addField("Record ID", record.id);
+  addField("Date Added", record.created_date ? new Date(record.created_date).toLocaleString("en-US", { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "2-digit" }) : "Not available");
+  addField("Last Updated", record.updated_date ? new Date(record.updated_date).toLocaleString("en-US", { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "2-digit" }) : "Not available");
 
   // Footer disclaimer
   y += 8;

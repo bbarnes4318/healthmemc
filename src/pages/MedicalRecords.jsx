@@ -96,7 +96,10 @@ export default function MedicalRecords() {
 
   const filtered = records.filter((r) => {
     if (filterCat !== "all" && r.category !== filterCat) return false;
-    if (searchTerm && !r.title.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    if (searchTerm) {
+      const q = searchTerm.toLowerCase();
+      if (!r.title?.toLowerCase().includes(q) && !r.notes?.toLowerCase().includes(q) && !r.provider?.toLowerCase().includes(q)) return false;
+    }
     return true;
   });
 

@@ -46,8 +46,8 @@ export default function Emergency() {
     try {
       await base44.integrations.Core.SendEmail({
         to: profile.emergency_contact_email,
-        subject: "EMERGENCY ALERT — AI HealthOne",
-        body: `This is an automated emergency alert from AI HealthOne.\n\nThe user ${profile.emergency_contact_relationship ? `(${profile.emergency_contact_relationship})` : ""} has triggered the emergency button at ${new Date().toLocaleString()}.\n\nEmergency contact on file:\nName: ${profile.emergency_contact_name || "N/A"}\nPhone: ${profile.emergency_contact_phone || "N/A"}\n\nPlease reach out immediately to check on them. If this is a life-threatening situation, call 911.\n\n— AI HealthOne`,
+        subject: "EMERGENCY ALERT — Health Me Medical Center",
+        body: `This is an automated emergency alert from Health Me Medical Center.\n\nThe user ${profile.emergency_contact_relationship ? `(${profile.emergency_contact_relationship})` : ""} has triggered the emergency button at ${new Date().toLocaleString()}.\n\nEmergency contact on file:\nName: ${profile.emergency_contact_name || "N/A"}\nPhone: ${profile.emergency_contact_phone || "N/A"}\n\nPlease reach out immediately to check on them. If this is a life-threatening situation, call 911.\n\n— Health Me Medical Center`,
       });
       setAlertSent(true);
       setTimeout(() => setAlertSent(false), 10000);
