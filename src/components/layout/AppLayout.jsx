@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import {
   Home, Stethoscope, HeartPulse, Users, Pill, FileText,
   Sparkles, Shield, User, Menu, X, LogOut, Activity, Phone,
-  Smile, Dumbbell, Heart, LifeBuoy, PawPrint, Bell, BellRing, ClipboardCheck,
+  Smile, Dumbbell, Heart, LifeBuoy, PawPrint, Bell, BellRing, ClipboardCheck, Ear, Eye,
   KeyRound, MapPin, Settings as SettingsIcon, Users as UsersIcon, History, Siren,
   Share2, TrendingUp, Contact, Star, Info
 } from "lucide-react";
@@ -25,6 +25,8 @@ const navItems = [
   { path: "/assisted-living", label: "Assisted Living", icon: LifeBuoy },
   { path: "/pet-care", label: "Pet Care", icon: PawPrint },
   { path: "/sports-medicine", label: "Sports Medicine", icon: Dumbbell },
+  { path: "/eye-doctor", label: "Eye Doctor", icon: Eye },
+  { path: "/ear-nose-doctor", label: "Ear & Nose", icon: Ear },
   { path: "/emergency-room", label: "AI ER", icon: Siren },
   { path: "/pharmacy", label: "Pharmacy", icon: Pill },
   { path: "/records", label: "Records", icon: FileText },

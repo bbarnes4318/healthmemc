@@ -4,8 +4,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Sparkles, Apple, Dumbbell, Moon, Heart, Wind, Scale, Cigarette, Activity,
-  ChefHat, Loader2, ArrowLeft, Shield
+  ChefHat, Loader2, ArrowLeft, Shield, Activity as BodyIcon
 } from "lucide-react";
+import BodyDiagram from "@/components/consultations/BodyDiagram";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import WellnessCharts from "@/components/wellness/WellnessCharts";
@@ -93,10 +94,11 @@ export default function Wellness() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <TabsList className="grid grid-cols-3 w-full max-w-sm mx-auto">
+          <TabsList className="grid grid-cols-4 w-full max-w-lg mx-auto">
             <TabsTrigger value="programs"><Sparkles className="w-3.5 h-3.5 mr-1.5" />Programs</TabsTrigger>
             <TabsTrigger value="nutrition"><Apple className="w-3.5 h-3.5 mr-1.5" />Nutrition</TabsTrigger>
             <TabsTrigger value="activity"><Activity className="w-3.5 h-3.5 mr-1.5" />Activity</TabsTrigger>
+            <TabsTrigger value="bodymap"><BodyIcon className="w-3.5 h-3.5 mr-1.5" />Body Map</TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -107,6 +109,8 @@ export default function Wellness() {
           </div>
         ) : activeTab === "activity" ? (
           <StepTracker />
+        ) : activeTab === "bodymap" ? (
+          <BodyDiagram />
         ) : (
           <>
             <WellnessCharts />
