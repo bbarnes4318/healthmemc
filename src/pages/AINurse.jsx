@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
+import VoiceInputButton from "@/components/voice/VoiceInputButton";
 
 const nurseTopics = [
   { label: "Daily Check-in", icon: HeartPulse, prompt: "I'd like to do my daily health check-in", color: "from-emerald-500 to-teal-600" },
@@ -109,6 +110,7 @@ Respond helpfully.`
                 rows={2}
                 className="resize-none flex-1"
               />
+              <VoiceInputButton value={input} onChange={setInput} />
               <Button onClick={() => startChat(input)} disabled={!input.trim()} className="bg-emerald-600 hover:bg-emerald-700">
                 <Send className="w-4 h-4" />
               </Button>
@@ -174,6 +176,7 @@ Respond helpfully.`
             rows={1}
             className="resize-none flex-1"
           />
+          <VoiceInputButton value={input} onChange={setInput} disabled={loading} />
           <Button onClick={sendMessage} disabled={!input.trim() || loading} className="bg-emerald-600 hover:bg-emerald-700">
             <Send className="w-4 h-4" />
           </Button>

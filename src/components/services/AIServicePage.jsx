@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, Loader2, ArrowLeft, Shield } from "lucide-react";
+import VoiceInputButton from "@/components/voice/VoiceInputButton";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 
@@ -89,6 +90,7 @@ export default function AIServicePage({ config }) {
                 rows={2}
                 className="resize-none flex-1"
               />
+              <VoiceInputButton value={input} onChange={setInput} />
               <Button onClick={() => startChat(input)} disabled={!input.trim()} className={btnClass}>
                 <Send className="w-4 h-4" />
               </Button>
@@ -162,6 +164,7 @@ export default function AIServicePage({ config }) {
             rows={1}
             className="resize-none flex-1"
           />
+          <VoiceInputButton value={input} onChange={setInput} disabled={loading} />
           <Button onClick={sendMessage} disabled={!input.trim() || loading} className={btnClass}>
             <Send className="w-4 h-4" />
           </Button>

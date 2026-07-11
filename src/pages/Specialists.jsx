@@ -14,6 +14,7 @@ import AppointmentCalendar from "@/components/specialists/AppointmentCalendar";
 import IntakeFormModal from "@/components/specialists/IntakeFormModal";
 import { generateClinicalSummaryPdf } from "@/lib/generateClinicalSummaryPdf";
 import SpecialistPrepReport from "@/components/specialists/SpecialistPrepReport";
+import VoiceInputButton from "@/components/voice/VoiceInputButton";
 
 const specialties = [
   { name: "Cardiology", icon: Heart, color: "from-red-500 to-rose-600", desc: "Heart & cardiovascular" },
@@ -267,6 +268,7 @@ Continue the conversation as a ${selectedSpecialty.name} specialist.`
             rows={1}
             className="resize-none flex-1"
           />
+          <VoiceInputButton value={input} onChange={setInput} disabled={loading} />
           <Button onClick={sendMessage} disabled={!input.trim() || loading} className="bg-violet-600 hover:bg-violet-700">
             <Send className="w-4 h-4" />
           </Button>

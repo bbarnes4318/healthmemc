@@ -1,0 +1,24 @@
+{
+  "name": "AudioNote",
+  "type": "object",
+  "properties": {
+    "audio_url": {
+      "type": "string"
+    },
+    "transcript": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    },
+    "duration_seconds": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "audio_url"
+  ]
+}

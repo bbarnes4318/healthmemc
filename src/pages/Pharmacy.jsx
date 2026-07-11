@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Pill, Search, Loader2, AlertTriangle, Info, RefreshCw,
-  Shield, ArrowRight, CheckCircle, Activity, Bell, Package, BarChart3, Receipt
+  Shield, Activity, Bell, Package, BarChart3, Receipt
 } from "lucide-react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";

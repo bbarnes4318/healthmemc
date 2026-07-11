@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Stethoscope, Send, Loader2, FileText, AlertTriangle,
-  CheckCircle, Download, Share2, ArrowLeft, Upload, Shield, Sparkles
+  CheckCircle, Download, ArrowLeft, Upload, Shield, Sparkles
 } from "lucide-react";
+import VoiceInputButton from "@/components/voice/VoiceInputButton";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import { generateReportPdf } from "@/lib/generateReportPdf";
@@ -199,8 +200,11 @@ IMPORTANT: Include appropriate disclaimers that this is AI-generated and should 
               value={symptoms}
               onChange={(e) => setSymptoms(e.target.value)}
               rows={5}
-              className="resize-none mb-4"
+              className="resize-none mb-2"
             />
+            <div className="flex justify-end mb-4">
+              <VoiceInputButton value={symptoms} onChange={setSymptoms} />
+            </div>
 
             <div className="flex items-center gap-3 mb-4">
               <label className="flex items-center gap-2 px-4 py-2 border rounded-lg cursor-pointer hover:bg-muted transition text-sm">
@@ -456,6 +460,7 @@ IMPORTANT: Include appropriate disclaimers that this is AI-generated and should 
             rows={1}
             className="resize-none flex-1"
           />
+          <VoiceInputButton value={currentInput} onChange={setCurrentInput} disabled={loading} />
           <Button onClick={sendMessage} disabled={!currentInput.trim() || loading} className="bg-sky-600 hover:bg-sky-700">
             <Send className="w-4 h-4" />
           </Button>
