@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Heart, Eye, Brain, Bone, Baby, User, Users, Smile, Apple,
-  Send, Loader2, ArrowLeft, Shield, CalendarPlus, Check
+  Send, Loader2, ArrowLeft, Shield, CalendarPlus, Check, FileText
 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import AppointmentCalendar from "@/components/specialists/AppointmentCalendar";
 import IntakeFormModal from "@/components/specialists/IntakeFormModal";
+import { generateClinicalSummaryPdf } from "@/lib/generateClinicalSummaryPdf";
 
 const specialties = [
   { name: "Cardiology", icon: Heart, color: "from-red-500 to-rose-600", desc: "Heart & cardiovascular" },
@@ -34,7 +35,36 @@ export default function Specialists() {
   const [showIntake, setShowIntake] = useState(false);
   const [booking, setBooking] = useState(false);
   const [booked, setBooked] = useState(false);
+  const [generatingSummary, setGeneratingSummary] = useState(false);
   const chatEndRef = useRef(null);
+
+  const handleGenerateClinicalSummary = async () => {
+    setGeneratingSummary(true);
+    try {
+      const [user, profiles, medications, vitals, records, consultations] = await Promise.all([
+        base44.auth.me(),
+        base44.entities.HealthProfile.filter({}),
+        base44.entities.Medication.filter({ active: true }),
+        base44.entities.VitalRecord.list("-recorded_at", 200),
+        base44.entities.MedicalRecord.filter({ category: "lab_results" }),
+        base44.entities.Consultation.list("-created_date", 5),
+      ]);
+      const labRecords = records.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+      generateClinicalSummaryPdf({
+        user,
+        profile: profiles[0],
+        medications,
+        vitals,
+        labRecords,
+        consultations,
+      });
+      toast({ title: "Clinical Summary generated", description: "PDF downloaded for your specialist visit." });
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Failed to generate summary", variant: "destructive" });
+    }
+    setGeneratingSummary(false);
+  };
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -124,6 +154,28 @@ Continue the conversation as a ${selectedSpecialty.name} specialist.`
           </div>
 
           <AppointmentCalendar />
+
+          {/* Clinical Summary Generator */}
+          <Card className="p-5 mb-6 border-sky-200 bg-gradient-to-br from-sky-50 to-blue-50">
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center shrink-0">
+                <FileText className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-sm">Clinical Summary for Specialist Visit</h3>
+                <p className="text-xs text-muted-foreground">Compile your latest vitals, medications, and lab trends into a printable PDF</p>
+              </div>
+              <Button
+                onClick={handleGenerateClinicalSummary}
+                disabled={generatingSummary}
+                className="bg-sky-600 hover:bg-sky-700"
+                size="sm"
+              >
+                {generatingSummary ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <FileText className="w-4 h-4 mr-1.5" />}
+                Generate PDF
+              </Button>
+            </div>
+          </Card>
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
             {specialties.map((spec) => (

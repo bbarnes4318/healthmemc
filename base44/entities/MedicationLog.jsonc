@@ -27,6 +27,10 @@
     },
     "family_member_id": {
       "type": "string"
+    },
+    "alert_sent": {
+      "type": "boolean",
+      "default": false
     }
   },
   "required": [
