@@ -1,0 +1,20 @@
+{
+  "name": "WellnessLog",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "water_cups": {
+      "type": "number",
+      "default": 0
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "date"
+  ]
+}

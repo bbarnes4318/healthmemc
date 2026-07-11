@@ -11,6 +11,7 @@ import { CreditCard, Plus, Loader2, Trash2, Upload, Lock, Calendar, Phone, ScanL
 import { useToast } from "@/components/ui/use-toast";
 import { generateMedicalIdCard } from "@/lib/generateMedicalIdCard";
 import { generateInsuranceSummary } from "@/lib/generateInsuranceSummary";
+import InsuranceCoverageMap from "@/components/insurance/InsuranceCoverageMap";
 
 const planTypes = [
   { value: "hmo", label: "HMO" },
@@ -638,6 +639,8 @@ export default function InsuranceSection() {
           ))}
         </div>
       )}
+
+      <InsuranceCoverageMap insuranceCard={cards[0] || null} />
     </div>
   );
 }

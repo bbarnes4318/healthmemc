@@ -10,6 +10,7 @@ import {
 import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 import CheckInButton from "@/components/CheckInButton";
+import WellnessStreakCards from "@/components/wellness/WellnessStreakCards";
 
 const quickActions = [
   { label: "Start AI Doctor Visit", icon: Stethoscope, path: "/ai-doctor", color: "from-sky-500 to-blue-600", desc: "Describe symptoms & get insights" },
@@ -214,6 +215,9 @@ export default function Home() {
           )}
         </Card>
       </div>
+
+      {/* Wellness Streak Cards */}
+      <WellnessStreakCards />
 
       {/* Health Trends */}
       <Card className="p-5">
