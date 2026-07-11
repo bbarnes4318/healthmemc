@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
-import { Pill, Plus, Loader2, Upload, Trash2, Camera, Image as ImageIcon } from "lucide-react";
+import { Pill, Plus, Loader2, Upload, Trash2, Camera, Image as ImageIcon, AlertTriangle } from "lucide-react";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
+import DrugInteractionAlert from "@/components/pharmacy/DrugInteractionAlert";
 
 const emptyMed = { name: "", dosage: "", frequency: "", prescribing_provider: "", notes: "", start_date: "", supply_quantity: "" };
 
@@ -21,6 +22,10 @@ export default function MedicationManager() {
   const [photoUrl, setPhotoUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [checkingInteractions, setCheckingInteractions] = useState(false);
+  const [interactionData, setInteractionData] = useState(null);
+  const [interactionAlertOpen, setInteractionAlertOpen] = useState(false);
+  const [pendingSave, setPendingSave] = useState(null);
 
   const loadMeds = async () => {
     try {
@@ -44,12 +49,90 @@ export default function MedicationManager() {
     setUploading(false);
   };
 
+  const checkInteractions = async (newMedName, existingMeds) => {
+    if (existingMeds.length === 0) return [];
+    const existingNames = existingMeds.map((m) => `${m.name} (${m.dosage}, ${m.frequency})`);
+    try {
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are a clinical pharmacology expert. Check for potential drug interactions between a NEW medication and the patient's EXISTING medications.
+
+NEW medication: ${newMedName}
+EXISTING medications: ${existingNames.join(", ")}
+
+For each interaction found, provide:
+- severity: "severe" (contraindicated, life-threatening), "moderate" (may need dose adjustment or monitoring), or "mild" (minor, usually manageable)
+- risk: short label for the interaction type (e.g., "Increased bleeding risk", "QT prolongation", "Serotonin syndrome")
+- description: what happens mechanistically
+- recommendation: practical advice (e.g., "Consult prescriber before combining", "Monitor for symptoms of...")
+
+Only report genuine, clinically recognized interactions. If no interactions exist, return an empty array. Do not include interactions between the existing medications themselves — only between the new medication and each existing one.`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            interactions: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  new_medication: { type: "string" },
+                  existing_medication: { type: "string" },
+                  severity: { type: "string", enum: ["severe", "moderate", "mild"] },
+                  risk: { type: "string" },
+                  description: { type: "string" },
+                  recommendation: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      });
+      return response.interactions || [];
+    } catch (e) {
+      console.error("Interaction check failed:", e);
+      return [];
+    }
+  };
+
   const handleSave = async () => {
     if (!form.name.trim() || !form.dosage.trim() || !form.frequency.trim()) return;
+
+    // Check interactions before saving
+    if (medications.length > 0) {
+      setCheckingInteractions(true);
+      const interactions = await checkInteractions(form.name.trim(), medications);
+      setCheckingInteractions(false);
+
+      if (interactions.length > 0) {
+        setInteractionData(interactions);
+        setPendingSave({ ...form });
+        setInteractionAlertOpen(true);
+        return;
+      }
+    }
+
+    await performSave(form);
+  };
+
+  const handleConfirmSaveWithInteractions = async () => {
+    setInteractionAlertOpen(false);
+    if (pendingSave) {
+      await performSave(pendingSave);
+      setPendingSave(null);
+    }
+    setInteractionData(null);
+  };
+
+  const handleCancelInteractionAlert = () => {
+    setInteractionAlertOpen(false);
+    setPendingSave(null);
+    setInteractionData(null);
+  };
+
+  const performSave = async (medData) => {
     setSaving(true);
     try {
       await base44.entities.Medication.create({
-        ...form,
+        ...medData,
         active: true,
         photo_url: photoUrl || undefined,
         family_member_id: currentMemberId || undefined,
@@ -144,14 +227,22 @@ export default function MedicationManager() {
             </div>
             <DialogFooter className="gap-2 mt-4">
               <Button variant="ghost" onClick={() => setDialogOpen(false)}>Cancel</Button>
-              <Button onClick={handleSave} disabled={!form.name.trim() || !form.dosage.trim() || !form.frequency.trim() || saving} className="bg-amber-600 hover:bg-amber-700">
-                {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
-                Save
+              <Button onClick={handleSave} disabled={!form.name.trim() || !form.dosage.trim() || !form.frequency.trim() || saving || checkingInteractions} className="bg-amber-600 hover:bg-amber-700">
+                {checkingInteractions ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+                {checkingInteractions ? "Checking interactions..." : saving ? "Saving..." : "Save"}
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
+
+      <DrugInteractionAlert
+        open={interactionAlertOpen}
+        interactions={interactionData}
+        newMedName={pendingSave?.name || ""}
+        onConfirm={handleConfirmSaveWithInteractions}
+        onCancel={handleCancelInteractionAlert}
+      />
 
       {medications.length === 0 ? (
         <Card className="p-8 text-center">
