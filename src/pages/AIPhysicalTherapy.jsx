@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import AIServicePage from "@/components/services/AIServicePage";
 import ExerciseTracker from "@/components/pt/ExerciseTracker";
 import PTSummary from "@/components/pt/PTSummary";
+import PTGoals from "@/components/pt/PTGoals";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dumbbell, Bone, Activity, Move, Stethoscope, AlignCenter, ClipboardList, BarChart3 } from "lucide-react";
 
@@ -46,6 +47,7 @@ export default function AIPhysicalTherapy() {
         </div>
       ) : (
         <div className="p-4 lg:p-8 max-w-3xl mx-auto">
+          <PTGoals />
           <PTSummary />
         </div>
       )}

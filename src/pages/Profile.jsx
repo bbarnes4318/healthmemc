@@ -34,6 +34,7 @@ export default function Profile() {
     blood_type: "unknown",
     emergency_contact_name: "",
     emergency_contact_phone: "",
+    emergency_contact_email: "",
     emergency_contact_relationship: "",
     insurance_provider: "",
     insurance_id: "",
@@ -60,6 +61,7 @@ export default function Profile() {
             blood_type: profiles[0].blood_type || "unknown",
             emergency_contact_name: profiles[0].emergency_contact_name || "",
             emergency_contact_phone: profiles[0].emergency_contact_phone || "",
+            emergency_contact_email: profiles[0].emergency_contact_email || "",
             emergency_contact_relationship: profiles[0].emergency_contact_relationship || "",
             insurance_provider: profiles[0].insurance_provider || "",
             insurance_id: profiles[0].insurance_id || "",
@@ -211,6 +213,11 @@ export default function Profile() {
               <div>
                 <Label className="text-xs">Relationship</Label>
                 <Input placeholder="e.g., Spouse, Parent, Sibling" value={form.emergency_contact_relationship} onChange={(e) => setForm({ ...form, emergency_contact_relationship: e.target.value })} />
+              </div>
+              <div>
+                <Label className="text-xs">Emergency Contact Email</Label>
+                <Input type="email" placeholder="email@example.com" value={form.emergency_contact_email} onChange={(e) => setForm({ ...form, emergency_contact_email: e.target.value })} />
+                <p className="text-[10px] text-muted-foreground mt-1">Used to send automated emergency alerts when you trigger the emergency button.</p>
               </div>
             </Card>
           </motion.div>

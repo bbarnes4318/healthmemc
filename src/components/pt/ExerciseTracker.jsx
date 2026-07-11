@@ -101,7 +101,7 @@ export default function ExerciseTracker() {
     const partLogs = logs.filter((l) => l.body_part === selectedBodyPart && l.pain_level != null);
     const byDate = {};
     partLogs.forEach((l) => {
-      if (!byDate[l.date]) byDate[l.date] = l.pain_level;
+      if (!(l.date in byDate)) byDate[l.date] = l.pain_level;
     });
     return Array.from({ length: 14 }).map((_, i) => {
       const d = subDays(new Date(), 13 - i);

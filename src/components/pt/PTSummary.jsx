@@ -2,9 +2,9 @@ import React, { useState, useEffect, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TrendingUp, Loader2, Dumbbell, Calendar, ArrowUp, ArrowDown, Minus } from "lucide-react";
+import { TrendingUp, Loader2, Dumbbell, Calendar, ArrowUp, ArrowDown, Minus, Activity } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
-import { BarChart, Bar } from "recharts";
+import { BarChart, Bar, ComposedChart } from "recharts";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 import { format, subDays, startOfWeek, isSameWeek, parseISO } from "date-fns";
 
@@ -93,6 +93,32 @@ export default function PTSummary() {
     });
   }, [weeklyData]);
 
+  // Pain vs Activity correlation - last 14 days
+  const painActivityData = useMemo(() => {
+    const now = new Date();
+    const byDate = {};
+
+    Array.from({ length: 14 }).forEach((_, i) => {
+      const d = subDays(now, 13 - i);
+      const dateStr = format(d, "yyyy-MM-dd");
+      byDate[dateStr] = { date: format(d, "MMM d"), count: 0, pain: null };
+    });
+
+    logs.forEach((l) => {
+      const dateStr = l.date;
+      if (byDate[dateStr]) {
+        byDate[dateStr].count++;
+        if (l.pain_level != null) {
+          if (byDate[dateStr].pain == null || l.pain_level > byDate[dateStr].pain) {
+            byDate[dateStr].pain = l.pain_level;
+          }
+        }
+      }
+    });
+
+    return Object.values(byDate);
+  }, [logs]);
+
   const avgRom = useMemo(() => {
     if (romChartData.length === 0) return null;
     const latest = romChartData[romChartData.length - 1].rom;
@@ -178,6 +204,37 @@ export default function PTSummary() {
                 </div>
               </div>
             )}
+          </>
+        )}
+      </Card>
+
+      {/* Pain vs Activity Chart */}
+      <Card className="p-5">
+        <h4 className="text-xs font-semibold flex items-center gap-1 mb-3">
+          <Activity className="w-3.5 h-3.5 text-orange-600" /> Pain vs. Activity
+        </h4>
+        {painActivityData.every((d) => d.count === 0 && d.pain == null) ? (
+          <div className="py-6 text-center">
+            <Activity className="w-8 h-8 text-muted-foreground/30 mx-auto mb-1" />
+            <p className="text-xs text-muted-foreground">Log exercises with pain levels to see how activity affects comfort</p>
+          </div>
+        ) : (
+          <>
+            <ResponsiveContainer width="100%" height={220}>
+              <ComposedChart data={painActivityData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                <YAxis yAxisId="left" tick={{ fontSize: 11 }} allowDecimals={false} />
+                <YAxis yAxisId="right" orientation="right" domain={[0, 10]} tick={{ fontSize: 11 }} />
+                <Tooltip />
+                <Legend />
+                <Bar yAxisId="left" dataKey="count" fill="#f97316" radius={[4, 4, 0, 0]} name="Exercises" />
+                <Line yAxisId="right" type="monotone" dataKey="pain" stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} name="Pain Level" connectNulls />
+              </ComposedChart>
+            </ResponsiveContainer>
+            <p className="text-[10px] text-muted-foreground mt-2 italic">
+              Bars show daily exercise count; the line tracks your peak pain level (0-10). Watch for patterns where more activity correlates with lower pain over time.
+            </p>
           </>
         )}
       </Card>

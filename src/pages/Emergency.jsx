@@ -18,15 +18,20 @@ export default function Emergency() {
   const [alertSent, setAlertSent] = useState(false);
   const [location, setLocation] = useState(null);
   const [locating, setLocating] = useState(false);
+  const [hasTrustedContacts, setHasTrustedContacts] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const data = await base44.entities.HealthProfile.filter({});
+        const [data, contacts] = await Promise.all([
+          base44.entities.HealthProfile.filter({}),
+          base44.entities.TrustedContact.filter({ status: "active", alert_emergencies: true }),
+        ]);
         if (data.length > 0) {
           setProfile(data[0]);
           setAutoAlert(data[0].auto_alert_contacts || false);
         }
+        setHasTrustedContacts(contacts.length > 0);
       } catch (err) { console.error(err); }
       setLoading(false);
     };
@@ -122,7 +127,7 @@ Please reach out immediately to check on them. If this is a life-threatening sit
     setSending(false);
   };
 
-  const hasContactEmail = !!profile?.emergency_contact_email;
+  const hasContactEmail = !!profile?.emergency_contact_email || hasTrustedContacts;
 
   return (
     <div className="p-4 lg:p-8 max-w-2xl mx-auto">
@@ -192,7 +197,9 @@ Please reach out immediately to check on them. If this is a life-threatening sit
                   </p>
                 ) : (
                   <p className="text-xs text-green-600 mt-1">
-                    Alerts will be sent to {profile.emergency_contact_email}
+                    {profile?.emergency_contact_email
+                      ? `Alerts will be sent to ${profile.emergency_contact_email}${hasTrustedContacts ? " and your trusted contacts" : ""}`
+                      : "Alerts will be sent to your trusted contacts"}
                   </p>
                 )}
               </div>
