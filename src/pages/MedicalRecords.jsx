@@ -8,9 +8,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   FileText, Plus, Upload, Loader2, Calendar, Trash2,
-  Download, Filter, Search
+  Download, Filter, Search, List, GitBranch
 } from "lucide-react";
 import { motion } from "framer-motion";
+import MedicalTimeline from "@/components/records/MedicalTimeline";
 
 const categories = [
   { value: "visit_summary", label: "Visit Summary" },
@@ -44,6 +45,7 @@ export default function MedicalRecords() {
   const [fileUrl, setFileUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [viewMode, setViewMode] = useState("list");
 
   useEffect(() => {
     loadRecords();
@@ -147,26 +149,48 @@ export default function MedicalRecords() {
         </Dialog>
       </div>
 
-      {/* Filters */}
+      {/* View Toggle + Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input placeholder="Search records..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-9" />
         </div>
-        <Select value={filterCat} onValueChange={setFilterCat}>
-          <SelectTrigger className="w-full sm:w-44">
-            <Filter className="w-3.5 h-3.5 mr-2" />
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            {categories.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
-          </SelectContent>
-        </Select>
+        {viewMode === "list" && (
+          <Select value={filterCat} onValueChange={setFilterCat}>
+            <SelectTrigger className="w-full sm:w-44">
+              <Filter className="w-3.5 h-3.5 mr-2" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {categories.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        )}
+        <div className="flex items-center gap-1 border rounded-lg p-0.5 bg-card">
+          <Button
+            variant={viewMode === "list" ? "default" : "ghost"}
+            size="sm"
+            className={`h-8 text-xs ${viewMode === "list" ? "bg-sky-600 hover:bg-sky-700" : ""}`}
+            onClick={() => setViewMode("list")}
+          >
+            <List className="w-3.5 h-3.5 mr-1.5" /> List
+          </Button>
+          <Button
+            variant={viewMode === "timeline" ? "default" : "ghost"}
+            size="sm"
+            className={`h-8 text-xs ${viewMode === "timeline" ? "bg-sky-600 hover:bg-sky-700" : ""}`}
+            onClick={() => setViewMode("timeline")}
+          >
+            <GitBranch className="w-3.5 h-3.5 mr-1.5" /> Timeline
+          </Button>
+        </div>
       </div>
 
-      {/* Records List */}
-      {filtered.length === 0 ? (
+      {/* Records List / Timeline */}
+      {viewMode === "timeline" ? (
+        <MedicalTimeline />
+      ) : filtered.length === 0 ? (
         <Card className="p-12 text-center">
           <FileText className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-muted-foreground">No records found</p>

@@ -1,0 +1,48 @@
+{
+  "name": "IntakeTemplate",
+  "type": "object",
+  "properties": {
+    "template_name": {
+      "type": "string"
+    },
+    "chief_complaint": {
+      "type": "string"
+    },
+    "symptom_duration": {
+      "type": "string"
+    },
+    "symptom_severity": {
+      "type": "string",
+      "enum": [
+        "mild",
+        "moderate",
+        "severe"
+      ]
+    },
+    "current_medications": {
+      "type": "string"
+    },
+    "allergies": {
+      "type": "string"
+    },
+    "medical_history": {
+      "type": "string"
+    },
+    "surgical_history": {
+      "type": "string"
+    },
+    "family_history": {
+      "type": "string"
+    },
+    "lifestyle_notes": {
+      "type": "string"
+    },
+    "questions_for_provider": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "template_name",
+    "chief_complaint"
+  ]
+}

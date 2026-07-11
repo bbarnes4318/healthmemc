@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import {
   Home, Stethoscope, HeartPulse, Users, Pill, FileText,
   Sparkles, Shield, User, Menu, X, LogOut, Activity, Phone,
-  Smile, Dumbbell, Heart, LifeBuoy, PawPrint
+  Smile, Dumbbell, Heart, LifeBuoy, PawPrint, Bell, BellRing
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRecordNotifications } from "@/hooks/useRecordNotifications";
 
 const navItems = [
   { path: "/", label: "Home", icon: Home },
@@ -28,6 +29,19 @@ const navItems = [
 export default function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const { permission, requestPermission } = useRecordNotifications();
+  const [showBanner, setShowBanner] = useState(false);
+
+  useEffect(() => {
+    if (typeof Notification !== "undefined" && Notification.permission === "default") {
+      setShowBanner(true);
+    }
+  }, []);
+
+  const handleEnableNotifications = async () => {
+    await requestPermission();
+    setShowBanner(false);
+  };
 
   const handleLogout = () => {
     base44.auth.logout("/login");
@@ -145,6 +159,22 @@ export default function AppLayout() {
 
       {/* Main Content */}
       <main className="flex-1 lg:ml-64 min-h-screen">
+        {showBanner && (
+          <div className="fixed top-14 lg:top-0 left-0 right-0 lg:left-64 z-20 bg-sky-600 text-white px-4 py-2.5 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <Bell className="w-4 h-4 shrink-0" />
+              <p className="text-xs sm:text-sm truncate">Enable notifications to get alerted when new medical records or lab results are uploaded.</p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button size="sm" variant="secondary" className="h-7 text-xs" onClick={handleEnableNotifications}>
+                <BellRing className="w-3 h-3 mr-1" /> Enable
+              </Button>
+              <Button size="icon" variant="ghost" className="h-7 w-7 text-white hover:bg-sky-700" onClick={() => setShowBanner(false)}>
+                <X className="w-3.5 h-3.5" />
+              </Button>
+            </div>
+          </div>
+        )}
         <div className="pt-14 lg:pt-0">
           <Outlet />
         </div>
