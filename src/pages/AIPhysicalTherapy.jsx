@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import AIServicePage from "@/components/services/AIServicePage";
 import ExerciseTracker from "@/components/pt/ExerciseTracker";
+import PTSummary from "@/components/pt/PTSummary";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dumbbell, Bone, Activity, Move, Stethoscope, AlignCenter, ClipboardList } from "lucide-react";
+import { Dumbbell, Bone, Activity, Move, Stethoscope, AlignCenter, ClipboardList, BarChart3 } from "lucide-react";
 
 const config = {
   title: "AI Physical Therapy",
@@ -30,17 +31,22 @@ export default function AIPhysicalTherapy() {
     <div>
       <div className="sticky top-14 lg:top-0 z-10 bg-white border-b border-border px-4 py-2">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2 max-w-xs mx-auto">
+          <TabsList className="grid grid-cols-3 max-w-md mx-auto">
             <TabsTrigger value="consult"><Dumbbell className="w-3.5 h-3.5 mr-1.5" />AI Consult</TabsTrigger>
-            <TabsTrigger value="tracker"><ClipboardList className="w-3.5 h-3.5 mr-1.5" />Exercise Tracker</TabsTrigger>
+            <TabsTrigger value="tracker"><ClipboardList className="w-3.5 h-3.5 mr-1.5" />Tracker</TabsTrigger>
+            <TabsTrigger value="summary"><BarChart3 className="w-3.5 h-3.5 mr-1.5" />Summary</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
       {activeTab === "consult" ? (
         <AIServicePage config={config} />
-      ) : (
+      ) : activeTab === "tracker" ? (
         <div className="p-4 lg:p-8 max-w-3xl mx-auto">
           <ExerciseTracker />
+        </div>
+      ) : (
+        <div className="p-4 lg:p-8 max-w-3xl mx-auto">
+          <PTSummary />
         </div>
       )}
     </div>

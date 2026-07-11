@@ -39,6 +39,7 @@ import HealthLocator from '@/pages/HealthLocator';
 import Settings from '@/pages/Settings';
 import CaregiverDashboard from '@/pages/CaregiverDashboard';
 import ThankYou from '@/pages/ThankYou';
+import AppointmentHistory from '@/pages/AppointmentHistory';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -85,6 +86,7 @@ const AuthenticatedApp = () => {
           <Route path="/clinician-dashboard" element={<ClinicianDashboard />} />
           <Route path="/health-locator" element={<HealthLocator />} />
           <Route path="/caregiver-dashboard" element={<CaregiverDashboard />} />
+          <Route path="/appointment-history" element={<AppointmentHistory />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />

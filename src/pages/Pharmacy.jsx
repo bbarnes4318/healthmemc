@@ -22,13 +22,14 @@ export default function Pharmacy() {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("lookup");
 
-  const searchMedication = async () => {
-    if (!searchQuery.trim()) return;
+  const searchMedication = async (overrideQuery) => {
+    const query = overrideQuery || searchQuery;
+    if (!query.trim()) return;
     setLoading(true);
     setResult(null);
     try {
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Provide comprehensive information about the medication "${searchQuery}". Include: generic name, brand names, drug class, common dosages, indications, side effects (common and serious), warnings, contraindications, and generic alternatives if available. Format with clear headers. Add a disclaimer that this is for informational purposes only.`,
+        prompt: `Provide comprehensive information about the medication "${query}". Include: generic name, brand names, drug class, common dosages, indications, side effects (common and serious), warnings, contraindications, and generic alternatives if available. Format with clear headers. Add a disclaimer that this is for informational purposes only.`,
         add_context_from_internet: true,
         model: "gemini_3_flash"
       });
@@ -36,6 +37,8 @@ export default function Pharmacy() {
     } catch (err) { console.error(err); }
     setLoading(false);
   };
+
+  const searchMedicationFor = (query) => searchMedication(query);
 
   const checkInteractions = async () => {
     if (!interactionDrugs.trim()) return;
@@ -90,7 +93,7 @@ export default function Pharmacy() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") searchMedication(); }}
                 />
-                <Button onClick={searchMedication} disabled={!searchQuery.trim() || loading} className="bg-amber-600 hover:bg-amber-700">
+                <Button onClick={() => searchMedication()} disabled={!searchQuery.trim() || loading} className="bg-amber-600 hover:bg-amber-700">
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                 </Button>
               </div>
@@ -151,7 +154,7 @@ export default function Pharmacy() {
             { label: "Dosage Guide", icon: Info, desc: "Proper usage" },
             { label: "Allergy Check", icon: Shield, desc: "Safety screening" },
           ].map((item) => (
-            <Card key={item.label} className="p-4 cursor-pointer hover:shadow-md transition-all" onClick={() => { setSearchQuery(item.label); setActiveTab("lookup"); }}>
+            <Card key={item.label} className="p-4 cursor-pointer hover:shadow-md transition-all" onClick={() => { setSearchQuery(item.label); setActiveTab("lookup"); setTimeout(() => searchMedicationFor(item.label), 100); }}>
               <item.icon className="w-5 h-5 text-amber-600 mb-2" />
               <h4 className="text-sm font-semibold">{item.label}</h4>
               <p className="text-xs text-muted-foreground">{item.desc}</p>

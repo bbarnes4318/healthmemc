@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Stethoscope, HeartPulse, Users, Pill, FileText, Sparkles,
-  Activity, Calendar, Bell, Phone, TrendingUp, Clock, ChevronRight, Shield, Dumbbell
+  Activity, Calendar, Bell, Phone, TrendingUp, Clock, ChevronRight, Shield, Dumbbell, History
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
@@ -16,6 +16,7 @@ const quickActions = [
   { label: "AI Specialists", icon: Users, path: "/specialists", color: "from-violet-500 to-purple-600", desc: "Cardiology, neuro & more" },
   { label: "AI Pharmacy", icon: Pill, path: "/pharmacy", color: "from-amber-500 to-orange-600", desc: "Medications & interactions" },
   { label: "Medical Records", icon: FileText, path: "/records", color: "from-rose-500 to-pink-600", desc: "View & manage records" },
+  { label: "Visit History", icon: History, path: "/appointment-history", color: "from-indigo-500 to-blue-600", desc: "Past consultations & reports" },
   { label: "Wellness Center", icon: Sparkles, path: "/wellness", color: "from-cyan-500 to-sky-600", desc: "Nutrition, exercise & more" },
   { label: "AI Pro Sports Medicine", icon: Dumbbell, path: "/sports-medicine", color: "from-orange-500 to-red-600", desc: "Injury, recovery & performance" },
 ];
@@ -25,6 +26,7 @@ export default function Home() {
   const [profile, setProfile] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [medications, setMedications] = useState([]);
+  const [vitals, setVitals] = useState([]);
   const [loading, setLoading] = useState(true);
   const { currentMemberId, currentMemberName } = useFamilyMember();
 
@@ -35,14 +37,17 @@ export default function Home() {
         setUser(u);
         const apptFilter = currentMemberId ? { family_member_id: currentMemberId, status: "scheduled" } : { status: "scheduled" };
         const medFilter = currentMemberId ? { family_member_id: currentMemberId, active: true } : { active: true };
-        const [profiles, appts, meds] = await Promise.all([
+        const [profiles, appts, meds, vitalData] = await Promise.all([
           base44.entities.HealthProfile.filter({ created_by_id: u.id }),
           base44.entities.Appointment.filter(apptFilter, "-date", 3),
           base44.entities.Medication.filter(medFilter),
+          base44.entities.VitalRecord.list("-recorded_at", 50),
         ]);
         if (profiles.length > 0) setProfile(profiles[0]);
         setAppointments(appts);
         setMedications(meds);
+        const memberVitals = currentMemberId ? vitalData.filter((v) => v.family_member_id === currentMemberId) : vitalData;
+        setVitals(memberVitals);
       } catch (e) { console.error(e); }
       setLoading(false);
     };
@@ -156,7 +161,7 @@ export default function Home() {
               <Calendar className="w-4 h-4 text-sky-600" />
               Upcoming Appointments
             </h3>
-            <Link to="/profile" className="text-xs text-sky-600 hover:underline">View all</Link>
+            <Link to="/appointment-history" className="text-xs text-sky-600 hover:underline">View history</Link>
           </div>
           {appointments.length === 0 ? (
             <p className="text-sm text-muted-foreground py-4 text-center">No upcoming appointments</p>
@@ -220,18 +225,31 @@ export default function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {[
-            { label: "Heart Rate", value: "72", unit: "bpm", color: "text-rose-600", bg: "bg-rose-50" },
-            { label: "Blood Pressure", value: "120/80", unit: "mmHg", color: "text-sky-600", bg: "bg-sky-50" },
-            { label: "Sleep", value: "7.5", unit: "hrs", color: "text-indigo-600", bg: "bg-indigo-50" },
-            { label: "Activity", value: "8,200", unit: "steps", color: "text-emerald-600", bg: "bg-emerald-50" },
-          ].map((stat) => (
-            <div key={stat.label} className={`${stat.bg} rounded-xl p-4`}>
-              <p className="text-xs text-muted-foreground font-medium">{stat.label}</p>
-              <p className={`text-xl font-display font-bold ${stat.color} mt-1`}>{stat.value}</p>
-              <p className="text-xs text-muted-foreground">{stat.unit}</p>
-            </div>
-          ))}
+          {(() => {
+            const getLatest = (type) => {
+              const record = vitals.find((v) => v.type === type);
+              if (!record) return null;
+              if (type === "blood_pressure" && record.secondary_value) return `${record.value}/${record.secondary_value}`;
+              return record.value;
+            };
+            const getUnit = (type) => {
+              const units = { heart_rate: "bpm", blood_pressure: "mmHg", sleep_hours: "hrs", activity_minutes: "min" };
+              return units[type] || "";
+            };
+            const stats = [
+              { label: "Heart Rate", value: getLatest("heart_rate"), unit: getUnit("heart_rate"), color: "text-rose-600", bg: "bg-rose-50" },
+              { label: "Blood Pressure", value: getLatest("blood_pressure"), unit: getUnit("blood_pressure"), color: "text-sky-600", bg: "bg-sky-50" },
+              { label: "Sleep", value: getLatest("sleep_hours"), unit: getUnit("sleep_hours"), color: "text-indigo-600", bg: "bg-indigo-50" },
+              { label: "Activity", value: getLatest("activity_minutes"), unit: getUnit("activity_minutes"), color: "text-emerald-600", bg: "bg-emerald-50" },
+            ];
+            return stats.map((stat) => (
+              <div key={stat.label} className={`${stat.bg} rounded-xl p-4`}>
+                <p className="text-xs text-muted-foreground font-medium">{stat.label}</p>
+                <p className={`text-xl font-display font-bold ${stat.color} mt-1`}>{stat.value ?? "—"}</p>
+                <p className="text-xs text-muted-foreground">{stat.unit}</p>
+              </div>
+            ));
+          })()}
         </div>
       </Card>
 
