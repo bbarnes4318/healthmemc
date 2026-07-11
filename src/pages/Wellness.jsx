@@ -3,13 +3,14 @@ import { base44 } from "@/api/base44Client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  Sparkles, Apple, Dumbbell, Moon, Heart, Wind, Scale, Cigarette,
+  Sparkles, Apple, Dumbbell, Moon, Heart, Wind, Scale, Cigarette, Activity,
   ChefHat, Loader2, ArrowLeft, Shield
 } from "lucide-react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import WellnessCharts from "@/components/wellness/WellnessCharts";
 import NutritionLog from "@/components/wellness/NutritionLog";
+import StepTracker from "@/components/wellness/StepTracker";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const programs = [
@@ -91,14 +92,17 @@ export default function Wellness() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <TabsList className="grid grid-cols-2 w-full max-w-xs mx-auto">
+          <TabsList className="grid grid-cols-3 w-full max-w-sm mx-auto">
             <TabsTrigger value="programs"><Sparkles className="w-3.5 h-3.5 mr-1.5" />Programs</TabsTrigger>
             <TabsTrigger value="nutrition"><Apple className="w-3.5 h-3.5 mr-1.5" />Nutrition</TabsTrigger>
+            <TabsTrigger value="activity"><Activity className="w-3.5 h-3.5 mr-1.5" />Activity</TabsTrigger>
           </TabsList>
         </Tabs>
 
         {activeTab === "nutrition" ? (
           <NutritionLog />
+        ) : activeTab === "activity" ? (
+          <StepTracker />
         ) : (
           <>
             <WellnessCharts />

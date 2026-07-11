@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { Pill, Plus, Loader2, Upload, Trash2, Camera, Image as ImageIcon } from "lucide-react";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 
-const emptyMed = { name: "", dosage: "", frequency: "", prescribing_provider: "", notes: "", start_date: "" };
+const emptyMed = { name: "", dosage: "", frequency: "", prescribing_provider: "", notes: "", start_date: "", supply_quantity: "" };
 
 export default function MedicationManager() {
   const { currentMemberId, currentMemberName } = useFamilyMember();
@@ -127,9 +127,15 @@ export default function MedicationManager() {
                 <Label className="text-xs">Prescribing Provider</Label>
                 <Input placeholder="Doctor name" value={form.prescribing_provider} onChange={(e) => setForm({ ...form, prescribing_provider: e.target.value })} />
               </div>
-              <div>
-                <Label className="text-xs">Start Date</Label>
-                <Input type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">Start Date</Label>
+                  <Input type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} />
+                </div>
+                <div>
+                  <Label className="text-xs">Supply (pills)</Label>
+                  <Input type="number" placeholder="e.g., 30" value={form.supply_quantity} onChange={(e) => setForm({ ...form, supply_quantity: e.target.value })} />
+                </div>
               </div>
               <div>
                 <Label className="text-xs">Notes</Label>

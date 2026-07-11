@@ -12,7 +12,8 @@
         "weight",
         "sleep_hours",
         "activity_minutes",
-        "temperature"
+        "temperature",
+        "steps"
       ]
     },
     "value": {

@@ -11,6 +11,7 @@ import {
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import AdherenceTracker from "@/components/pharmacy/AdherenceTracker";
+import MedicationSupplyAlert from "@/components/pharmacy/MedicationSupplyAlert";
 import MedicationReminders from "@/components/pharmacy/MedicationReminders";
 import MedicationManager from "@/components/pharmacy/MedicationManager";
 
@@ -60,6 +61,10 @@ export default function Pharmacy() {
           </div>
           <h1 className="text-2xl font-display font-bold">AI Pharmacy</h1>
           <p className="text-muted-foreground mt-1 text-sm">Medication information, interactions, and safety</p>
+        </div>
+
+        <div className="mb-6">
+          <MedicationSupplyAlert />
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>

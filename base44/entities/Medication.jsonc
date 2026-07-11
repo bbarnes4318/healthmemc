@@ -42,6 +42,9 @@
     "photo_url": {
       "type": "string"
     },
+    "supply_quantity": {
+      "type": "number"
+    },
     "family_member_id": {
       "type": "string"
     }

@@ -8,12 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   FileText, Plus, Upload, Loader2, Calendar, Trash2,
-  Download, Filter, Search, List, GitBranch, FileDown
+  Download, Filter, Search, List, GitBranch, FileDown, FlaskConical
 } from "lucide-react";
 import { motion } from "framer-motion";
 import MedicalTimeline from "@/components/records/MedicalTimeline";
 import RecordInsights from "@/components/records/RecordInsights";
-import LabExtractButton from "@/components/records/LabExtractButton";
 import { generateRecordPdf } from "@/lib/generateRecordPdf";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 
@@ -51,10 +50,23 @@ export default function MedicalRecords() {
   const [saving, setSaving] = useState(false);
   const [viewMode, setViewMode] = useState("list");
   const { currentMemberId } = useFamilyMember();
+  const [extracting, setExtracting] = useState(null);
 
   useEffect(() => {
     loadRecords();
   }, [currentMemberId]);
+
+  const handleExtractLabValues = async (record) => {
+    setExtracting(record.id);
+    try {
+      await base44.functions.invoke("extractLabValues", {
+        file_url: record.file_url,
+        family_member_id: currentMemberId || undefined,
+      });
+      loadRecords();
+    } catch (e) { console.error(e); }
+    setExtracting(null);
+  };
 
   const loadRecords = async () => {
     try {
@@ -234,15 +246,24 @@ export default function MedicalRecords() {
                   <Button variant="ghost" size="icon" className="h-8 w-8 text-sky-600 hover:text-sky-700" title="Download PDF summary" onClick={() => generateRecordPdf(record)}>
                     <FileDown className="w-4 h-4" />
                   </Button>
-                  {record.category === "lab_results" && record.file_url && (
-                    <LabExtractButton record={record} onExtracted={loadRecords} />
-                  )}
                   {record.file_url && (
                     <a href={record.file_url} target="_blank" rel="noopener noreferrer">
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <Download className="w-4 h-4" />
                       </Button>
                     </a>
+                  )}
+                  {record.category === "lab_results" && record.file_url && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-emerald-600 hover:text-emerald-700"
+                      title="Extract lab values to vitals"
+                      disabled={extracting === record.id}
+                      onClick={() => handleExtractLabValues(record)}
+                    >
+                      {extracting === record.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <FlaskConical className="w-4 h-4" />}
+                    </Button>
                   )}
                   <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDelete(record.id)}>
                     <Trash2 className="w-4 h-4" />
