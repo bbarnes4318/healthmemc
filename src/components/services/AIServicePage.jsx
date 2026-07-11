@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, Loader2, ArrowLeft, Shield } from "lucide-react";
 import VoiceInputButton from "@/components/voice/VoiceInputButton";
+import ResponseActions from "@/components/voice/ResponseActions";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 
@@ -140,6 +141,9 @@ export default function AIServicePage({ config }) {
                 {msg.role === "user"
                   ? <p>{msg.content}</p>
                   : <ReactMarkdown className="prose prose-sm max-w-none">{msg.content}</ReactMarkdown>}
+                {msg.role === "assistant" && msg.content && (
+                  <ResponseActions content={msg.content} label={`${title}-response`} />
+                )}
               </div>
             </motion.div>
           ))}

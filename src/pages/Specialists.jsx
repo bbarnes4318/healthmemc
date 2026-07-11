@@ -15,6 +15,7 @@ import IntakeFormModal from "@/components/specialists/IntakeFormModal";
 import { generateClinicalSummaryPdf } from "@/lib/generateClinicalSummaryPdf";
 import SpecialistPrepReport from "@/components/specialists/SpecialistPrepReport";
 import VoiceInputButton from "@/components/voice/VoiceInputButton";
+import ResponseActions from "@/components/voice/ResponseActions";
 
 const specialties = [
   { name: "Cardiology", icon: Heart, color: "from-red-500 to-rose-600", desc: "Heart & cardiovascular" },
@@ -243,7 +244,12 @@ Continue the conversation as a ${selectedSpecialty.name} specialist.`
                   ? "bg-violet-600 text-white rounded-br-md"
                   : "bg-white border rounded-bl-md shadow-sm"
               }`}>
-                {msg.role === "user" ? <p>{msg.content}</p> : <ReactMarkdown className="prose prose-sm max-w-none">{msg.content}</ReactMarkdown>}
+                {msg.role === "user" ? <p>{msg.content}</p> : (
+                  <>
+                    <ReactMarkdown className="prose prose-sm max-w-none">{msg.content}</ReactMarkdown>
+                    <ResponseActions content={msg.content} label={`ai-${selectedSpecialty.name}-response`} />
+                  </>
+                )}
               </div>
             </motion.div>
           ))}

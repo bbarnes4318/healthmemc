@@ -10,6 +10,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import VoiceInputButton from "@/components/voice/VoiceInputButton";
+import ResponseActions from "@/components/voice/ResponseActions";
 
 const nurseTopics = [
   { label: "Daily Check-in", icon: HeartPulse, prompt: "I'd like to do my daily health check-in", color: "from-emerald-500 to-teal-600" },
@@ -150,7 +151,10 @@ Respond helpfully.`
                 {msg.role === "user" ? (
                   <p>{msg.content}</p>
                 ) : (
-                  <ReactMarkdown className="prose prose-sm max-w-none">{msg.content}</ReactMarkdown>
+                  <>
+                    <ReactMarkdown className="prose prose-sm max-w-none">{msg.content}</ReactMarkdown>
+                    <ResponseActions content={msg.content} label="ai-nurse-response" />
+                  </>
                 )}
               </div>
             </motion.div>

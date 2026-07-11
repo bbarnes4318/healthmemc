@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Stethoscope, Send, Loader2, FileText, AlertTriangle,
-  CheckCircle, Download, ArrowLeft, Upload, Shield, Sparkles
+  CheckCircle, Download, ArrowLeft, Upload, Shield, Sparkles, Volume2
 } from "lucide-react";
 import VoiceInputButton from "@/components/voice/VoiceInputButton";
+import ResponseActions from "@/components/voice/ResponseActions";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import { generateReportPdf } from "@/lib/generateReportPdf";
@@ -255,14 +256,30 @@ IMPORTANT: Include appropriate disclaimers that this is AI-generated and should 
                   <p className="text-sky-100 text-sm">{new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</p>
                 </div>
               </div>
-              <Button
-                variant="secondary"
-                className="bg-white/20 text-white hover:bg-white/30 border-0"
-                onClick={() => generateReportPdf(report, symptoms, severity)}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download PDF
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="secondary"
+                  className="bg-white/20 text-white hover:bg-white/30 border-0"
+                  onClick={() => {
+                    const text = report.summary || "";
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    window.speechSynthesis.cancel();
+                    window.speechSynthesis.speak(utterance);
+                  }}
+                  title="Listen to report summary"
+                >
+                  <Volume2 className="w-4 h-4 mr-2" />
+                  Listen
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="bg-white/20 text-white hover:bg-white/30 border-0"
+                  onClick={() => generateReportPdf(report, symptoms, severity)}
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download PDF
+                </Button>
+              </div>
             </div>
           </Card>
 
@@ -436,6 +453,9 @@ IMPORTANT: Include appropriate disclaimers that this is AI-generated and should 
                   : "bg-white border rounded-bl-md shadow-sm"
               }`}>
                 <ReactMarkdown className="prose prose-sm max-w-none">{msg.content}</ReactMarkdown>
+                {msg.role === "assistant" && msg.content && (
+                  <ResponseActions content={msg.content} label="ai-doctor-response" />
+                )}
               </div>
             </motion.div>
           ))}

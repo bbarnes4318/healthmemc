@@ -17,6 +17,8 @@ import MedicationReminders from "@/components/pharmacy/MedicationReminders";
 import MedicationManager from "@/components/pharmacy/MedicationManager";
 import RefillActionPanel from "@/components/pharmacy/RefillActionPanel";
 import PharmacyExpenseTracker from "@/components/pharmacy/PharmacyExpenseTracker";
+import OneClickRefillButton from "@/components/pharmacy/OneClickRefillButton";
+import MonthlyExpenseReport from "@/components/pharmacy/MonthlyExpenseReport";
 
 export default function Pharmacy() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -74,10 +76,11 @@ export default function Pharmacy() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2 sm:grid-cols-8 mb-6">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-9 mb-6">
             <TabsTrigger value="medications"><Pill className="w-3.5 h-3.5 mr-1" />My Meds</TabsTrigger>
             <TabsTrigger value="refills"><Package className="w-3.5 h-3.5 mr-1" />Refills</TabsTrigger>
             <TabsTrigger value="receipts"><Receipt className="w-3.5 h-3.5 mr-1" />Receipts</TabsTrigger>
+            <TabsTrigger value="expenses"><BarChart3 className="w-3.5 h-3.5 mr-1" />Expenses</TabsTrigger>
             <TabsTrigger value="analytics"><BarChart3 className="w-3.5 h-3.5 mr-1" />Analytics</TabsTrigger>
             <TabsTrigger value="lookup">Lookup</TabsTrigger>
             <TabsTrigger value="interactions">Interactions</TabsTrigger>
@@ -87,6 +90,9 @@ export default function Pharmacy() {
 
           <TabsContent value="medications">
             <MedicationManager />
+            <div className="mt-4">
+              <OneClickRefillButton />
+            </div>
           </TabsContent>
 
           <TabsContent value="refills">
@@ -95,6 +101,10 @@ export default function Pharmacy() {
 
           <TabsContent value="receipts">
             <PharmacyExpenseTracker />
+          </TabsContent>
+
+          <TabsContent value="expenses">
+            <MonthlyExpenseReport />
           </TabsContent>
 
           <TabsContent value="analytics">
