@@ -30,6 +30,7 @@ import AIDentalCare from '@/pages/AIDentalCare';
 import AIPhysicalTherapy from '@/pages/AIPhysicalTherapy';
 import AIEyeDoctor from '@/pages/AIEyeDoctor';
 import AIEarNoseDoctor from '@/pages/AIEarNoseDoctor';
+import AIDermatology from '@/pages/AIDermatology';
 import AISeniorCare from '@/pages/AISeniorCare';
 import AIAssistedLiving from '@/pages/AIAssistedLiving';
 import AIVeterinary from '@/pages/AIVeterinary';
@@ -89,6 +90,7 @@ const AuthenticatedApp = () => {
           <Route path="/physical-therapy" element={<AIPhysicalTherapy />} />
           <Route path="/eye-doctor" element={<AIEyeDoctor />} />
           <Route path="/ear-nose-doctor" element={<AIEarNoseDoctor />} />
+          <Route path="/dermatology" element={<AIDermatology />} />
           <Route path="/senior-care" element={<AISeniorCare />} />
           <Route path="/assisted-living" element={<AIAssistedLiving />} />
           <Route path="/pet-care" element={<AIVeterinary />} />

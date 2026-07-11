@@ -16,6 +16,7 @@ import LabComparison from "@/components/records/LabComparison";
 import RecordInsights from "@/components/records/RecordInsights";
 import { generateRecordPdf } from "@/lib/generateRecordPdf";
 import BulkExportButton from "@/components/records/BulkExportButton";
+import GlobalRecordSearch from "@/components/records/GlobalRecordSearch";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 
 const categories = [
@@ -229,11 +230,21 @@ export default function MedicalRecords() {
           >
             <GitCompare className="w-3.5 h-3.5 mr-1.5" /> Compare
           </Button>
+          <Button
+            variant={viewMode === "search" ? "default" : "ghost"}
+            size="sm"
+            className={`h-8 text-xs ${viewMode === "search" ? "bg-sky-600 hover:bg-sky-700" : ""}`}
+            onClick={() => setViewMode("search")}
+          >
+            <Search className="w-3.5 h-3.5 mr-1.5" /> Search All
+          </Button>
         </div>
       </div>
 
       {/* Records List / Timeline */}
-      {viewMode === "timeline" ? (
+      {viewMode === "search" ? (
+        <GlobalRecordSearch />
+      ) : viewMode === "timeline" ? (
         <MedicalTimeline />
       ) : viewMode === "compare" ? (
         <LabComparison />

@@ -1,0 +1,73 @@
+{
+  "name": "DermatologyImage",
+  "type": "object",
+  "properties": {
+    "image_url": {
+      "type": "string"
+    },
+    "body_location": {
+      "type": "string",
+      "enum": [
+        "face",
+        "scalp",
+        "neck",
+        "chest",
+        "back",
+        "abdomen",
+        "left_arm",
+        "right_arm",
+        "left_hand",
+        "right_hand",
+        "left_leg",
+        "right_leg",
+        "left_foot",
+        "right_foot",
+        "groin",
+        "buttocks",
+        "other"
+      ]
+    },
+    "concern_type": {
+      "type": "string",
+      "enum": [
+        "mole",
+        "rash",
+        "lesion",
+        "acne",
+        "wound",
+        "discoloration",
+        "growth",
+        "other"
+      ]
+    },
+    "notes": {
+      "type": "string"
+    },
+    "ai_analysis": {
+      "type": "string"
+    },
+    "ai_risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "default": "low"
+    },
+    "size_mm": {
+      "type": "number"
+    },
+    "tracked": {
+      "type": "boolean",
+      "default": false
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "image_url",
+    "body_location"
+  ]
+}
