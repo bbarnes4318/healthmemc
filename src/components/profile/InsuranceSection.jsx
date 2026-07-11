@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { CreditCard, Plus, Loader2, Trash2, Upload, Lock, Calendar, Phone } from "lucide-react";
+import { CreditCard, Plus, Loader2, Trash2, Upload, Lock, Calendar, Phone, ScanLine, IdCard, Download } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { generateMedicalIdCard } from "@/lib/generateMedicalIdCard";
 
 const planTypes = [
   { value: "hmo", label: "HMO" },
@@ -44,7 +45,15 @@ export default function InsuranceSection() {
   const [form, setForm] = useState(emptyForm);
   const [uploadingFront, setUploadingFront] = useState(false);
   const [uploadingBack, setUploadingBack] = useState(false);
+  const [scanning, setScanning] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [idDialogOpen, setIdDialogOpen] = useState(false);
+  const [includePhoto, setIncludePhoto] = useState(false);
+  const [idPhotoUrl, setIdPhotoUrl] = useState("");
+  const [uploadingIdPhoto, setUploadingIdPhoto] = useState(false);
+  const [downloadingId, setDownloadingId] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -53,8 +62,14 @@ export default function InsuranceSection() {
 
   const loadCards = async () => {
     try {
-      const data = await base44.entities.InsuranceCard.list("-created_date", 50);
+      const [data, u] = await Promise.all([
+        base44.entities.InsuranceCard.list("-created_date", 50),
+        base44.auth.me(),
+      ]);
       setCards(data);
+      setUser(u);
+      const profiles = await base44.entities.HealthProfile.filter({ created_by_id: u.id });
+      if (profiles.length > 0) setProfile(profiles[0]);
     } catch (err) { console.error(err); }
     setLoading(false);
   };
@@ -70,6 +85,79 @@ export default function InsuranceSection() {
     } catch (err) { console.error(err); }
     if (side === "front") setUploadingFront(false);
     else setUploadingBack(false);
+  };
+
+  const handleScanCard = async () => {
+    if (!form.card_front_url && !form.card_back_url) {
+      toast({ title: "Upload a card image first", variant: "destructive" });
+      return;
+    }
+    setScanning(true);
+    try {
+      const fileUrls = [form.card_front_url, form.card_back_url].filter(Boolean);
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: "You are an expert at reading insurance cards. Extract all visible information from these insurance card images. Return only the structured data. For plan_type, use one of: hmo, ppo, epo, pos, medicare, medicaid, other. Leave fields empty if not visible on the card.",
+        file_urls: fileUrls,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            provider_name: { type: "string" },
+            policy_number: { type: "string" },
+            group_number: { type: "string" },
+            subscriber_name: { type: "string" },
+            plan_name: { type: "string" },
+            plan_type: { type: "string" },
+            effective_date: { type: "string" },
+            copay_amount: { type: "number" },
+            deductible_amount: { type: "number" },
+            customer_service_phone: { type: "string" },
+          },
+        },
+      });
+      setForm((prev) => ({
+        ...prev,
+        provider_name: response.provider_name || prev.provider_name,
+        policy_number: response.policy_number || prev.policy_number,
+        group_number: response.group_number || prev.group_number,
+        subscriber_name: response.subscriber_name || prev.subscriber_name,
+        plan_name: response.plan_name || prev.plan_name,
+        plan_type: response.plan_type || prev.plan_type,
+        effective_date: response.effective_date || prev.effective_date,
+        copay_amount: response.copay_amount != null ? String(response.copay_amount) : prev.copay_amount,
+        deductible_amount: response.deductible_amount != null ? String(response.deductible_amount) : prev.deductible_amount,
+        customer_service_phone: response.customer_service_phone || prev.customer_service_phone,
+      }));
+      toast({ title: "Card scanned", description: "Insurance details auto-filled from your card image." });
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Scan failed", description: "Could not extract card details. Please enter manually.", variant: "destructive" });
+    }
+    setScanning(false);
+  };
+
+  const handleUploadIdPhoto = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingIdPhoto(true);
+    try {
+      const result = await base44.integrations.Core.UploadFile({ file });
+      setIdPhotoUrl(result.file_url);
+    } catch (err) { console.error(err); }
+    setUploadingIdPhoto(false);
+  };
+
+  const handleDownloadIdCard = async () => {
+    setDownloadingId(true);
+    try {
+      const primaryCard = cards[0] || null;
+      generateMedicalIdCard({ user, profile, insuranceCard: primaryCard, includePhoto, photoUrl: idPhotoUrl });
+      toast({ title: "Medical ID card downloaded" });
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Failed to generate ID card", variant: "destructive" });
+    }
+    setDownloadingId(false);
+    setIdDialogOpen(false);
   };
 
   const handleSave = async () => {
@@ -113,7 +201,45 @@ export default function InsuranceSection() {
           <Lock className="w-4 h-4 text-muted-foreground" />
           <p className="text-xs text-muted-foreground">Your insurance information is stored securely and privately.</p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <div className="flex items-center gap-2">
+          <Dialog open={idDialogOpen} onOpenChange={setIdDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                <IdCard className="w-4 h-4 mr-1.5" /> Medical ID Card
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-sm">
+              <DialogHeader>
+                <DialogTitle>Download Medical ID Card</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-2">
+                <p className="text-xs text-muted-foreground">
+                  Generates a printable PDF with your patient info, insurance details, and emergency contact. Photo ID is optional.
+                </p>
+                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                  <div>
+                    <p className="text-sm font-medium">Include photo ID</p>
+                    <p className="text-xs text-muted-foreground">Optional — adds a photo to the card</p>
+                  </div>
+                  <input type="checkbox" checked={includePhoto} onChange={(e) => setIncludePhoto(e.target.checked)} className="w-4 h-4" />
+                </div>
+                {includePhoto && (
+                  <div>
+                    <Label className="text-xs">Upload Photo</Label>
+                    <label className="flex items-center justify-center gap-2 px-4 py-6 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted transition text-sm">
+                      {uploadingIdPhoto ? <Loader2 className="w-4 h-4 animate-spin" /> : idPhotoUrl ? <img src={idPhotoUrl} alt="ID Photo" className="max-h-16 object-contain" /> : <><Upload className="w-4 h-4" /> Upload photo</>}
+                      <input type="file" accept="image/*" className="hidden" onChange={handleUploadIdPhoto} />
+                    </label>
+                  </div>
+                )}
+                <Button onClick={handleDownloadIdCard} disabled={downloadingId} className="w-full bg-sky-600 hover:bg-sky-700">
+                  {downloadingId ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
+                  Download PDF
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-sky-600 hover:bg-sky-700" size="sm">
               <Plus className="w-4 h-4 mr-1.5" /> Add Card
@@ -199,6 +325,17 @@ export default function InsuranceSection() {
                   </label>
                 </div>
               </div>
+              {(form.card_front_url || form.card_back_url) && (
+                <Button
+                  variant="outline"
+                  onClick={handleScanCard}
+                  disabled={scanning}
+                  className="w-full border-sky-300 text-sky-700 hover:bg-sky-50"
+                >
+                  {scanning ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <ScanLine className="w-4 h-4 mr-2" />}
+                  {scanning ? "Scanning card..." : "Auto-Extract Details from Card"}
+                </Button>
+              )}
               <Textarea placeholder="Additional notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className="resize-none" />
               <Button onClick={handleSave} disabled={!form.provider_name.trim() || !form.policy_number.trim() || saving} className="w-full bg-sky-600 hover:bg-sky-700">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Lock className="w-4 h-4 mr-2" />}
@@ -207,6 +344,7 @@ export default function InsuranceSection() {
             </div>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {cards.length === 0 ? (
