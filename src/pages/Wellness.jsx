@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
+import WellnessCharts from "@/components/wellness/WellnessCharts";
 
 const programs = [
   { name: "Nutrition Plans", icon: Apple, color: "from-green-500 to-emerald-600", desc: "Personalized dietary guidance" },
@@ -85,6 +86,8 @@ export default function Wellness() {
           <h1 className="text-2xl font-display font-bold">Wellness Center</h1>
           <p className="text-muted-foreground mt-1 text-sm">Holistic health programs for mind, body, and spirit</p>
         </div>
+
+        <WellnessCharts />
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {programs.map((program, i) => (

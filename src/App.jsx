@@ -32,6 +32,9 @@ import AISeniorCare from '@/pages/AISeniorCare';
 import AIAssistedLiving from '@/pages/AIAssistedLiving';
 import AIVeterinary from '@/pages/AIVeterinary';
 import ProviderDashboard from '@/pages/ProviderDashboard';
+import ClinicianDashboard from '@/pages/ClinicianDashboard';
+import ClinicianView from '@/pages/ClinicianView';
+import HealthLocator from '@/pages/HealthLocator';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -59,6 +62,7 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/clinician-view" element={<ClinicianView />} />
 
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route element={<AppLayout />}>
@@ -72,6 +76,8 @@ const AuthenticatedApp = () => {
           <Route path="/assisted-living" element={<AIAssistedLiving />} />
           <Route path="/pet-care" element={<AIVeterinary />} />
           <Route path="/provider-dashboard" element={<ProviderDashboard />} />
+          <Route path="/clinician-dashboard" element={<ClinicianDashboard />} />
+          <Route path="/health-locator" element={<HealthLocator />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />
           <Route path="/wellness" element={<Wellness />} />

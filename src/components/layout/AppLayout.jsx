@@ -4,9 +4,11 @@ import { base44 } from "@/api/base44Client";
 import {
   Home, Stethoscope, HeartPulse, Users, Pill, FileText,
   Sparkles, Shield, User, Menu, X, LogOut, Activity, Phone,
-  Smile, Dumbbell, Heart, LifeBuoy, PawPrint, Bell, BellRing, ClipboardCheck
+  Smile, Dumbbell, Heart, LifeBuoy, PawPrint, Bell, BellRing, ClipboardCheck,
+  KeyRound, MapPin
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import GlobalSearch from "@/components/layout/GlobalSearch";
 import { useRecordNotifications } from "@/hooks/useRecordNotifications";
 
 const navItems = [
@@ -24,6 +26,8 @@ const navItems = [
   { path: "/wellness", label: "Wellness", icon: Sparkles },
   { path: "/dashboard", label: "Dashboard", icon: Activity },
   { path: "/provider-dashboard", label: "Provider", icon: ClipboardCheck },
+  { path: "/clinician-dashboard", label: "Clinician Access", icon: KeyRound },
+  { path: "/health-locator", label: "Find Care", icon: MapPin },
   { path: "/profile", label: "Profile", icon: User },
 ];
 
@@ -177,6 +181,9 @@ export default function AppLayout() {
           </div>
         )}
         <div className="pt-14 lg:pt-0">
+          <div className="sticky top-14 lg:top-0 z-20 bg-white border-b border-border px-4 py-2.5">
+            <GlobalSearch />
+          </div>
           <Outlet />
         </div>
       </main>
