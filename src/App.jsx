@@ -42,6 +42,7 @@ import ThankYou from '@/pages/ThankYou';
 import AppointmentHistory from '@/pages/AppointmentHistory';
 import AIEmergencyRoom from '@/pages/AIEmergencyRoom';
 import DoctorRecordsPortal from '@/pages/DoctorRecordsPortal';
+import DoctorDirectory from '@/pages/DoctorDirectory';
 import WellnessTrends from '@/pages/WellnessTrends';
 
 const AuthenticatedApp = () => {
@@ -92,6 +93,7 @@ const AuthenticatedApp = () => {
           <Route path="/appointment-history" element={<AppointmentHistory />} />
           <Route path="/emergency-room" element={<AIEmergencyRoom />} />
           <Route path="/doctor-records" element={<DoctorRecordsPortal />} />
+          <Route path="/doctor-directory" element={<DoctorDirectory />} />
           <Route path="/wellness-trends" element={<WellnessTrends />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />

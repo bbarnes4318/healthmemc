@@ -1,0 +1,37 @@
+{
+  "name": "DoctorDirectory",
+  "type": "object",
+  "properties": {
+    "doctor_name": {
+      "type": "string"
+    },
+    "specialty": {
+      "type": "string"
+    },
+    "practice_name": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "clinician_access_id": {
+      "type": "string"
+    },
+    "access_link": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "doctor_name",
+    "specialty"
+  ]
+}

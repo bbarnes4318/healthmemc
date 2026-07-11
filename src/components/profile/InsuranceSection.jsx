@@ -12,6 +12,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { generateMedicalIdCard } from "@/lib/generateMedicalIdCard";
 import { generateInsuranceSummary } from "@/lib/generateInsuranceSummary";
 import InsuranceCoverageMap from "@/components/insurance/InsuranceCoverageMap";
+import OutOfPocketEstimator from "@/components/insurance/OutOfPocketEstimator";
 
 const planTypes = [
   { value: "hmo", label: "HMO" },
@@ -639,6 +640,8 @@ export default function InsuranceSection() {
           ))}
         </div>
       )}
+
+      <OutOfPocketEstimator insuranceCards={cards} />
 
       <InsuranceCoverageMap insuranceCard={cards[0] || null} />
     </div>

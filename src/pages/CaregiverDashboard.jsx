@@ -7,6 +7,7 @@ import { useFamilyMember } from "@/context/FamilyMemberContext";
 import { Loader2, Users, Pill, Calendar, TrendingUp, AlertCircle, CheckCircle, XCircle, ChevronDown, ChevronUp, Bell } from "lucide-react";
 import RefillAlertBanner from "@/components/pharmacy/RefillAlertBanner";
 import AlertConfigPanel from "@/components/caregiver/AlertConfigPanel";
+import CaregiverVisitLog from "@/components/caregiver/CaregiverVisitLog";
 import { format, subDays } from "date-fns";
 import { motion } from "framer-motion";
 
@@ -227,6 +228,10 @@ export default function CaregiverDashboard() {
 
       <div className="mb-6">
         <AlertConfigPanel />
+      </div>
+
+      <div className="mb-6">
+        <CaregiverVisitLog />
       </div>
 
       {/* Member Toggle Selector */}

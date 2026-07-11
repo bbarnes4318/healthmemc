@@ -1,0 +1,43 @@
+{
+  "name": "CaregiverVisitLog",
+  "type": "object",
+  "properties": {
+    "visit_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "caregiver_name": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    },
+    "family_member_name": {
+      "type": "string"
+    },
+    "support_type": {
+      "type": "string",
+      "enum": [
+        "medication_assistance",
+        "personal_care",
+        "transportation",
+        "meal_preparation",
+        "companionship",
+        "medical_appointment",
+        "household",
+        "other"
+      ]
+    },
+    "duration_minutes": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "visit_date",
+    "caregiver_name",
+    "support_type"
+  ]
+}

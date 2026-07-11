@@ -43,6 +43,16 @@
     "deductible_amount": {
       "type": "number"
     },
+    "deductible_met": {
+      "type": "number",
+      "default": 0
+    },
+    "coinsurance_percentage": {
+      "type": "number"
+    },
+    "out_of_pocket_max": {
+      "type": "number"
+    },
     "customer_service_phone": {
       "type": "string"
     },
