@@ -13,6 +13,8 @@ import { motion } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import moment from "moment";
 import LabMarkerTrend from "@/components/health/LabMarkerTrend";
+import { generateHealthDashboardPdf } from "@/lib/generateHealthDashboardPdf";
+import { Download } from "lucide-react";
 
 const vitalTypes = [
   { value: "heart_rate", label: "Heart Rate", icon: Heart, unit: "bpm", color: "#ef4444", bg: "bg-red-50" },
@@ -103,12 +105,16 @@ export default function HealthDashboard() {
           <h1 className="text-2xl font-display font-bold">Health Dashboard</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Track and monitor your vitals</p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-sky-600 hover:bg-sky-700">
-              <Plus className="w-4 h-4 mr-2" /> Log Vital
-            </Button>
-          </DialogTrigger>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => generateHealthDashboardPdf(vitals)} title="Download PDF report">
+            <Download className="w-4 h-4 mr-2" /> PDF
+          </Button>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-sky-600 hover:bg-sky-700">
+                <Plus className="w-4 h-4 mr-2" /> Log Vital
+              </Button>
+            </DialogTrigger>
           <DialogContent className="max-w-sm">
             <DialogHeader>
               <DialogTitle>Log Vital Sign</DialogTitle>
@@ -143,7 +149,8 @@ export default function HealthDashboard() {
               </Button>
             </div>
           </DialogContent>
-        </Dialog>
+          </Dialog>
+        </div>
       </div>
 
       {/* Vital Cards Grid */}

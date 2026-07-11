@@ -5,6 +5,7 @@ import { Users, Loader2, Shield, Bell } from "lucide-react";
 import TrustedContactForm from "@/components/settings/TrustedContactForm";
 import TrustedContactList from "@/components/settings/TrustedContactList";
 import RecordShareManager from "@/components/settings/RecordShareManager";
+import BiometricSettings from "@/components/settings/BiometricSettings";
 
 export default function Settings() {
   const [contacts, setContacts] = useState([]);
@@ -57,6 +58,10 @@ export default function Settings() {
 
       <div className="mt-6">
         <RecordShareManager />
+      </div>
+
+      <div className="mt-6">
+        <BiometricSettings />
       </div>
     </div>
   );

@@ -14,6 +14,8 @@ import {
 } from "recharts";
 import { format, subDays, eachDayOfInterval } from "date-fns";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
+import { generateWellnessReportPdf } from "@/lib/generateWellnessReportPdf";
+import { Download } from "lucide-react";
 
 export default function WellnessTrends() {
   const [range, setRange] = useState("weekly");
@@ -141,24 +143,35 @@ export default function WellnessTrends() {
             <p className="text-sm text-muted-foreground">Aggregated daily progress across all wellness metrics</p>
           </div>
         </div>
-        <div className="flex items-center bg-muted rounded-lg p-0.5">
-          <Button
-            size="sm"
-            variant={range === "weekly" ? "default" : "ghost"}
-            className={`h-8 ${range === "weekly" ? "bg-sky-600 hover:bg-sky-700" : ""}`}
-            onClick={() => setRange("weekly")}
-          >
-            Weekly
-          </Button>
-          <Button
-            size="sm"
-            variant={range === "monthly" ? "default" : "ghost"}
-            className={`h-8 ${range === "monthly" ? "bg-sky-600 hover:bg-sky-700" : ""}`}
-            onClick={() => setRange("monthly")}
-          >
-            Monthly
-          </Button>
-        </div>
+        <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8"
+              onClick={() => generateWellnessReportPdf(chartData, range)}
+              title="Download PDF report"
+            >
+              <Download className="w-3.5 h-3.5 mr-1.5" /> PDF
+            </Button>
+            <div className="flex items-center bg-muted rounded-lg p-0.5">
+              <Button
+                size="sm"
+                variant={range === "weekly" ? "default" : "ghost"}
+                className={`h-8 ${range === "weekly" ? "bg-sky-600 hover:bg-sky-700" : ""}`}
+                onClick={() => setRange("weekly")}
+              >
+                Weekly
+              </Button>
+              <Button
+                size="sm"
+                variant={range === "monthly" ? "default" : "ghost"}
+                className={`h-8 ${range === "monthly" ? "bg-sky-600 hover:bg-sky-700" : ""}`}
+                onClick={() => setRange("monthly")}
+              >
+                Monthly
+              </Button>
+            </div>
+          </div>
       </div>
 
       {/* Summary Stats */}
@@ -290,6 +303,99 @@ export default function WellnessTrends() {
           </ResponsiveContainer>
         </Card>
       </div>
+
+      {/* Nutrition Impact on Health Score */}
+      {chartData.filter((d) => d.calories > 0 && d.wellnessScore !== null).length > 0 && (
+        <Card className="p-5 bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200">
+          <div className="flex items-center gap-2 mb-3">
+            <Flame className="w-4 h-4 text-emerald-600" />
+            <h3 className="font-display font-semibold text-sm">Nutrition Impact on Wellness Score</h3>
+          </div>
+          {(() => {
+            const nutritionDays = chartData.filter((d) => d.calories > 0 && d.wellnessScore !== null);
+            const nonNutritionDays = chartData.filter((d) => d.calories === 0 && d.wellnessScore !== null);
+            const avgScoreNutrition = Math.round(nutritionDays.reduce((s, d) => s + d.wellnessScore, 0) / nutritionDays.length);
+            const avgScoreNon = nonNutritionDays.length > 0 ? Math.round(nonNutritionDays.reduce((s, d) => s + d.wellnessScore, 0) / nonNutritionDays.length) : null;
+            const avgCal = Math.round(nutritionDays.reduce((s, d) => s + d.calories, 0) / nutritionDays.length);
+            const diff = avgScoreNon !== null ? avgScoreNutrition - avgScoreNon : null;
+            const highCalDays = nutritionDays.filter((d) => d.calories > 2500);
+            const lowCalDays = nutritionDays.filter((d) => d.calories < 1500);
+            const idealCalDays = nutritionDays.filter((d) => d.calories >= 1500 && d.calories <= 2500);
+            const avgScoreHigh = highCalDays.length > 0 ? Math.round(highCalDays.reduce((s, d) => s + d.wellnessScore, 0) / highCalDays.length) : null;
+            const avgScoreLow = lowCalDays.length > 0 ? Math.round(lowCalDays.reduce((s, d) => s + d.wellnessScore, 0) / lowCalDays.length) : null;
+            const avgScoreIdeal = idealCalDays.length > 0 ? Math.round(idealCalDays.reduce((s, d) => s + d.wellnessScore, 0) / idealCalDays.length) : null;
+            return (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                  <div className="p-2.5 bg-white rounded-lg border border-emerald-100">
+                    <p className="text-[10px] text-muted-foreground font-medium">Avg Score (Logged)</p>
+                    <p className="text-lg font-display font-bold text-emerald-600">{avgScoreNutrition}</p>
+                  </div>
+                  {avgScoreNon !== null && (
+                    <div className="p-2.5 bg-white rounded-lg border border-emerald-100">
+                      <p className="text-[10px] text-muted-foreground font-medium">Avg Score (Not Logged)</p>
+                      <p className="text-lg font-display font-bold text-slate-500">{avgScoreNon}</p>
+                    </div>
+                  )}
+                  <div className="p-2.5 bg-white rounded-lg border border-emerald-100">
+                    <p className="text-[10px] text-muted-foreground font-medium">Avg Calories</p>
+                    <p className="text-lg font-display font-bold text-rose-600">{avgCal}</p>
+                  </div>
+                  {diff !== null && (
+                    <div className="p-2.5 bg-white rounded-lg border border-emerald-100">
+                      <p className="text-[10px] text-muted-foreground font-medium">Diet Impact</p>
+                      <p className={`text-lg font-display font-bold ${diff >= 0 ? "text-emerald-600" : "text-red-500"}`}>
+                        {diff >= 0 ? "+" : ""}{diff}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                {(avgScoreHigh || avgScoreLow || avgScoreIdeal) && (
+                  <div>
+                    <p className="text-xs font-medium text-emerald-800 mb-2">Wellness Score by Calorie Range</p>
+                    <div className="space-y-1.5">
+                      {avgScoreLow && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] w-24 text-muted-foreground">Low (&lt;1500)</span>
+                          <div className="flex-1 h-4 bg-white rounded-full overflow-hidden border border-emerald-100">
+                            <div className="h-full bg-amber-400 rounded-full" style={{ width: `${avgScoreLow}%` }} />
+                          </div>
+                          <span className="text-[10px] font-bold w-8 text-right">{avgScoreLow}</span>
+                        </div>
+                      )}
+                      {avgScoreIdeal && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] w-24 text-muted-foreground">Ideal (1500-2500)</span>
+                          <div className="flex-1 h-4 bg-white rounded-full overflow-hidden border border-emerald-100">
+                            <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${avgScoreIdeal}%` }} />
+                          </div>
+                          <span className="text-[10px] font-bold w-8 text-right">{avgScoreIdeal}</span>
+                        </div>
+                      )}
+                      {avgScoreHigh && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] w-24 text-muted-foreground">High (&gt;2500)</span>
+                          <div className="flex-1 h-4 bg-white rounded-full overflow-hidden border border-emerald-100">
+                            <div className="h-full bg-rose-400 rounded-full" style={{ width: `${avgScoreHigh}%` }} />
+                          </div>
+                          <span className="text-[10px] font-bold w-8 text-right">{avgScoreHigh}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {diff !== null && (
+                  <p className="text-[10px] text-emerald-700 italic">
+                    {diff >= 0
+                      ? `Tracking your nutrition is associated with a ${diff}-point higher wellness score on average.`
+                      : `Days without nutrition tracking had a ${Math.abs(diff)}-point higher score — consider logging meals consistently.`}
+                  </p>
+                )}
+              </div>
+            );
+          })()}
+        </Card>
+      )}
 
       {/* Medication Adherence */}
       <Card className="p-5">
