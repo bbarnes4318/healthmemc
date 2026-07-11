@@ -7,11 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   Activity, Heart, Droplets, Thermometer, Scale, Moon,
-  Footprints, Plus, Loader2, TrendingUp
+  Footprints, Plus, Loader2, TrendingUp, FlaskConical
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import moment from "moment";
+import LabMarkerTrend from "@/components/health/LabMarkerTrend";
 
 const vitalTypes = [
   { value: "heart_rate", label: "Heart Rate", icon: Heart, unit: "bpm", color: "#ef4444", bg: "bg-red-50" },
@@ -200,6 +201,13 @@ export default function HealthDashboard() {
           </ResponsiveContainer>
         )}
       </Card>
+
+      {/* Lab Marker Trends */}
+      <div className="flex items-center gap-2 mb-2">
+        <FlaskConical className="w-4 h-4 text-sky-600" />
+        <h3 className="font-display font-semibold text-sm">Lab Marker Trends</h3>
+      </div>
+      <LabMarkerTrend />
     </div>
   );
 }
