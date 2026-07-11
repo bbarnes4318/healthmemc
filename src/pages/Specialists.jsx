@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Heart, Eye, Brain, Bone, Baby, User, Users, Smile, Apple,
-  Send, Loader2, ArrowLeft, Shield
+  Send, Loader2, ArrowLeft, Shield, CalendarPlus, Check
 } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import AppointmentCalendar from "@/components/specialists/AppointmentCalendar";
@@ -31,6 +32,8 @@ export default function Specialists() {
   const [loading, setLoading] = useState(false);
   const [intakeData, setIntakeData] = useState(null);
   const [showIntake, setShowIntake] = useState(false);
+  const [booking, setBooking] = useState(false);
+  const [booked, setBooked] = useState(false);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -59,6 +62,31 @@ export default function Specialists() {
   const handleIntakeSkip = () => {
     setShowIntake(false);
     beginConsultation(null);
+  };
+
+  const handleBookAppointment = async () => {
+    if (messages.length === 0) return;
+    setBooking(true);
+    try {
+      const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
+      const notesSummary = lastAssistant
+        ? lastAssistant.content.substring(0, 500)
+        : `AI ${selectedSpecialty.name} consultation`;
+      const apptDate = new Date();
+      apptDate.setDate(apptDate.getDate() + 7);
+      await base44.entities.Appointment.create({
+        title: `${selectedSpecialty.name} Follow-up`,
+        date: apptDate.toISOString(),
+        type: "specialist",
+        provider: `AI ${selectedSpecialty.name} Specialist`,
+        notes: `Based on AI consultation recommendations:\n\n${notesSummary}`,
+      });
+      setBooked(true);
+      toast({ title: "Appointment created", description: `Scheduled for ${apptDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}` });
+    } catch (err) {
+      toast({ title: "Failed to create appointment", variant: "destructive" });
+    }
+    setBooking(false);
   };
 
   const sendMessage = async () => {
@@ -120,7 +148,7 @@ Continue the conversation as a ${selectedSpecialty.name} specialist.`
   return (
     <div className="flex flex-col h-[calc(100vh-3.5rem)] lg:h-screen">
       <div className="p-4 border-b bg-white flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => { setSelectedSpecialty(null); setMessages([]); }}>
+        <Button variant="ghost" size="icon" onClick={() => { setSelectedSpecialty(null); setMessages([]); setBooked(false); }}>
           <ArrowLeft className="w-4 h-4" />
         </Button>
         <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${selectedSpecialty.color} flex items-center justify-center`}>
@@ -129,6 +157,18 @@ Continue the conversation as a ${selectedSpecialty.name} specialist.`
         <div>
           <h2 className="font-display font-semibold text-sm">AI {selectedSpecialty.name}</h2>
           <p className="text-xs text-muted-foreground">Specialist consultation</p>
+        </div>
+        <div className="ml-auto">
+          <Button
+            size="sm"
+            variant={booked ? "secondary" : "default"}
+            disabled={messages.length === 0 || booking || booked}
+            onClick={handleBookAppointment}
+            className={booked ? "" : "bg-violet-600 hover:bg-violet-700"}
+          >
+            {booking ? <Loader2 className="w-4 h-4 animate-spin" /> : booked ? <Check className="w-4 h-4" /> : <CalendarPlus className="w-4 h-4" />}
+            <span className="hidden sm:inline">{booked ? "Booked" : "Book Appointment"}</span>
+          </Button>
         </div>
       </div>
 

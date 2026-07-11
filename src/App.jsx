@@ -31,6 +31,7 @@ import AIPhysicalTherapy from '@/pages/AIPhysicalTherapy';
 import AISeniorCare from '@/pages/AISeniorCare';
 import AIAssistedLiving from '@/pages/AIAssistedLiving';
 import AIVeterinary from '@/pages/AIVeterinary';
+import ProviderDashboard from '@/pages/ProviderDashboard';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -70,6 +71,7 @@ const AuthenticatedApp = () => {
           <Route path="/senior-care" element={<AISeniorCare />} />
           <Route path="/assisted-living" element={<AIAssistedLiving />} />
           <Route path="/pet-care" element={<AIVeterinary />} />
+          <Route path="/provider-dashboard" element={<ProviderDashboard />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />
           <Route path="/wellness" element={<Wellness />} />

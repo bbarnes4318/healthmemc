@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import {
   Home, Stethoscope, HeartPulse, Users, Pill, FileText,
   Sparkles, Shield, User, Menu, X, LogOut, Activity, Phone,
-  Smile, Dumbbell, Heart, LifeBuoy, PawPrint, Bell, BellRing
+  Smile, Dumbbell, Heart, LifeBuoy, PawPrint, Bell, BellRing, ClipboardCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRecordNotifications } from "@/hooks/useRecordNotifications";
@@ -23,6 +23,7 @@ const navItems = [
   { path: "/records", label: "Records", icon: FileText },
   { path: "/wellness", label: "Wellness", icon: Sparkles },
   { path: "/dashboard", label: "Dashboard", icon: Activity },
+  { path: "/provider-dashboard", label: "Provider", icon: ClipboardCheck },
   { path: "/profile", label: "Profile", icon: User },
 ];
 
