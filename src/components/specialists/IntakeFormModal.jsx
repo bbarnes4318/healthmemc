@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Loader2, ClipboardList, SkipForward } from "lucide-react";
+import { Loader2, ClipboardList, SkipForward, Wand2 } from "lucide-react";
 import TemplateLibrary from "@/components/specialists/TemplateLibrary";
 import QuickTemplates from "@/components/specialists/QuickTemplates";
 
@@ -68,6 +68,33 @@ export default function IntakeFormModal({ open, onOpenChange, specialty, onCompl
     onSkip();
   };
 
+  const [autoFilling, setAutoFilling] = useState(false);
+
+  const handleAutoPopulate = async () => {
+    setAutoFilling(true);
+    try {
+      const [profiles, meds] = await Promise.all([
+        base44.entities.HealthProfile.filter({}),
+        base44.entities.Medication.filter({ active: true }),
+      ]);
+      const hp = profiles[0];
+      const updates = {};
+      if (meds.length > 0) {
+        updates.current_medications = meds
+          .map((m) => `${m.name} ${m.dosage} (${m.frequency})`)
+          .join("\n");
+      }
+      if (hp?.allergies?.length > 0) {
+        updates.allergies = hp.allergies.join(", ");
+      }
+      if (hp?.chronic_conditions?.length > 0 && !form.medical_history.trim()) {
+        updates.medical_history = hp.chronic_conditions.join(", ");
+      }
+      setForm((prev) => ({ ...prev, ...updates }));
+    } catch (err) { console.error(err); }
+    setAutoFilling(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) handleSkip(); }}>
       <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
@@ -83,6 +110,16 @@ export default function IntakeFormModal({ open, onOpenChange, specialty, onCompl
           <div className="space-y-2 p-3 bg-violet-50 rounded-lg border border-violet-100">
             <QuickTemplates onLoadTemplate={(data) => setForm(data)} />
             <TemplateLibrary form={form} onLoadTemplate={(data) => setForm(data)} />
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs"
+              disabled={autoFilling}
+              onClick={handleAutoPopulate}
+            >
+              {autoFilling ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Wand2 className="w-3.5 h-3.5 mr-1.5" />}
+              Auto-Fill from Health Data
+            </Button>
           </div>
 
           <div>

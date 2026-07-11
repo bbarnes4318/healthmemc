@@ -1,0 +1,48 @@
+{
+  "name": "RecordShare",
+  "type": "object",
+  "properties": {
+    "recipient_email": {
+      "type": "string"
+    },
+    "recipient_name": {
+      "type": "string"
+    },
+    "share_medical_records": {
+      "type": "boolean",
+      "default": true
+    },
+    "share_appointments": {
+      "type": "boolean",
+      "default": true
+    },
+    "share_medications": {
+      "type": "boolean",
+      "default": false
+    },
+    "share_vitals": {
+      "type": "boolean",
+      "default": false
+    },
+    "access_token": {
+      "type": "string"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "revoked"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "recipient_email",
+    "access_token",
+    "expires_at"
+  ]
+}

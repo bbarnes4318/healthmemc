@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
   Phone, AlertTriangle, Heart, Users, Shield, ArrowLeft,
-  Bell, Loader2, CheckCircle, Mail, Send, MapPin
+  Bell, Loader2, CheckCircle, Mail, Send, MapPin, FileDown
 } from "lucide-react";
+import { generateEmergencySummaryPdf } from "@/lib/generateEmergencySummaryPdf";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -19,6 +20,21 @@ export default function Emergency() {
   const [location, setLocation] = useState(null);
   const [locating, setLocating] = useState(false);
   const [hasTrustedContacts, setHasTrustedContacts] = useState(false);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
+
+  const handleGenerateEmergencyPdf = async () => {
+    setGeneratingPdf(true);
+    try {
+      const [user, meds, vitals, insurance] = await Promise.all([
+        base44.auth.me(),
+        base44.entities.Medication.filter({ active: true }),
+        base44.entities.VitalRecord.list("-recorded_at", 50),
+        base44.entities.InsuranceCard.filter({}),
+      ]);
+      generateEmergencySummaryPdf({ user, profile, medications: meds, vitals, insuranceCards: insurance });
+    } catch (err) { console.error(err); }
+    setGeneratingPdf(false);
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -173,6 +189,31 @@ Please reach out immediately to check on them. If this is a life-threatening sit
                 </p>
               )}
             </div>
+          </div>
+        </Card>
+
+        {/* Printable Emergency Summary */}
+        <Card className="p-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center shrink-0">
+                <FileDown className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="font-display font-semibold text-sm">Printable Emergency Summary</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Generate a one-page PDF with your vitals, medications, allergies, and insurance info — ready for paramedics.
+                </p>
+              </div>
+            </div>
+            <Button
+              onClick={handleGenerateEmergencyPdf}
+              disabled={generatingPdf || loading}
+              className="bg-red-600 hover:bg-red-700 shrink-0"
+            >
+              {generatingPdf ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <FileDown className="w-4 h-4 mr-2" />}
+              Generate PDF
+            </Button>
           </div>
         </Card>
 
