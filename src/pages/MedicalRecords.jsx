@@ -8,10 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   FileText, Plus, Upload, Loader2, Calendar, Trash2,
-  Download, Filter, Search, List, GitBranch
+  Download, Filter, Search, List, GitBranch, FileDown
 } from "lucide-react";
 import { motion } from "framer-motion";
 import MedicalTimeline from "@/components/records/MedicalTimeline";
+import { generateRecordPdf } from "@/lib/generateRecordPdf";
 
 const categories = [
   { value: "visit_summary", label: "Visit Summary" },
@@ -218,6 +219,9 @@ export default function MedicalRecords() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-sky-600 hover:text-sky-700" title="Download PDF summary" onClick={() => generateRecordPdf(record)}>
+                    <FileDown className="w-4 h-4" />
+                  </Button>
                   {record.file_url && (
                     <a href={record.file_url} target="_blank" rel="noopener noreferrer">
                       <Button variant="ghost" size="icon" className="h-8 w-8">

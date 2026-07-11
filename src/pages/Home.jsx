@@ -234,7 +234,7 @@ export default function Home() {
       <div className="flex items-start gap-2 p-4 bg-amber-50 rounded-xl border border-amber-200">
         <Shield className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
         <p className="text-xs text-amber-800">
-          AI HealthOne provides health information and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider for medical concerns.
+          Health Me Medical Center provides health information and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider for medical concerns.
         </p>
       </div>
     </div>

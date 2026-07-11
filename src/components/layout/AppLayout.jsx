@@ -58,7 +58,7 @@ export default function AppLayout() {
               <Activity className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="font-display font-bold text-base leading-tight">AI HealthOne</h1>
+              <h1 className="font-display font-bold text-base leading-tight">Health Me Medical Center</h1>
               <p className="text-[10px] text-muted-foreground leading-tight">Health Intelligence</p>
             </div>
           </Link>
@@ -106,7 +106,7 @@ export default function AppLayout() {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center">
             <Activity className="w-4 h-4 text-white" />
           </div>
-          <span className="font-display font-bold text-sm">AI HealthOne</span>
+          <span className="font-display font-bold text-sm">Health Me Medical</span>
         </Link>
         <Button variant="ghost" size="icon" onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -122,7 +122,7 @@ export default function AppLayout() {
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center">
                   <Activity className="w-5 h-5 text-white" />
                 </div>
-                <h1 className="font-display font-bold">AI HealthOne</h1>
+                <h1 className="font-display font-bold">Health Me Medical Center</h1>
               </div>
               <Button variant="ghost" size="icon" onClick={() => setMobileOpen(false)}>
                 <X className="w-5 h-5" />
