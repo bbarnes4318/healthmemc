@@ -5,7 +5,7 @@
       "trigger_type": "scheduled",
       "events": [],
       "schedule_mode": "recurring",
-      "cron_expression": "0 8 * * *",
+      "cron_expression": "0 * * * *",
       "one_time_date": null,
       "timezone": "America/New_York",
       "interval_value": null,
@@ -35,11 +35,11 @@
           "then": "end",
           "x-base44": {
             "title": "Send appointment reminders",
-            "description": "Email users 24h before confirmed appointments"
+            "description": "Email users 24h before appointments"
           }
         }
       }
     ]
   },
-  "description": "Sends email reminders 24 hours before confirmed specialist appointments"
+  "description": "Sends email reminders 24 hours before scheduled specialist appointments \u2014 runs hourly to catch all appointments in the 22-24 hour window"
 }

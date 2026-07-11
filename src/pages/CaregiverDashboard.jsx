@@ -10,6 +10,7 @@ import AlertConfigPanel from "@/components/caregiver/AlertConfigPanel";
 import CaregiverVisitLog from "@/components/caregiver/CaregiverVisitLog";
 import ActivityFeed from "@/components/caregiver/ActivityFeed";
 import VoiceNoteRecorder from "@/components/caregiver/VoiceNoteRecorder";
+import SharedCalendar from "@/components/caregiver/SharedCalendar";
 import { format, subDays } from "date-fns";
 import { motion } from "framer-motion";
 
@@ -234,6 +235,10 @@ export default function CaregiverDashboard() {
 
       <div className="mb-6">
         <CaregiverVisitLog />
+      </div>
+
+      <div className="mb-6">
+        <SharedCalendar />
       </div>
 
       <div className="mb-6">

@@ -1,0 +1,82 @@
+{
+  "name": "SymptomMap",
+  "type": "object",
+  "properties": {
+    "body_region": {
+      "type": "string",
+      "enum": [
+        "head",
+        "neck",
+        "left_shoulder",
+        "right_shoulder",
+        "left_arm",
+        "right_arm",
+        "chest",
+        "abdomen",
+        "back",
+        "lower_back",
+        "left_hip",
+        "right_hip",
+        "left_thigh",
+        "right_thigh",
+        "left_knee",
+        "right_knee",
+        "left_calf",
+        "right_calf",
+        "left_foot",
+        "right_foot"
+      ]
+    },
+    "body_view": {
+      "type": "string",
+      "enum": [
+        "front",
+        "back"
+      ],
+      "default": "front"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "mild",
+        "moderate",
+        "severe"
+      ],
+      "default": "mild"
+    },
+    "symptom_description": {
+      "type": "string"
+    },
+    "pain_type": {
+      "type": "string",
+      "enum": [
+        "aching",
+        "sharp",
+        "burning",
+        "throbbing",
+        "stiffness",
+        "numbness",
+        "tingling",
+        "cramping",
+        "other"
+      ]
+    },
+    "duration": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "logged_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "body_region",
+    "severity"
+  ]
+}

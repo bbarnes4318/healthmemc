@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import { generateReportPdf } from "@/lib/generateReportPdf";
 import SymptomTimeline from "@/components/consultations/SymptomTimeline";
+import BodyDiagram from "@/components/consultations/BodyDiagram";
 
 export default function AIDoctor() {
   const [step, setStep] = useState("input"); // input, consulting, report
@@ -234,6 +235,8 @@ IMPORTANT: Include appropriate disclaimers that this is AI-generated and should 
           </div>
 
           <SymptomTimeline />
+
+          <BodyDiagram />
         </motion.div>
       </div>
     );

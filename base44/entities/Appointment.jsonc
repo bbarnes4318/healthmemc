@@ -42,6 +42,10 @@
     },
     "consultation_id": {
       "type": "string"
+    },
+    "reminder_sent": {
+      "type": "boolean",
+      "default": false
     }
   },
   "required": [
