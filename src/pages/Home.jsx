@@ -12,6 +12,7 @@ import { useFamilyMember } from "@/context/FamilyMemberContext";
 import CheckInButton from "@/components/CheckInButton";
 import WellnessStreakCards from "@/components/wellness/WellnessStreakCards";
 import FamilyOverviewCard from "@/components/family/FamilyOverviewCard";
+import FamilyHealthScoreCard from "@/components/family/FamilyHealthScoreCard";
 import PricingPlans from "@/components/about/PricingPlans";
 import NutritionProgressBars from "@/components/wellness/NutritionProgressBars";
 
@@ -239,6 +240,9 @@ export default function Home() {
 
       {/* Nutrition Goal Progress */}
       <NutritionProgressBars />
+
+      {/* Family Health Score Comparison */}
+      <FamilyHealthScoreCard />
 
       {/* Family Overview */}
       <FamilyOverviewCard />
