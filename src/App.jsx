@@ -55,6 +55,7 @@ import ImmunizationHistory from '@/pages/ImmunizationHistory';
 import SurgicalRecovery from '@/pages/SurgicalRecovery';
 import IntakeFormTemplates from '@/pages/IntakeFormTemplates';
 import FamilyManagementPage from '@/pages/FamilyManagementPage';
+import MedicalForum from '@/pages/MedicalForum';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -117,6 +118,7 @@ const AuthenticatedApp = () => {
           <Route path="/surgical-recovery" element={<SurgicalRecovery />} />
           <Route path="/intake-forms" element={<IntakeFormTemplates />} />
           <Route path="/family-management" element={<FamilyManagementPage />} />
+          <Route path="/medical-forum" element={<MedicalForum />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />

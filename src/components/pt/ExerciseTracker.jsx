@@ -30,7 +30,9 @@ const difficultyColors = {
   hard: "bg-red-100 text-red-700",
 };
 
-const emptyExercise = { exercise_name: "", body_part: "knee", difficulty: "medium", sets: "", reps: "", duration_minutes: "", rom_degrees: "", pain_level: "", notes: "" };
+const emptyExercise = { exercise_name: "", body_part: "knee", difficulty: "medium", intensity: "moderate", sets: "", reps: "", duration_minutes: "", rom_degrees: "", pain_level: "", notes: "" };
+
+const intensityColors = { low: "bg-green-100 text-green-700", moderate: "bg-amber-100 text-amber-700", high: "bg-red-100 text-red-700" };
 
 export default function ExerciseTracker() {
   const { currentMemberId, currentMemberName } = useFamilyMember();
@@ -175,6 +177,17 @@ export default function ExerciseTracker() {
                   </Select>
                 </div>
               </div>
+              <div>
+                <Label className="text-xs">Intensity Level</Label>
+                <Select value={form.intensity} onValueChange={(v) => setForm({ ...form, intensity: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="moderate">Moderate</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label className="text-xs">Sets</Label>
@@ -301,9 +314,16 @@ export default function ExerciseTracker() {
                       {ex.pain_level != null ? ` · Pain: ${ex.pain_level}/10` : ""}
                     </p>
                   </div>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${difficultyColors[ex.difficulty] || difficultyColors.medium}`}>
-                    {ex.difficulty}
-                  </span>
+                  <div className="flex flex-col gap-1 items-end shrink-0">
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${difficultyColors[ex.difficulty] || difficultyColors.medium}`}>
+                      {ex.difficulty}
+                    </span>
+                    {ex.intensity && (
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${intensityColors[ex.intensity] || intensityColors.moderate}`}>
+                        {ex.intensity} intensity
+                      </span>
+                    )}
+                  </div>
                   <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600 shrink-0" onClick={() => handleDelete(ex.id)}>
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>

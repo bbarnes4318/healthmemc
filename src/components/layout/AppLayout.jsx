@@ -6,7 +6,7 @@ import {
   Sparkles, Shield, User, Menu, X, LogOut, Activity, Phone,
   Smile, Dumbbell, Heart, LifeBuoy, PawPrint, Bell, BellRing, ClipboardCheck, Ear, Eye, Scan,
   KeyRound, MapPin, Settings as SettingsIcon, Users as UsersIcon, History, Siren,
-  Share2, TrendingUp, Contact, Star, Info, Syringe, Activity as ActivityIcon, ClipboardList
+  Share2, TrendingUp, Contact, Star, Info, Syringe, Activity as ActivityIcon, ClipboardList, MessagesSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/layout/GlobalSearch";
@@ -40,6 +40,7 @@ const navItems = [
   { path: "/clinician-dashboard", label: "Clinician Access", icon: KeyRound },
   { path: "/doctor-records", label: "Doctor Records", icon: Share2 },
   { path: "/doctor-directory", label: "Doctor Directory", icon: Contact },
+  { path: "/medical-forum", label: "Pro Forum", icon: MessagesSquare },
   { path: "/specialist-feedback", label: "Specialist Feedback", icon: Star },
   { path: "/immunization", label: "Immunization", icon: Syringe },
   { path: "/surgical-recovery", label: "Surgical Recovery", icon: ActivityIcon },

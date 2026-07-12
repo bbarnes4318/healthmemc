@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import WellnessCharts from "@/components/wellness/WellnessCharts";
 import NutritionLog from "@/components/wellness/NutritionLog";
 import RecipeSuggester from "@/components/wellness/RecipeSuggester";
 import StepTracker from "@/components/wellness/StepTracker";
+import ExerciseWeeklySummary from "@/components/wellness/ExerciseWeeklySummary";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const programs = [
@@ -25,6 +26,14 @@ const programs = [
   { name: "Smoking Cessation", icon: Cigarette, color: "from-gray-500 to-slate-600", desc: "Quit smoking support" },
   { name: "Healthy Recipes", icon: ChefHat, color: "from-lime-500 to-green-600", desc: "Nutritious meal ideas" },
 ];
+
+function ActivityWeeklyWrapper() {
+  const [exLogs, setExLogs] = useState([]);
+  useEffect(() => {
+    base44.entities.ExerciseLog.list("-date", 100).then(setExLogs).catch(() => {});
+  }, []);
+  return <ExerciseWeeklySummary logs={exLogs} />;
+}
 
 export default function Wellness() {
   const [selectedProgram, setSelectedProgram] = useState(null);
@@ -108,7 +117,10 @@ export default function Wellness() {
             <NutritionLog />
           </div>
         ) : activeTab === "activity" ? (
-          <StepTracker />
+          <div className="space-y-4">
+            <ActivityWeeklyWrapper />
+            <StepTracker />
+          </div>
         ) : activeTab === "bodymap" ? (
           <BodyDiagram />
         ) : (

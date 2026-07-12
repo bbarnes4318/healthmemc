@@ -28,6 +28,15 @@
       ],
       "default": "medium"
     },
+    "intensity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "default": "moderate"
+    },
     "sets": {
       "type": "number"
     },

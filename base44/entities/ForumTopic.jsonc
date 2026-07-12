@@ -1,0 +1,59 @@
+{
+  "name": "ForumTopic",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "surgery_options",
+        "treatment_methods",
+        "care_plans",
+        "medication_review",
+        "diagnostic_approaches",
+        "case_discussion",
+        "general"
+      ],
+      "default": "general"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_role": {
+      "type": "string",
+      "enum": [
+        "doctor",
+        "specialist",
+        "nurse"
+      ]
+    },
+    "author_specialty": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pinned": {
+      "type": "boolean",
+      "default": false
+    },
+    "views": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title",
+    "content",
+    "category",
+    "author_role"
+  ]
+}

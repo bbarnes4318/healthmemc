@@ -1,0 +1,38 @@
+{
+  "name": "ForumReply",
+  "type": "object",
+  "properties": {
+    "topic_id": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_role": {
+      "type": "string",
+      "enum": [
+        "doctor",
+        "specialist",
+        "nurse"
+      ]
+    },
+    "author_specialty": {
+      "type": "string"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "parent_reply_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "topic_id",
+    "content",
+    "author_role"
+  ]
+}
