@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
-import { Clock, Plus, Loader2, Trash2, ClipboardList, Stethoscope, Car, Utensils, Heart, Pill, Home, Calendar, User } from "lucide-react";
+import { Clock, Plus, Loader2, Trash2, ClipboardList, Stethoscope, Car, Utensils, Heart, Pill, Home, Calendar, User, Activity } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 
 const supportTypes = [
@@ -33,6 +34,9 @@ const emptyForm = {
   family_member_name: "",
   support_type: "medication_assistance",
   duration_minutes: "",
+  medication_administered: false,
+  meal_taken: false,
+  activity_completed: false,
   notes: "",
 };
 
@@ -151,6 +155,23 @@ export default function CaregiverVisitLog() {
                 <Input type="number" placeholder="60" value={form.duration_minutes} onChange={(e) => setForm({ ...form, duration_minutes: e.target.value })} />
               </div>
               <div>
+                <Label className="text-xs">Daily Care Checklist</Label>
+                <div className="space-y-2 mt-1.5">
+                  <label className="flex items-center gap-2 p-2 rounded-lg border cursor-pointer hover:bg-muted/50 transition">
+                    <Checkbox checked={form.medication_administered} onCheckedChange={(v) => setForm({ ...form, medication_administered: v })} />
+                    <span className="text-xs flex items-center gap-1"><Pill className="w-3 h-3 text-emerald-600" /> Medication administered</span>
+                  </label>
+                  <label className="flex items-center gap-2 p-2 rounded-lg border cursor-pointer hover:bg-muted/50 transition">
+                    <Checkbox checked={form.meal_taken} onCheckedChange={(v) => setForm({ ...form, meal_taken: v })} />
+                    <span className="text-xs flex items-center gap-1"><Utensils className="w-3 h-3 text-amber-600" /> Meal intake completed</span>
+                  </label>
+                  <label className="flex items-center gap-2 p-2 rounded-lg border cursor-pointer hover:bg-muted/50 transition">
+                    <Checkbox checked={form.activity_completed} onCheckedChange={(v) => setForm({ ...form, activity_completed: v })} />
+                    <span className="text-xs flex items-center gap-1"><Activity className="w-3 h-3 text-sky-600" /> Activity / exercise completed</span>
+                  </label>
+                </div>
+              </div>
+              <div>
                 <Label className="text-xs">Notes</Label>
                 <Textarea placeholder="What was done during the visit..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className="resize-none" />
               </div>
@@ -199,6 +220,25 @@ export default function CaregiverVisitLog() {
                       <Calendar className="w-3 h-3" />{format(new Date(log.visit_date), "MMM d, h:mm a")}
                     </span>
                   </div>
+                  {(log.medication_administered || log.meal_taken || log.activity_completed) && (
+                    <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                      {log.medication_administered && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 flex items-center gap-0.5">
+                          <Pill className="w-2.5 h-2.5" /> Meds given
+                        </span>
+                      )}
+                      {log.meal_taken && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 flex items-center gap-0.5">
+                          <Utensils className="w-2.5 h-2.5" /> Meal taken
+                        </span>
+                      )}
+                      {log.activity_completed && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-700 flex items-center gap-0.5">
+                          <Activity className="w-2.5 h-2.5" /> Activity done
+                        </span>
+                      )}
+                    </div>
+                  )}
                   {log.notes && <p className="text-xs text-muted-foreground mt-1">{log.notes}</p>}
                 </div>
                 <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500 hover:text-red-700 shrink-0" onClick={() => handleDelete(log.id)}>

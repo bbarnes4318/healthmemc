@@ -1,0 +1,45 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 9 1 * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Monthly Health Report Workflow",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "monthly_health_report",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "compile_reports": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "compileMonthlyHealthReport",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Compile monthly health reports",
+            "description": "Generate reports for all family members"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Compiles a comprehensive health report for each family member on the 1st of every month and saves it to the medical records vault"
+}

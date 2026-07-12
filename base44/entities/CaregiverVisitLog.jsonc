@@ -31,6 +31,18 @@
     "duration_minutes": {
       "type": "number"
     },
+    "medication_administered": {
+      "type": "boolean",
+      "default": false
+    },
+    "meal_taken": {
+      "type": "boolean",
+      "default": false
+    },
+    "activity_completed": {
+      "type": "boolean",
+      "default": false
+    },
     "notes": {
       "type": "string"
     }
