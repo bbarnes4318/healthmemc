@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Activity, ShieldAlert } from "lucide-react";
+import { Activity, ShieldAlert, LayoutDashboard, ListChecks } from "lucide-react";
 import SurgicalRecoveryTracker from "@/components/surgical/SurgicalRecoveryTracker";
+import SurgicalRecoveryDashboard from "@/components/surgical/SurgicalRecoveryDashboard";
 
 export default function SurgicalRecoveryPage() {
+  const [activeTab, setActiveTab] = useState("dashboard");
+
   return (
     <div className="p-4 lg:p-8 max-w-4xl mx-auto">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -22,7 +25,27 @@ export default function SurgicalRecoveryPage() {
           </p>
         </div>
 
-        <SurgicalRecoveryTracker />
+        {/* Tabs */}
+        <div className="flex gap-1 p-1 bg-muted rounded-lg mb-6 w-fit mx-auto">
+          <button
+            onClick={() => setActiveTab("dashboard")}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition ${
+              activeTab === "dashboard" ? "bg-background shadow-sm text-rose-700" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <LayoutDashboard className="w-4 h-4" /> Dashboard
+          </button>
+          <button
+            onClick={() => setActiveTab("log")}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition ${
+              activeTab === "log" ? "bg-background shadow-sm text-rose-700" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <ListChecks className="w-4 h-4" /> Log Entries
+          </button>
+        </div>
+
+        {activeTab === "dashboard" ? <SurgicalRecoveryDashboard /> : <SurgicalRecoveryTracker />}
       </motion.div>
     </div>
   );
