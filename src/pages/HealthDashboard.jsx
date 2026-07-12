@@ -13,6 +13,8 @@ import { motion } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import moment from "moment";
 import LabMarkerTrend from "@/components/health/LabMarkerTrend";
+import DermatologyTrendChart from "@/components/health/DermatologyTrendChart";
+import VisionTrendChart from "@/components/health/VisionTrendChart";
 import { generateHealthDashboardPdf } from "@/lib/generateHealthDashboardPdf";
 import { Download } from "lucide-react";
 
@@ -215,6 +217,12 @@ export default function HealthDashboard() {
         <h3 className="font-display font-semibold text-sm">Lab Marker Trends</h3>
       </div>
       <LabMarkerTrend />
+
+      {/* Specialty Trend Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <DermatologyTrendChart />
+        <VisionTrendChart />
+      </div>
     </div>
   );
 }

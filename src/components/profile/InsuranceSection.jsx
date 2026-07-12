@@ -13,6 +13,7 @@ import { generateMedicalIdCard } from "@/lib/generateMedicalIdCard";
 import { generateInsuranceSummary } from "@/lib/generateInsuranceSummary";
 import InsuranceCoverageMap from "@/components/insurance/InsuranceCoverageMap";
 import OutOfPocketEstimator from "@/components/insurance/OutOfPocketEstimator";
+import InsuranceExpiryBanner from "@/components/insurance/InsuranceExpiryBanner";
 
 const planTypes = [
   { value: "hmo", label: "HMO" },
@@ -301,6 +302,7 @@ export default function InsuranceSection() {
 
   return (
     <div className="space-y-4">
+      <InsuranceExpiryBanner cards={cards} />
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Lock className="w-4 h-4 text-muted-foreground" />

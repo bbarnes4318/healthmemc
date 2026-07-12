@@ -1,0 +1,45 @@
+{
+  "description": "Daily check for insurance cards expiring within 30 days and sends email reminders",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 8 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Insurance Expiry Reminder Workflow",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "insurance_expiry_reminder",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "check_and_send_expiry_reminders": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "insuranceExpiryReminder",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Check & Send Insurance Expiry Reminders",
+            "description": "Scans insurance cards for upcoming expirations"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -52,6 +52,7 @@ import AboutUs from '@/pages/AboutUs';
 import HomeDoctorVisit from '@/pages/HomeDoctorVisit';
 import ImmunizationHistory from '@/pages/ImmunizationHistory';
 import SurgicalRecovery from '@/pages/SurgicalRecovery';
+import IntakeFormTemplates from '@/pages/IntakeFormTemplates';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -111,6 +112,7 @@ const AuthenticatedApp = () => {
           <Route path="/home-doctor-visit" element={<HomeDoctorVisit />} />
           <Route path="/immunization" element={<ImmunizationHistory />} />
           <Route path="/surgical-recovery" element={<SurgicalRecovery />} />
+          <Route path="/intake-forms" element={<IntakeFormTemplates />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />

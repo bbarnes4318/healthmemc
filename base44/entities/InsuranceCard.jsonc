@@ -64,6 +64,10 @@
     },
     "notes": {
       "type": "string"
+    },
+    "expiry_reminder_sent": {
+      "type": "boolean",
+      "default": false
     }
   },
   "required": [
