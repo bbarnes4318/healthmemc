@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Stethoscope, HeartPulse, Users, Pill, FileText, Sparkles,
-  Calendar, Phone, TrendingUp, Clock, ChevronRight, Shield, Dumbbell, History, Home as HomeIcon, Scan, Info
+  Calendar, Phone, TrendingUp, Clock, ChevronRight, Shield, Dumbbell, History, Home as HomeIcon, Scan, Info, Syringe, Activity as ActivityIcon
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
@@ -26,6 +26,8 @@ const quickActions = [
   { label: "AI Pro Sports Medicine", icon: Dumbbell, path: "/sports-medicine", color: "from-orange-500 to-red-600", desc: "Injury, recovery & performance" },
   { label: "Home Doctor Visit", icon: HomeIcon, path: "/home-doctor-visit", color: "from-sky-600 to-blue-700", desc: "A physician comes to you" },
   { label: "AI Dermatology", icon: Scan, path: "/dermatology", color: "from-teal-500 to-cyan-600", desc: "Track moles, rashes & skin changes" },
+  { label: "Immunization History", icon: Syringe, path: "/immunization", color: "from-emerald-500 to-teal-600", desc: "Vaccines & booster reminders" },
+  { label: "Surgical Recovery", icon: ActivityIcon, path: "/surgical-recovery", color: "from-rose-500 to-pink-600", desc: "Post-op healing & wound tracking" },
 ];
 
 export default function Home() {

@@ -1,0 +1,60 @@
+{
+  "name": "ImmunizationLog",
+  "type": "object",
+  "properties": {
+    "vaccine_name": {
+      "type": "string"
+    },
+    "date_administered": {
+      "type": "string",
+      "format": "date"
+    },
+    "batch_number": {
+      "type": "string"
+    },
+    "manufacturer": {
+      "type": "string"
+    },
+    "administered_by": {
+      "type": "string"
+    },
+    "administration_site": {
+      "type": "string",
+      "enum": [
+        "left_arm",
+        "right_arm",
+        "left_thigh",
+        "right_thigh",
+        "buttocks",
+        "oral",
+        "nasal",
+        "other"
+      ]
+    },
+    "dose_number": {
+      "type": "number",
+      "default": 1
+    },
+    "booster_interval_months": {
+      "type": "number"
+    },
+    "next_booster_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "booster_reminder_sent": {
+      "type": "boolean",
+      "default": false
+    },
+    "notes": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "vaccine_name",
+    "date_administered"
+  ]
+}

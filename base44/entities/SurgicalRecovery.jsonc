@@ -1,0 +1,91 @@
+{
+  "name": "SurgicalRecovery",
+  "type": "object",
+  "properties": {
+    "surgery_name": {
+      "type": "string"
+    },
+    "surgery_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "surgeon": {
+      "type": "string"
+    },
+    "hospital": {
+      "type": "string"
+    },
+    "log_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "days_post_op": {
+      "type": "number"
+    },
+    "pain_level": {
+      "type": "number"
+    },
+    "pain_type": {
+      "type": "string",
+      "enum": [
+        "aching",
+        "sharp",
+        "throbbing",
+        "burning",
+        "stinging",
+        "stiffness",
+        "other"
+      ]
+    },
+    "wound_status": {
+      "type": "string",
+      "enum": [
+        "clean_healing",
+        "redness",
+        "swelling",
+        "discharge",
+        "dehiscence",
+        "infection",
+        "fully_healed"
+      ],
+      "default": "clean_healing"
+    },
+    "mobility_level": {
+      "type": "string",
+      "enum": [
+        "bedridden",
+        "limited_assistance",
+        "with_walker",
+        "independent_limited",
+        "fully_mobile"
+      ],
+      "default": "limited_assistance"
+    },
+    "photo_url": {
+      "type": "string"
+    },
+    "milestones_reached": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "medications_taken": {
+      "type": "string"
+    },
+    "temperature": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "surgery_name",
+    "surgery_date",
+    "log_date"
+  ]
+}

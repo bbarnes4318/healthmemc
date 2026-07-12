@@ -1,0 +1,45 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 9 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "booster_reminder_workflow",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "check_and_send_boosters": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "boosterReminder",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Check & Send Booster Reminders",
+            "description": "Scans immunization logs for due boosters"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Daily check for vaccine boosters due within 30 days and sends email reminders",
+  "name": "Booster Reminder Workflow"
+}

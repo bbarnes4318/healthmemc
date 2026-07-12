@@ -50,6 +50,8 @@ import WellnessTrends from '@/pages/WellnessTrends';
 import SpecialistFeedback from '@/pages/SpecialistFeedback';
 import AboutUs from '@/pages/AboutUs';
 import HomeDoctorVisit from '@/pages/HomeDoctorVisit';
+import ImmunizationHistory from '@/pages/ImmunizationHistory';
+import SurgicalRecovery from '@/pages/SurgicalRecovery';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -107,6 +109,8 @@ const AuthenticatedApp = () => {
           <Route path="/specialist-feedback" element={<SpecialistFeedback />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/home-doctor-visit" element={<HomeDoctorVisit />} />
+          <Route path="/immunization" element={<ImmunizationHistory />} />
+          <Route path="/surgical-recovery" element={<SurgicalRecovery />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />
