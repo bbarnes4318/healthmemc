@@ -15,6 +15,7 @@ import RecipeSuggester from "@/components/wellness/RecipeSuggester";
 import StepTracker from "@/components/wellness/StepTracker";
 import ExerciseWeeklySummary from "@/components/wellness/ExerciseWeeklySummary";
 import ExerciseCalendar from "@/components/wellness/ExerciseCalendar";
+import ExerciseProgressChart from "@/components/fitness/ExerciseProgressChart";
 import WellnessJournal from "@/components/wellness/WellnessJournal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -121,6 +122,7 @@ export default function Wellness() {
           </div>
         ) : activeTab === "activity" ? (
           <div className="space-y-4">
+            <ExerciseProgressChart />
             <ExerciseCalendar />
             <ActivityWeeklyWrapper />
             <StepTracker />
