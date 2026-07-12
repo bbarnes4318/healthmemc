@@ -6,11 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Loader2, Flame, Apple, Trash2, TrendingUp, Activity } from "lucide-react";
+import { Plus, Loader2, Flame, Apple, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { format, subDays } from "date-fns";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { format } from "date-fns";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
+import NutritionTrendChart from "@/components/wellness/NutritionTrendChart";
 
 const mealTypes = [
   { value: "breakfast", label: "Breakfast", icon: "🌅", color: "bg-amber-100 text-amber-700" },
@@ -76,19 +76,6 @@ export default function NutritionLog() {
   const todayProtein = todayMeals.reduce((s, m) => s + (m.protein_g || 0), 0);
   const todayCarbs = todayMeals.reduce((s, m) => s + (m.carbs_g || 0), 0);
   const todayFat = todayMeals.reduce((s, m) => s + (m.fat_g || 0), 0);
-
-  const calorieTrend = useMemo(() => {
-    return Array.from({ length: 7 }).map((_, i) => {
-      const d = subDays(new Date(), 6 - i);
-      const dayLogs = logs.filter((l) => l.date === format(d, "yyyy-MM-dd"));
-      return {
-        day: format(d, "EEE"),
-        calories: dayLogs.reduce((s, m) => s + (m.calories || 0), 0),
-      };
-    });
-  }, [logs]);
-
-  const avgCalories = Math.round(calorieTrend.reduce((s, d) => s + d.calories, 0) / 7);
 
   if (loading) {
     return <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin text-emerald-600" /></div>;
@@ -167,7 +154,7 @@ export default function NutritionLog() {
             <p className="text-xs text-muted-foreground font-medium">Calories</p>
           </div>
           <p className="text-xl font-display font-bold text-orange-600">{todayCalories}</p>
-          <p className="text-[10px] text-muted-foreground">avg {avgCalories}/day</p>
+          <p className="text-[10px] text-muted-foreground">today's intake</p>
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-2 mb-1">
@@ -192,28 +179,8 @@ export default function NutritionLog() {
         </Card>
       </div>
 
-      {/* Calorie Trend */}
-      <Card className="p-5">
-        <div className="flex items-center justify-between mb-3">
-          <h4 className="text-xs font-semibold flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5 text-emerald-600" /> 7-Day Calorie Trend</h4>
-          {healthScore && (
-            <div className="flex items-center gap-2 text-xs">
-              <Activity className="w-3.5 h-3.5 text-violet-600" />
-              <span className="text-muted-foreground">Health Score:</span>
-              <span className="font-bold text-violet-600">{healthScore}</span>
-            </div>
-          )}
-        </div>
-        <ResponsiveContainer width="100%" height={180}>
-          <LineChart data={calorieTrend}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="day" tick={{ fontSize: 11 }} />
-            <YAxis tick={{ fontSize: 11 }} />
-            <Tooltip />
-            <Line type="monotone" dataKey="calories" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
-          </LineChart>
-        </ResponsiveContainer>
-      </Card>
+      {/* Nutrition Trends */}
+      <NutritionTrendChart logs={logs} healthScore={healthScore} />
 
       {/* Today's Meals */}
       <div>

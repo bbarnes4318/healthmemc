@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Users, UserPlus } from "lucide-react";
 import FamilyManagement from "@/components/family/FamilyManagement";
+import FamilyCareDashboard from "@/components/family/FamilyCareDashboard";
 
 export default function FamilyManagementPage() {
   return (
@@ -15,6 +16,7 @@ export default function FamilyManagementPage() {
           <p className="text-muted-foreground mt-1 text-sm">Manage profiles for your children, parents, and dependents — linked to your dashboard</p>
         </div>
 
+        <FamilyCareDashboard />
         <FamilyManagement />
       </motion.div>
     </div>
