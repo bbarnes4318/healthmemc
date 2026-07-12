@@ -4,12 +4,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
-import { Dumbbell, Heart, Flame, Wind, Zap, PersonStanding, Bike, Activity, Loader2, Check, Clock, Users, Flame as CalIcon } from "lucide-react";
+import { Dumbbell, Heart, Flame, Wind, Zap, PersonStanding, Bike, Activity, Loader2, Check, Clock, Users, Flame as CalIcon, Shield, Sparkles, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import ReactMarkdown from "react-markdown";
 import VoiceInputButton from "@/components/voice/VoiceInputButton";
-import { Shield } from "lucide-react";
+import AIFitnessPlanner from "@/components/fitness/AIFitnessPlanner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const typeIcons = {
   strength: Dumbbell, cardio: Heart, hiit: Flame, yoga: Wind,
@@ -252,9 +253,6 @@ function ClassCatalog({ user }) {
   );
 }
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar } from "lucide-react";
-
 export default function AIFitnessCenter() {
   const [user, setUser] = useState(null);
   const [selectedTrainer, setSelectedTrainer] = useState(null);
@@ -276,8 +274,9 @@ export default function AIFitnessCenter() {
           <TrainerChat trainer={selectedTrainer} onBack={() => setSelectedTrainer(null)} />
         ) : (
           <Tabs defaultValue="trainers">
-            <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto mb-6">
-              <TabsTrigger value="trainers"><Dumbbell className="w-3.5 h-3.5 mr-1.5" />AI Trainers</TabsTrigger>
+            <TabsList className="grid grid-cols-3 w-full max-w-lg mx-auto mb-6">
+              <TabsTrigger value="trainers"><Dumbbell className="w-3.5 h-3.5 mr-1.5" />Trainers</TabsTrigger>
+              <TabsTrigger value="planner"><Sparkles className="w-3.5 h-3.5 mr-1.5" />Planner</TabsTrigger>
               <TabsTrigger value="classes"><Users className="w-3.5 h-3.5 mr-1.5" />Classes</TabsTrigger>
             </TabsList>
 
@@ -308,6 +307,10 @@ export default function AIFitnessCenter() {
                 <Shield className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
                 <p className="text-xs text-amber-800">AI trainer guidance is for general fitness purposes. Consult a healthcare provider before starting any exercise program, especially if you have medical conditions.</p>
               </div>
+            </TabsContent>
+
+            <TabsContent value="planner">
+              <AIFitnessPlanner />
             </TabsContent>
 
             <TabsContent value="classes">
