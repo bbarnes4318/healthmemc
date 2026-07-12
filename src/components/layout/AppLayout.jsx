@@ -43,6 +43,7 @@ const navItems = [
   { path: "/immunization", label: "Immunization", icon: Syringe },
   { path: "/surgical-recovery", label: "Surgical Recovery", icon: ActivityIcon },
   { path: "/intake-forms", label: "Intake Forms", icon: ClipboardList },
+  { path: "/family-management", label: "Family", icon: UsersIcon },
   { path: "/caregiver-dashboard", label: "Caregiver", icon: UsersIcon },
   { path: "/health-locator", label: "Find Care", icon: MapPin },
   { path: "/settings", label: "Settings", icon: SettingsIcon },

@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import AIServicePage from "@/components/services/AIServicePage";
 import DermatologyGallery from "@/components/dermatology/DermatologyGallery";
 import DermatologyCompare from "@/components/dermatology/DermatologyCompare";
+import DermatologyTrendChart from "@/components/health/DermatologyTrendChart";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Scan, Camera, GitCompare, Shield } from "lucide-react";
+import { Scan, Camera, GitCompare, Shield, Activity } from "lucide-react";
 
 const config = {
   title: "AI Dermatology",
@@ -31,10 +32,11 @@ export default function AIDermatology() {
     <div>
       <div className="sticky top-14 lg:top-0 z-10 bg-white border-b border-border px-4 py-2">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-3 max-w-lg mx-auto">
+          <TabsList className="grid grid-cols-4 max-w-2xl mx-auto">
             <TabsTrigger value="consult"><Scan className="w-3.5 h-3.5 mr-1.5" />AI Consult</TabsTrigger>
             <TabsTrigger value="gallery"><Camera className="w-3.5 h-3.5 mr-1.5" />Gallery</TabsTrigger>
             <TabsTrigger value="compare"><GitCompare className="w-3.5 h-3.5 mr-1.5" />Compare</TabsTrigger>
+            <TabsTrigger value="trends"><Activity className="w-3.5 h-3.5 mr-1.5" />Trends</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -44,9 +46,13 @@ export default function AIDermatology() {
         <div className="p-4 lg:p-8 max-w-4xl mx-auto">
           <DermatologyGallery />
         </div>
-      ) : (
+      ) : activeTab === "compare" ? (
         <div className="p-4 lg:p-8 max-w-4xl mx-auto">
           <DermatologyCompare />
+        </div>
+      ) : (
+        <div className="p-4 lg:p-8 max-w-4xl mx-auto">
+          <DermatologyTrendChart />
         </div>
       )}
     </div>

@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import AIServicePage from "@/components/services/AIServicePage";
 import EyeExam from "@/components/eye/EyeExam";
 import EyeExamLog from "@/components/eye/EyeExamLog";
+import VisionTrendChart from "@/components/health/VisionTrendChart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Eye, EyeOff, Glasses, AlertTriangle, Eye as EyeIcon, Activity, ClipboardList } from "lucide-react";
+import { Eye, EyeOff, Glasses, AlertTriangle, Eye as EyeIcon, Activity, ClipboardList, TrendingUp } from "lucide-react";
 
 const config = {
   title: "AI Eye Doctor",
@@ -31,10 +32,11 @@ export default function AIEyeDoctor() {
     <div>
       <div className="sticky top-14 lg:top-0 z-10 bg-white border-b border-border px-4 py-2">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-3 max-w-lg mx-auto">
+          <TabsList className="grid grid-cols-4 max-w-2xl mx-auto">
             <TabsTrigger value="consult"><EyeIcon className="w-3.5 h-3.5 mr-1.5" />AI Consult</TabsTrigger>
             <TabsTrigger value="exam"><Activity className="w-3.5 h-3.5 mr-1.5" />Eye Exam</TabsTrigger>
             <TabsTrigger value="log"><ClipboardList className="w-3.5 h-3.5 mr-1.5" />Exam Log</TabsTrigger>
+            <TabsTrigger value="trends"><TrendingUp className="w-3.5 h-3.5 mr-1.5" />Trends</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -44,9 +46,13 @@ export default function AIEyeDoctor() {
         <div className="p-4 lg:p-8 max-w-3xl mx-auto">
           <EyeExam />
         </div>
-      ) : (
+      ) : activeTab === "log" ? (
         <div className="p-4 lg:p-8 max-w-4xl mx-auto">
           <EyeExamLog />
+        </div>
+      ) : (
+        <div className="p-4 lg:p-8 max-w-4xl mx-auto">
+          <VisionTrendChart />
         </div>
       )}
     </div>
