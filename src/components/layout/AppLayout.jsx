@@ -6,7 +6,7 @@ import {
   Sparkles, Shield, User, Menu, X, LogOut, Activity, Phone,
   Smile, Dumbbell, Heart, LifeBuoy, PawPrint, Bell, BellRing, ClipboardCheck, Ear, Eye, Scan,
   KeyRound, MapPin, Settings as SettingsIcon, Users as UsersIcon, History, Siren,
-  Share2, TrendingUp, Contact, Star, Info, Syringe, Activity as ActivityIcon, ClipboardList, MessagesSquare
+  Share2, TrendingUp, Contact, Star, Info, Syringe, Activity as ActivityIcon, ClipboardList, MessagesSquare, Trophy
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/layout/GlobalSearch";
@@ -26,6 +26,7 @@ const navItems = [
   { path: "/pet-care", label: "Pet Care", icon: PawPrint },
   { path: "/sports-medicine", label: "Sports Medicine", icon: Dumbbell },
   { path: "/fitness-center", label: "AI Fitness", icon: Dumbbell },
+  { path: "/family-fitness", label: "Family Challenge", icon: Trophy },
   { path: "/eye-doctor", label: "Eye Doctor", icon: Eye },
   { path: "/ear-nose-doctor", label: "Ear & Nose", icon: Ear },
   { path: "/ear-care", label: "Ear Care", icon: Ear },

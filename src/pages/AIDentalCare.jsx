@@ -4,6 +4,7 @@ import ToothMap from "@/components/dental/ToothMap";
 import DentalVisitLogSection from "@/components/dental/DentalVisitLogSection";
 import DentalDashboard from "@/components/dental/DentalDashboard";
 import DentalPainLogSection from "@/components/dental/DentalPainLogSection";
+import DentalExportButton from "@/components/dental/DentalExportButton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Smile, AlertCircle, Droplet, Sparkles, AlertTriangle, Star, Bone as ToothIcon, ClipboardList, BarChart3, Activity } from "lucide-react";
 
@@ -31,8 +32,8 @@ export default function AIDentalCare() {
 
   return (
     <div>
-      <div className="sticky top-14 lg:top-0 z-10 bg-white border-b border-border px-4 py-2">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <div className="sticky top-14 lg:top-0 z-10 bg-white border-b border-border px-4 py-2 flex items-center justify-between gap-2">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
           <TabsList className="grid grid-cols-5 max-w-2xl mx-auto">
             <TabsTrigger value="consult"><Smile className="w-3.5 h-3.5 mr-1.5" />AI Consult</TabsTrigger>
             <TabsTrigger value="toothmap"><ToothIcon className="w-3.5 h-3.5 mr-1.5" />Tooth Map</TabsTrigger>
@@ -41,6 +42,7 @@ export default function AIDentalCare() {
             <TabsTrigger value="dashboard"><BarChart3 className="w-3.5 h-3.5 mr-1.5" />Dashboard</TabsTrigger>
           </TabsList>
         </Tabs>
+        <DentalExportButton />
       </div>
       {activeTab === "consult" ? (
         <AIServicePage config={config} />
