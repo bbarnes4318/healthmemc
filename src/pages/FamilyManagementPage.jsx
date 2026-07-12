@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Users, UserPlus } from "lucide-react";
 import FamilyManagement from "@/components/family/FamilyManagement";
 import FamilyCareDashboard from "@/components/family/FamilyCareDashboard";
+import FamilyAppointmentCalendar from "@/components/family/FamilyAppointmentCalendar";
 
 export default function FamilyManagementPage() {
   return (
@@ -17,6 +18,7 @@ export default function FamilyManagementPage() {
         </div>
 
         <FamilyCareDashboard />
+        <FamilyAppointmentCalendar />
         <FamilyManagement />
       </motion.div>
     </div>

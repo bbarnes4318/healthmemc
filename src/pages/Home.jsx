@@ -13,6 +13,7 @@ import CheckInButton from "@/components/CheckInButton";
 import WellnessStreakCards from "@/components/wellness/WellnessStreakCards";
 import FamilyOverviewCard from "@/components/family/FamilyOverviewCard";
 import PricingPlans from "@/components/about/PricingPlans";
+import NutritionProgressBars from "@/components/wellness/NutritionProgressBars";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a4dfc16013374d3269a9096/3f23b1c41_generated_image.png";
 
@@ -235,6 +236,9 @@ export default function Home() {
           )}
         </Card>
       </div>
+
+      {/* Nutrition Goal Progress */}
+      <NutritionProgressBars />
 
       {/* Family Overview */}
       <FamilyOverviewCard />

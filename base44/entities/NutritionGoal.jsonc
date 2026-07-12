@@ -1,0 +1,28 @@
+{
+  "name": "NutritionGoal",
+  "type": "object",
+  "properties": {
+    "calorie_goal": {
+      "type": "number",
+      "default": 2000
+    },
+    "protein_goal": {
+      "type": "number",
+      "default": 50
+    },
+    "fat_goal": {
+      "type": "number",
+      "default": 70
+    },
+    "carbs_goal": {
+      "type": "number",
+      "default": 250
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "calorie_goal"
+  ]
+}
