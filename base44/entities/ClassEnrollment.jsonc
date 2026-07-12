@@ -1,0 +1,35 @@
+{
+  "name": "ClassEnrollment",
+  "type": "object",
+  "properties": {
+    "class_id": {
+      "type": "string"
+    },
+    "class_name": {
+      "type": "string"
+    },
+    "trainer_name": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "enrolled_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "enrolled",
+        "completed",
+        "cancelled"
+      ],
+      "default": "enrolled"
+    }
+  },
+  "required": [
+    "class_id",
+    "user_name"
+  ]
+}

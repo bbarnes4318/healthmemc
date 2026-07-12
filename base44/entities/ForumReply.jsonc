@@ -16,7 +16,9 @@
       "enum": [
         "doctor",
         "specialist",
-        "nurse"
+        "nurse",
+        "dentist",
+        "veterinarian"
       ]
     },
     "author_specialty": {

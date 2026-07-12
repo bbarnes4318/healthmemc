@@ -45,6 +45,8 @@
         "nephrology",
         "pulmonology",
         "rheumatology",
+        "dentistry",
+        "veterinary_medicine",
         "general"
       ],
       "default": "general"
@@ -57,7 +59,9 @@
       "enum": [
         "doctor",
         "specialist",
-        "nurse"
+        "nurse",
+        "dentist",
+        "veterinarian"
       ]
     },
     "author_specialty": {

@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Sparkles, Apple, Dumbbell, Moon, Heart, Wind, Scale, Cigarette, Activity,
-  ChefHat, Loader2, ArrowLeft, Shield, Activity as BodyIcon
+  ChefHat, Loader2, ArrowLeft, Shield, Activity as BodyIcon, BookHeart
 } from "lucide-react";
 import BodyDiagram from "@/components/consultations/BodyDiagram";
 import { motion } from "framer-motion";
@@ -15,6 +15,7 @@ import RecipeSuggester from "@/components/wellness/RecipeSuggester";
 import StepTracker from "@/components/wellness/StepTracker";
 import ExerciseWeeklySummary from "@/components/wellness/ExerciseWeeklySummary";
 import ExerciseCalendar from "@/components/wellness/ExerciseCalendar";
+import WellnessJournal from "@/components/wellness/WellnessJournal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const programs = [
@@ -104,10 +105,11 @@ export default function Wellness() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <TabsList className="grid grid-cols-4 w-full max-w-lg mx-auto">
+          <TabsList className="grid grid-cols-5 w-full max-w-xl mx-auto">
             <TabsTrigger value="programs"><Sparkles className="w-3.5 h-3.5 mr-1.5" />Programs</TabsTrigger>
             <TabsTrigger value="nutrition"><Apple className="w-3.5 h-3.5 mr-1.5" />Nutrition</TabsTrigger>
             <TabsTrigger value="activity"><Activity className="w-3.5 h-3.5 mr-1.5" />Activity</TabsTrigger>
+            <TabsTrigger value="journal"><BookHeart className="w-3.5 h-3.5 mr-1.5" />Journal</TabsTrigger>
             <TabsTrigger value="bodymap"><BodyIcon className="w-3.5 h-3.5 mr-1.5" />Body Map</TabsTrigger>
           </TabsList>
         </Tabs>
@@ -123,6 +125,8 @@ export default function Wellness() {
             <ActivityWeeklyWrapper />
             <StepTracker />
           </div>
+        ) : activeTab === "journal" ? (
+          <WellnessJournal />
         ) : activeTab === "bodymap" ? (
           <BodyDiagram />
         ) : (

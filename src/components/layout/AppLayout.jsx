@@ -25,6 +25,7 @@ const navItems = [
   { path: "/assisted-living", label: "Assisted Living", icon: LifeBuoy },
   { path: "/pet-care", label: "Pet Care", icon: PawPrint },
   { path: "/sports-medicine", label: "Sports Medicine", icon: Dumbbell },
+  { path: "/fitness-center", label: "AI Fitness", icon: Dumbbell },
   { path: "/eye-doctor", label: "Eye Doctor", icon: Eye },
   { path: "/ear-nose-doctor", label: "Ear & Nose", icon: Ear },
   { path: "/ear-care", label: "Ear Care", icon: Ear },

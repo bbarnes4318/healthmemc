@@ -56,6 +56,7 @@ import SurgicalRecovery from '@/pages/SurgicalRecovery';
 import IntakeFormTemplates from '@/pages/IntakeFormTemplates';
 import FamilyManagementPage from '@/pages/FamilyManagementPage';
 import MedicalForum from '@/pages/MedicalForum';
+import AIFitnessCenter from '@/pages/AIFitnessCenter';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -119,6 +120,7 @@ const AuthenticatedApp = () => {
           <Route path="/intake-forms" element={<IntakeFormTemplates />} />
           <Route path="/family-management" element={<FamilyManagementPage />} />
           <Route path="/medical-forum" element={<MedicalForum />} />
+          <Route path="/fitness-center" element={<AIFitnessCenter />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />

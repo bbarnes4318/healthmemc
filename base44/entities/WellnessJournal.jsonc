@@ -1,0 +1,70 @@
+{
+  "name": "WellnessJournal",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "mood": {
+      "type": "string",
+      "enum": [
+        "great",
+        "good",
+        "okay",
+        "low",
+        "poor"
+      ],
+      "default": "okay"
+    },
+    "mood_score": {
+      "type": "number",
+      "default": 3
+    },
+    "stress_level": {
+      "type": "string",
+      "enum": [
+        "minimal",
+        "low",
+        "moderate",
+        "high",
+        "severe"
+      ],
+      "default": "moderate"
+    },
+    "stress_score": {
+      "type": "number",
+      "default": 3
+    },
+    "sleep_quality": {
+      "type": "string",
+      "enum": [
+        "excellent",
+        "good",
+        "fair",
+        "poor",
+        "terrible"
+      ],
+      "default": "fair"
+    },
+    "sleep_score": {
+      "type": "number",
+      "default": 3
+    },
+    "sleep_hours": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "gratitude": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "date"
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "name": "FitnessClass",
+  "type": "object",
+  "properties": {
+    "class_name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "trainer_name": {
+      "type": "string"
+    },
+    "trainer_type": {
+      "type": "string",
+      "enum": [
+        "strength",
+        "cardio",
+        "yoga",
+        "hiit",
+        "pilates",
+        "cycling",
+        "boxing",
+        "dance",
+        "swimming",
+        "recovery"
+      ]
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 45
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ],
+      "default": "intermediate"
+    },
+    "schedule_day": {
+      "type": "string",
+      "enum": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+      ]
+    },
+    "schedule_time": {
+      "type": "string"
+    },
+    "max_participants": {
+      "type": "number",
+      "default": 20
+    },
+    "current_participants": {
+      "type": "number",
+      "default": 0
+    },
+    "trainer_bio": {
+      "type": "string"
+    },
+    "equipment_needed": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "calories_burn_estimate": {
+      "type": "number"
+    },
+    "image_url": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "class_name",
+    "trainer_name",
+    "trainer_type"
+  ]
+}

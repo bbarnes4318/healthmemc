@@ -9,10 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, Loader2, Pin, Eye, ArrowLeft, MessageSquare, ShieldCheck, Stethoscope, HeartPulse, UserCircle, Tag } from "lucide-react";
+import { Plus, Loader2, Pin, Eye, ArrowLeft, MessageSquare, ShieldCheck, Stethoscope, HeartPulse, UserCircle, Tag, Search, Download, PawPrint, Smile } from "lucide-react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import ReactMarkdown from "react-markdown";
+import generateForumReportPdf from "@/lib/generateForumReportPdf";
 
 const categories = [
   { value: "surgery_options", label: "Surgery Options", icon: Stethoscope, color: "bg-sky-100 text-sky-700" },
@@ -28,6 +29,8 @@ const roleConfig = {
   doctor: { label: "Doctor", color: "bg-sky-100 text-sky-700", icon: Stethoscope },
   specialist: { label: "Specialist", color: "bg-violet-100 text-violet-700", icon: HeartPulse },
   nurse: { label: "Nurse", color: "bg-emerald-100 text-emerald-700", icon: HeartPulse },
+  dentist: { label: "Dentist", color: "bg-amber-100 text-amber-700", icon: Smile },
+  veterinarian: { label: "Veterinarian", color: "bg-orange-100 text-orange-700", icon: PawPrint },
 };
 
 const specialties = [
@@ -53,6 +56,8 @@ const specialties = [
   { value: "nephrology", label: "Nephrology" },
   { value: "pulmonology", label: "Pulmonology" },
   { value: "rheumatology", label: "Rheumatology" },
+  { value: "dentistry", label: "Dentistry" },
+  { value: "veterinary_medicine", label: "Veterinary Medicine" },
 ];
 
 const specialtyColors = "bg-teal-100 text-teal-700";
@@ -76,6 +81,8 @@ export default function MedicalForum() {
   const [saving, setSaving] = useState(false);
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterSpecialty, setFilterSpecialty] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [exporting, setExporting] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -150,17 +157,45 @@ export default function MedicalForum() {
 
   const filteredTopics = topics
     .filter((t) => filterCategory === "all" || t.category === filterCategory)
-    .filter((t) => filterSpecialty === "all" || t.specialty === filterSpecialty);
+    .filter((t) => filterSpecialty === "all" || t.specialty === filterSpecialty)
+    .filter((t) => {
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase();
+      return (t.title?.toLowerCase().includes(q) ||
+        t.content?.toLowerCase().includes(q) ||
+        t.author_name?.toLowerCase().includes(q) ||
+        t.tags?.some((tag) => tag.toLowerCase().includes(q)));
+    });
   const pinnedTopics = filteredTopics.filter((t) => t.pinned);
   const regularTopics = filteredTopics.filter((t) => !t.pinned);
+
+  const handleExportReport = async () => {
+    setExporting(true);
+    try {
+      const topicReplies = await base44.entities.ForumReply.filter({ topic_id: selectedTopic.id });
+      topicReplies.sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+      generateForumReportPdf(selectedTopic, topicReplies, specialties);
+      toast({ title: "Report downloaded", description: "Forum discussion summary exported as PDF." });
+    } catch (e) {
+      console.error(e);
+      toast({ title: "Failed to export report", variant: "destructive" });
+    }
+    setExporting(false);
+  };
 
   if (selectedTopic) {
     const cat = getCategory(selectedTopic.category);
     return (
       <div className="p-4 lg:p-8 max-w-4xl mx-auto">
-        <Button variant="ghost" onClick={() => setSelectedTopic(null)} className="mb-4">
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back to Forum
-        </Button>
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="ghost" onClick={() => setSelectedTopic(null)}>
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Forum
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleExportReport} disabled={exporting}>
+            {exporting ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Download className="w-4 h-4 mr-1.5" />}
+            Export Report
+          </Button>
+        </div>
 
         <Card className="p-6 mb-4">
           <div className="flex items-center gap-2 mb-3 flex-wrap">
@@ -263,7 +298,7 @@ export default function MedicalForum() {
             <Stethoscope className="w-7 h-7 text-white" />
           </div>
           <h1 className="text-xl font-display font-bold">Medical Professionals Forum</h1>
-          <p className="text-muted-foreground mt-1 text-sm">A secure space for doctors, specialists & nurses to discuss surgery options, treatment methods, and care plans</p>
+          <p className="text-muted-foreground mt-1 text-sm">A secure space for doctors, specialists, nurses, dentists & veterinarians to discuss surgery options, treatment methods, and care plans</p>
         </div>
 
         {/* Role Selector + New Topic */}
@@ -276,6 +311,8 @@ export default function MedicalForum() {
                 <SelectItem value="doctor">Doctor</SelectItem>
                 <SelectItem value="specialist">Specialist</SelectItem>
                 <SelectItem value="nurse">Nurse</SelectItem>
+                <SelectItem value="dentist">Dentist</SelectItem>
+                <SelectItem value="veterinarian">Veterinarian</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -334,6 +371,17 @@ export default function MedicalForum() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Search topics, content, tags, or authors..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 h-9"
+          />
         </div>
 
         {/* Category Filter */}
