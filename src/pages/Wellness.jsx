@@ -14,6 +14,7 @@ import NutritionLog from "@/components/wellness/NutritionLog";
 import RecipeSuggester from "@/components/wellness/RecipeSuggester";
 import StepTracker from "@/components/wellness/StepTracker";
 import ExerciseWeeklySummary from "@/components/wellness/ExerciseWeeklySummary";
+import ExerciseCalendar from "@/components/wellness/ExerciseCalendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const programs = [
@@ -118,6 +119,7 @@ export default function Wellness() {
           </div>
         ) : activeTab === "activity" ? (
           <div className="space-y-4">
+            <ExerciseCalendar />
             <ActivityWeeklyWrapper />
             <StepTracker />
           </div>

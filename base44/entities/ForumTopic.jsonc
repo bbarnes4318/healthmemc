@@ -21,6 +21,34 @@
       ],
       "default": "general"
     },
+    "specialty": {
+      "type": "string",
+      "enum": [
+        "cardiology",
+        "orthopedics",
+        "neurology",
+        "oncology",
+        "pediatrics",
+        "surgery",
+        "internal_medicine",
+        "emergency_medicine",
+        "psychiatry",
+        "obstetrics_gynecology",
+        "dermatology",
+        "radiology",
+        "anesthesiology",
+        "ent",
+        "ophthalmology",
+        "urology",
+        "gastroenterology",
+        "endocrinology",
+        "nephrology",
+        "pulmonology",
+        "rheumatology",
+        "general"
+      ],
+      "default": "general"
+    },
     "author_name": {
       "type": "string"
     },

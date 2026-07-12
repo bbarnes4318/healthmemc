@@ -30,8 +30,36 @@ const roleConfig = {
   nurse: { label: "Nurse", color: "bg-emerald-100 text-emerald-700", icon: HeartPulse },
 };
 
+const specialties = [
+  { value: "general", label: "General" },
+  { value: "cardiology", label: "Cardiology" },
+  { value: "orthopedics", label: "Orthopedics" },
+  { value: "neurology", label: "Neurology" },
+  { value: "oncology", label: "Oncology" },
+  { value: "pediatrics", label: "Pediatrics" },
+  { value: "surgery", label: "Surgery" },
+  { value: "internal_medicine", label: "Internal Medicine" },
+  { value: "emergency_medicine", label: "Emergency Medicine" },
+  { value: "psychiatry", label: "Psychiatry" },
+  { value: "obstetrics_gynecology", label: "OB/GYN" },
+  { value: "dermatology", label: "Dermatology" },
+  { value: "radiology", label: "Radiology" },
+  { value: "anesthesiology", label: "Anesthesiology" },
+  { value: "ent", label: "ENT" },
+  { value: "ophthalmology", label: "Ophthalmology" },
+  { value: "urology", label: "Urology" },
+  { value: "gastroenterology", label: "Gastroenterology" },
+  { value: "endocrinology", label: "Endocrinology" },
+  { value: "nephrology", label: "Nephrology" },
+  { value: "pulmonology", label: "Pulmonology" },
+  { value: "rheumatology", label: "Rheumatology" },
+];
+
+const specialtyColors = "bg-teal-100 text-teal-700";
+
 const getCategory = (v) => categories.find((c) => c.value === v) || categories[6];
 const getRole = (v) => roleConfig[v] || roleConfig.doctor;
+const getSpecialty = (v) => specialties.find((s) => s.value === v) || specialties[0];
 
 export default function MedicalForum() {
   const [user, setUser] = useState(null);
@@ -44,9 +72,10 @@ export default function MedicalForum() {
   const [replyText, setReplyText] = useState("");
   const [postingReply, setPostingReply] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [form, setForm] = useState({ title: "", content: "", category: "general", tags: "" });
+  const [form, setForm] = useState({ title: "", content: "", category: "general", specialty: "general", author_specialty: "", tags: "" });
   const [saving, setSaving] = useState(false);
   const [filterCategory, setFilterCategory] = useState("all");
+  const [filterSpecialty, setFilterSpecialty] = useState("all");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -87,8 +116,9 @@ export default function MedicalForum() {
         tags: form.tags ? form.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
         author_name: user?.full_name || "Anonymous",
         author_role: userRole,
+        author_specialty: form.author_specialty || undefined,
       });
-      setForm({ title: "", content: "", category: "general", tags: "" });
+      setForm({ title: "", content: "", category: "general", specialty: "general", author_specialty: "", tags: "" });
       setDialogOpen(false);
       loadTopics();
       toast({ title: "Topic posted", description: "Your discussion topic has been published." });
@@ -118,7 +148,9 @@ export default function MedicalForum() {
     setPostingReply(false);
   };
 
-  const filteredTopics = filterCategory === "all" ? topics : topics.filter((t) => t.category === filterCategory);
+  const filteredTopics = topics
+    .filter((t) => filterCategory === "all" || t.category === filterCategory)
+    .filter((t) => filterSpecialty === "all" || t.specialty === filterSpecialty);
   const pinnedTopics = filteredTopics.filter((t) => t.pinned);
   const regularTopics = filteredTopics.filter((t) => !t.pinned);
 
@@ -131,8 +163,11 @@ export default function MedicalForum() {
         </Button>
 
         <Card className="p-6 mb-4">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
             <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${cat.color}`}>{cat.label}</span>
+            {selectedTopic.specialty && selectedTopic.specialty !== "general" && (
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${specialtyColors}`}>{getSpecialty(selectedTopic.specialty).label}</span>
+            )}
             {selectedTopic.pinned && <Pin className="w-3.5 h-3.5 text-amber-500" />}
           </div>
           <h1 className="text-xl font-display font-bold mb-2">{selectedTopic.title}</h1>
@@ -257,14 +292,29 @@ export default function MedicalForum() {
                   <Label className="text-xs">Title *</Label>
                   <Input placeholder="e.g., Laparoscopic vs open cholecystectomy for high-risk patients" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
                 </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">Category *</Label>
+                    <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {categories.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Medical Specialty</Label>
+                    <Select value={form.specialty} onValueChange={(v) => setForm({ ...form, specialty: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {specialties.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
                 <div>
-                  <Label className="text-xs">Category *</Label>
-                  <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {categories.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+                  <Label className="text-xs">Your Specialty (optional)</Label>
+                  <Input placeholder="e.g., Interventional Cardiology" value={form.author_specialty} onChange={(e) => setForm({ ...form, author_specialty: e.target.value })} />
                 </div>
                 <div>
                   <Label className="text-xs">Content *</Label>
@@ -287,7 +337,7 @@ export default function MedicalForum() {
         </div>
 
         {/* Category Filter */}
-        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto pb-1">
+        <div className="flex items-center gap-1.5 mb-2 overflow-x-auto pb-1">
           <button
             onClick={() => setFilterCategory("all")}
             className={`text-xs px-3 py-1.5 rounded-full border whitespace-nowrap transition ${filterCategory === "all" ? "bg-sky-600 border-sky-600 text-white" : "border-border hover:bg-muted text-muted-foreground"}`}
@@ -301,6 +351,26 @@ export default function MedicalForum() {
               className={`text-xs px-3 py-1.5 rounded-full border whitespace-nowrap transition flex items-center gap-1 ${filterCategory === c.value ? "bg-sky-600 border-sky-600 text-white" : "border-border hover:bg-muted text-muted-foreground"}`}
             >
               <c.icon className="w-3 h-3" /> {c.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Specialty Filter */}
+        <div className="flex items-center gap-1.5 mb-4 overflow-x-auto pb-1">
+          <span className="text-[10px] text-muted-foreground font-medium shrink-0 mr-1">Specialty:</span>
+          <button
+            onClick={() => setFilterSpecialty("all")}
+            className={`text-[10px] px-2.5 py-1 rounded-full border whitespace-nowrap transition ${filterSpecialty === "all" ? "bg-teal-600 border-teal-600 text-white" : "border-border hover:bg-muted text-muted-foreground"}`}
+          >
+            All
+          </button>
+          {specialties.filter((s) => s.value !== "general").map((s) => (
+            <button
+              key={s.value}
+              onClick={() => setFilterSpecialty(s.value)}
+              className={`text-[10px] px-2.5 py-1 rounded-full border whitespace-nowrap transition ${filterSpecialty === s.value ? "bg-teal-600 border-teal-600 text-white" : "border-border hover:bg-muted text-muted-foreground"}`}
+            >
+              {s.label}
             </button>
           ))}
         </div>
@@ -347,6 +417,9 @@ function TopicRow({ topic, onClick, delay }) {
             <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{topic.content}</p>
             <div className="flex items-center gap-2 mt-1.5 flex-wrap">
               <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${cat.color}`}>{cat.label}</span>
+              {topic.specialty && topic.specialty !== "general" && (
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${specialtyColors}`}>{getSpecialty(topic.specialty).label}</span>
+              )}
               <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${r.color}`}>{r.label}</span>
               <span className="text-[10px] text-muted-foreground">{topic.author_name}</span>
               <span className="text-[10px] text-muted-foreground">· {format(new Date(topic.created_date), "MMM d")}</span>
