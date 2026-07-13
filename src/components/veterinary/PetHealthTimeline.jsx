@@ -6,6 +6,7 @@ import { Loader2, Syringe, Activity, Apple, Calendar, Stethoscope, Shield, Sciss
 import { motion } from "framer-motion";
 import { format, parseISO, differenceInDays } from "date-fns";
 import PetSymptomTrendChart from "@/components/veterinary/PetSymptomTrendChart";
+import PetMedicalHistoryExport from "@/components/veterinary/PetMedicalHistoryExport";
 
 const recordTypeConfig = {
   vet_visit: { label: "Vet Visit", icon: Stethoscope, color: "text-sky-600", bg: "bg-sky-50", border: "border-sky-200" },
@@ -133,12 +134,15 @@ export default function PetHealthTimeline() {
         <p className="text-xs text-muted-foreground">Complete medical history — vaccinations, symptoms & nutrition in one place</p>
       </div>
 
-      <Select value={selectedPetId} onValueChange={setSelectedPetId}>
-        <SelectTrigger className="max-w-xs"><SelectValue /></SelectTrigger>
-        <SelectContent>
-          {pets.map((p) => <SelectItem key={p.id} value={p.id}>{p.name} ({p.breed || p.pet_type})</SelectItem>)}
-        </SelectContent>
-      </Select>
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <Select value={selectedPetId} onValueChange={setSelectedPetId}>
+          <SelectTrigger className="max-w-xs"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {pets.map((p) => <SelectItem key={p.id} value={p.id}>{p.name} ({p.breed || p.pet_type})</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <PetMedicalHistoryExport pet={selectedPet} />
+      </div>
 
       {/* Summary counts */}
       <div className="grid grid-cols-3 gap-2">
