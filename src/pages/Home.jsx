@@ -18,6 +18,7 @@ import PricingPlans from "@/components/about/PricingPlans";
 import InsuranceCoverageChart from "@/components/insurance/InsuranceCoverageChart";
 import FAQSection from "@/components/home/FAQSection";
 import BenefitsSection from "@/components/home/BenefitsSection";
+import FitnessPainMedicationReportButton from "@/components/health/FitnessPainMedicationReportButton";
 import NutritionProgressBars from "@/components/wellness/NutritionProgressBars";
 import VoiceGreeting from "@/components/voice/VoiceGreeting";
 import CriticalRecordsBanner from "@/components/records/CriticalRecordsBanner";
@@ -309,6 +310,20 @@ export default function Home() {
               </div>
             ));
           })()}
+        </div>
+      </Card>
+
+      {/* Physician Report Export */}
+      <Card className="p-5">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0">
+            <FileText className="w-5 h-5 text-white" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-display font-semibold text-sm">Share Progress with Your Doctor</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">Generate a single PDF with all your fitness activity, pain levels, and medication adherence.</p>
+          </div>
+          <FitnessPainMedicationReportButton className="bg-emerald-600 hover:bg-emerald-700 shrink-0" />
         </div>
       </Card>
 
