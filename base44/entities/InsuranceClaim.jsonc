@@ -1,0 +1,75 @@
+{
+  "name": "InsuranceClaim",
+  "type": "object",
+  "properties": {
+    "claim_number": {
+      "type": "string"
+    },
+    "provider_name": {
+      "type": "string"
+    },
+    "service_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "service_description": {
+      "type": "string"
+    },
+    "provider_type": {
+      "type": "string",
+      "enum": [
+        "primary_care",
+        "specialist",
+        "emergency_room",
+        "urgent_care",
+        "lab_work",
+        "imaging",
+        "surgery",
+        "pharmacy",
+        "mental_health",
+        "other"
+      ],
+      "default": "primary_care"
+    },
+    "billed_amount": {
+      "type": "number"
+    },
+    "insurance_paid": {
+      "type": "number"
+    },
+    "patient_responsibility": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "pending",
+        "approved",
+        "partially_paid",
+        "paid",
+        "denied"
+      ],
+      "default": "submitted"
+    },
+    "submitted_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "resolution_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "denial_reason": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "service_description",
+    "service_date",
+    "status"
+  ]
+}

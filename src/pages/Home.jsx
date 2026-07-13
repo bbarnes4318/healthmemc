@@ -17,6 +17,7 @@ import PricingPlans from "@/components/about/PricingPlans";
 import NutritionProgressBars from "@/components/wellness/NutritionProgressBars";
 import VoiceGreeting from "@/components/voice/VoiceGreeting";
 import CriticalRecordsBanner from "@/components/records/CriticalRecordsBanner";
+import QuickActionOverlay from "@/components/home/QuickActionOverlay";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a4dfc16013374d3269a9096/3f23b1c41_generated_image.png";
 
@@ -35,6 +36,7 @@ const quickActions = [
   { label: "Immunization History", icon: Syringe, path: "/immunization", color: "from-emerald-500 to-teal-600", desc: "Vaccines & booster reminders" },
   { label: "Surgical Recovery", icon: ActivityIcon, path: "/surgical-recovery", color: "from-rose-500 to-pink-600", desc: "Post-op healing & wound tracking" },
   { label: "Privacy Dashboard", icon: Shield, path: "/privacy-dashboard", color: "from-blue-500 to-indigo-600", desc: "Access logs & security status" },
+  { label: "Insurance Tracker", icon: Shield, path: "/insurance-tracker", color: "from-indigo-500 to-blue-600", desc: "Policies, deductibles & claims" },
 ];
 
 export default function Home() {
@@ -155,6 +157,12 @@ export default function Home() {
             </p>
           </Card>
         </motion.div>
+      </div>
+
+      {/* Quick Log Actions */}
+      <div>
+        <h2 className="text-lg font-display font-semibold mb-3">Quick Log</h2>
+        <QuickActionOverlay />
       </div>
 
       {/* Quick Actions Grid */}
