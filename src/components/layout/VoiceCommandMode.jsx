@@ -42,8 +42,12 @@ const routeCommands = {
 
 const logCommands = {
   "new feeding": "/newborn-care", "log feeding": "/newborn-care", "add feeding": "/newborn-care",
+  "new sleep": "/newborn-care", "log sleep": "/newborn-care", "add sleep": "/newborn-care",
+  "new diaper": "/newborn-care", "log diaper": "/newborn-care", "add diaper": "/newborn-care",
   "new milestone": "/newborn-care", "log milestone": "/newborn-care", "add milestone": "/newborn-care",
   "new vaccine": "/newborn-care", "log vaccine": "/newborn-care", "add vaccine": "/newborn-care",
+  "new growth": "/newborn-care", "log growth": "/newborn-care", "log weight": "/newborn-care", "log height": "/newborn-care",
+  "new specialist": "/newborn-care", "add specialist": "/newborn-care", "add doctor": "/newborn-care",
   "new appointment": "/appointment-dashboard", "schedule appointment": "/appointment-dashboard",
   "new medication": "/pharmacy", "add medication": "/pharmacy", "log medication": "/pharmacy",
   "new record": "/records", "add record": "/records", "upload record": "/records",
@@ -53,8 +57,8 @@ const logCommands = {
 };
 
 const commandHints = [
-  "Go to dashboard", "Open pharmacy", "New feeding", "Log medication",
-  "New appointment", "Open baby care", "Go to records", "New milestone",
+  "Go to dashboard", "Open pharmacy", "New feeding", "Log sleep",
+  "New milestone", "Log weight", "Open baby care", "New medication",
 ];
 
 export default function VoiceCommandMode() {

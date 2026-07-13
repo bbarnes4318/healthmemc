@@ -4,10 +4,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Milk, Moon, Droplets, Syringe, Sparkles, ChevronRight, Clock,
-  Baby, TrendingUp, RefreshCw, Loader2, Activity
+  Baby, TrendingUp, RefreshCw, Loader2, Activity, ChevronDown, ChevronUp
 } from "lucide-react";
 import { motion } from "framer-motion";
 import NewbornSpecialistDirectory from "@/components/newborn/NewbornSpecialistDirectory";
+import BabyGrowthChart from "@/components/newborn/BabyGrowthChart";
+import BabyMilestoneTracker from "@/components/newborn/BabyMilestoneTracker";
+import BabyMonthlyReportButton from "@/components/newborn/BabyMonthlyReportButton";
 
 function getTimestamp(log) {
   if (!log.date) return 0;
@@ -21,6 +24,9 @@ export default function NewbornDashboard({ onNavigateTab }) {
   const [milestones, setMilestones] = useState([]);
   const [growth, setGrowth] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showGrowthChart, setShowGrowthChart] = useState(false);
+  const [showMilestones, setShowMilestones] = useState(false);
+  const [showJournal, setShowJournal] = useState(false);
 
   const now = Date.now();
   const cutoff = now - 24 * 60 * 60 * 1000;
@@ -107,17 +113,20 @@ export default function NewbornDashboard({ onNavigateTab }) {
               <Baby className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="font-semibold text-white text-sm">24-Hour Snapshot</h3>
+              <h3 className="font-semibold text-white text-sm">Consolidated Dashboard</h3>
               <p className="text-[10px] text-white/80">
-                {new Date(cutoff).toLocaleDateString("en-US", { month: "short", day: "numeric" })} {new Date(cutoff).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                Last 24h: {new Date(cutoff).toLocaleDateString("en-US", { month: "short", day: "numeric" })} {new Date(cutoff).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
                 {" — "}
-                {new Date(now).toLocaleDateString("en-US", { month: "short", day: "numeric" })} {new Date(now).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                {new Date(now).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
               </p>
             </div>
           </div>
-          <Button size="icon" variant="ghost" className="text-white hover:bg-white/20 h-8 w-8" onClick={load} title="Refresh">
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-          </Button>
+          <div className="flex items-center gap-2">
+            <BabyMonthlyReportButton />
+            <Button size="icon" variant="ghost" className="text-white hover:bg-white/20 h-8 w-8" onClick={load} title="Refresh">
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+            </Button>
+          </div>
         </div>
       </Card>
 
@@ -234,20 +243,25 @@ export default function NewbornDashboard({ onNavigateTab }) {
         )}
       </Card>
 
-      {/* Recent milestones */}
+      {/* Recent milestones summary */}
       {milestones.length > 0 && (
         <Card className="p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-purple-600" />
-              <h3 className="font-semibold text-sm">Recent Milestones</h3>
+              <h3 className="font-semibold text-sm">Milestone Timeline</h3>
             </div>
-            <button onClick={() => onNavigateTab?.("milestones")} className="text-[10px] text-sky-600 hover:underline">
-              View all
-            </button>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setShowMilestones(!showMilestones)} className="text-[10px] text-sky-600 hover:underline flex items-center gap-0.5">
+                {showMilestones ? "Hide" : "Expand"} {showMilestones ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+              </button>
+              <button onClick={() => onNavigateTab?.("milestones")} className="text-[10px] text-sky-600 hover:underline">
+                Open tab
+              </button>
+            </div>
           </div>
           <div className="space-y-2">
-            {milestones.slice(0, 3).map((m) => (
+            {milestones.slice(0, showMilestones ? 10 : 3).map((m) => (
               <div key={m.id} className="flex items-center gap-3 p-2 rounded-lg bg-muted/30">
                 <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center shrink-0">
                   <Sparkles className="w-4 h-4 text-purple-600" />
@@ -261,6 +275,63 @@ export default function NewbornDashboard({ onNavigateTab }) {
           </div>
         </Card>
       )}
+
+      {/* Growth Chart — embedded */}
+      <div>
+        <div className="flex items-center justify-between mb-2 px-1">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-emerald-600" />
+            <h3 className="font-semibold text-sm">Growth Chart</h3>
+          </div>
+          <button onClick={() => setShowGrowthChart(!showGrowthChart)} className="text-[10px] text-sky-600 hover:underline flex items-center gap-0.5">
+            {showGrowthChart ? "Hide" : "Show"} {showGrowthChart ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+          </button>
+        </div>
+        {showGrowthChart && <BabyGrowthChart />}
+      </div>
+
+      {/* Shared Journal — recent entries */}
+      <div>
+        <div className="flex items-center justify-between mb-2 px-1">
+          <div className="flex items-center gap-2">
+            <Milk className="w-4 h-4 text-indigo-600" />
+            <h3 className="font-semibold text-sm">Shared Journal — Recent Entries</h3>
+          </div>
+          <button onClick={() => onNavigateTab?.("journal")} className="text-[10px] text-sky-600 hover:underline">
+            Open journal
+          </button>
+        </div>
+        {loading ? (
+          <div className="flex justify-center py-4"><Loader2 className="w-5 h-5 animate-spin text-indigo-600" /></div>
+        ) : last24.length === 0 ? (
+          <Card className="p-4 text-center">
+            <p className="text-xs text-muted-foreground">No journal entries in the last 24 hours</p>
+          </Card>
+        ) : (
+          <Card className="p-3">
+            <div className="space-y-1.5">
+              {last24.sort((a, b) => getTimestamp(b) - getTimestamp(a)).slice(0, showJournal ? 20 : 5).map((l) => {
+                const Icon = activityIcon[l.log_type] || Activity;
+                const color = activityColor[l.log_type] || "#64748b";
+                return (
+                  <div key={l.id} className="flex items-center gap-2 p-1.5 rounded-lg bg-muted/20">
+                    <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}15` }}>
+                      <Icon className="w-3 h-3" style={{ color }} />
+                    </div>
+                    <span className="text-xs capitalize flex-1 min-w-0 truncate">{l.log_type}</span>
+                    {l.time && <span className="text-[9px] text-muted-foreground">{l.time}</span>}
+                  </div>
+                );
+              })}
+              {last24.length > 5 && (
+                <button onClick={() => setShowJournal(!showJournal)} className="w-full text-center text-[10px] text-sky-600 hover:underline py-1">
+                  {showJournal ? "Show less" : `Show ${last24.length - 5} more`}
+                </button>
+              )}
+            </div>
+          </Card>
+        )}
+      </div>
 
       {/* Specialist Directory */}
       <NewbornSpecialistDirectory />
