@@ -22,7 +22,8 @@ import MonthlyExpenseReport from "@/components/pharmacy/MonthlyExpenseReport";
 import MedicationHistoryReport from "@/components/pharmacy/MedicationHistoryReport";
 import MedicationSafetyScanner from "@/components/pharmacy/MedicationSafetyScanner";
 import TreatmentCorrelationAnalyzer from "@/components/health/TreatmentCorrelationAnalyzer";
-import { GitCompare } from "lucide-react";
+import DosageTimingCalculator from "@/components/pharmacy/DosageTimingCalculator";
+import { GitCompare, Clock } from "lucide-react";
 
 export default function Pharmacy() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -87,6 +88,7 @@ export default function Pharmacy() {
             <TabsTrigger value="expenses"><BarChart3 className="w-3.5 h-3.5 mr-1" />Expenses</TabsTrigger>
             <TabsTrigger value="analytics"><BarChart3 className="w-3.5 h-3.5 mr-1" />Analytics</TabsTrigger>
             <TabsTrigger value="correlation"><GitCompare className="w-3.5 h-3.5 mr-1" />Correlate</TabsTrigger>
+            <TabsTrigger value="dosage"><Clock className="w-3.5 h-3.5 mr-1" />Dosage</TabsTrigger>
             <TabsTrigger value="lookup">Lookup</TabsTrigger>
             <TabsTrigger value="interactions">Interactions</TabsTrigger>
             <TabsTrigger value="safety"><Shield className="w-3.5 h-3.5 mr-1" />Safety Scan</TabsTrigger>
@@ -120,6 +122,10 @@ export default function Pharmacy() {
 
           <TabsContent value="correlation">
             <TreatmentCorrelationAnalyzer />
+          </TabsContent>
+
+          <TabsContent value="dosage">
+            <DosageTimingCalculator />
           </TabsContent>
 
           <TabsContent value="lookup">

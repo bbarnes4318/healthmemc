@@ -62,6 +62,7 @@ import AIWellnessSpa from '@/pages/AIWellnessSpa';
 import PrivacyDashboard from '@/pages/PrivacyDashboard';
 import InsuranceTracker from '@/pages/InsuranceTracker';
 import MasterWellnessDashboard from '@/pages/MasterWellnessDashboard';
+import AIPersonalPhysician from '@/pages/AIPersonalPhysician';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -131,6 +132,7 @@ const AuthenticatedApp = () => {
           <Route path="/privacy-dashboard" element={<PrivacyDashboard />} />
           <Route path="/insurance-tracker" element={<InsuranceTracker />} />
           <Route path="/master-wellness" element={<MasterWellnessDashboard />} />
+          <Route path="/personal-physician" element={<AIPersonalPhysician />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />

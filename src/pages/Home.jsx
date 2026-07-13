@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Stethoscope, HeartPulse, Users, Pill, FileText, Sparkles,
-  Calendar, Phone, TrendingUp, Clock, ChevronRight, Shield, Dumbbell, History, Home as HomeIcon, Scan, Info, Syringe, Activity as ActivityIcon, Ear
+  Calendar, Phone, TrendingUp, Clock, ChevronRight, Shield, Dumbbell, History, Home as HomeIcon, Scan, Info, Syringe, Activity as ActivityIcon, Ear, UserRound
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
@@ -24,6 +24,7 @@ const LOGO_URL = "https://media.base44.com/images/public/6a4dfc16013374d3269a909
 
 const quickActions = [
   { label: "Start AI Doctor Visit", icon: Stethoscope, path: "/ai-doctor", color: "from-sky-500 to-blue-600", desc: "Describe symptoms & get insights" },
+  { label: "AI Personal Physician", icon: UserRound, path: "/personal-physician", color: "from-indigo-500 to-purple-600", desc: "Your personalized health companion" },
   { label: "Chat with AI Nurse", icon: HeartPulse, path: "/ai-nurse", color: "from-emerald-500 to-teal-600", desc: "Daily check-ins & wellness" },
   { label: "AI Specialists", icon: Users, path: "/specialists", color: "from-violet-500 to-purple-600", desc: "Cardiology, neuro & more" },
   { label: "AI Pharmacy", icon: Pill, path: "/pharmacy", color: "from-amber-500 to-orange-600", desc: "Medications & interactions" },

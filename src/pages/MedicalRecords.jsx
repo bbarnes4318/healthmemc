@@ -10,6 +10,7 @@ import {
   FileText, Plus, Upload, Loader2, Calendar, Trash2,
   Download, Filter, Search, List, GitBranch, FileDown, FlaskConical, GitCompare, Shield
 } from "lucide-react";
+import OcrButton from "@/components/records/OcrButton";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import MedicalTimeline from "@/components/records/MedicalTimeline";
@@ -327,6 +328,9 @@ export default function MedicalRecords() {
                     >
                       {extracting === record.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <FlaskConical className="w-4 h-4" />}
                     </Button>
+                  )}
+                  {record.file_url && (
+                    <OcrButton record={record} onExtracted={loadRecords} />
                   )}
                   <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700" onClick={() => handleDelete(record.id)}>
                     <Trash2 className="w-4 h-4" />
