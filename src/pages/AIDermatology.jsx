@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import AIServicePage from "@/components/services/AIServicePage";
 import DermatologyGallery from "@/components/dermatology/DermatologyGallery";
 import DermatologyCompare from "@/components/dermatology/DermatologyCompare";
+import DermatologyOverlay from "@/components/dermatology/DermatologyOverlay";
+import DermatologyAssessment from "@/components/dermatology/DermatologyAssessment";
 import DermatologyTrendChart from "@/components/health/DermatologyTrendChart";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Scan, Camera, GitCompare, Shield, Activity } from "lucide-react";
+import { Scan, Camera, GitCompare, Shield, Activity, Layers, Brain } from "lucide-react";
 
 const config = {
   title: "AI Dermatology",
@@ -32,10 +34,12 @@ export default function AIDermatology() {
     <div>
       <div className="sticky top-14 lg:top-0 z-10 bg-white border-b border-border px-4 py-2">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-4 max-w-2xl mx-auto">
+          <TabsList className="grid grid-cols-6 max-w-3xl mx-auto">
             <TabsTrigger value="consult"><Scan className="w-3.5 h-3.5 mr-1.5" />AI Consult</TabsTrigger>
             <TabsTrigger value="gallery"><Camera className="w-3.5 h-3.5 mr-1.5" />Gallery</TabsTrigger>
             <TabsTrigger value="compare"><GitCompare className="w-3.5 h-3.5 mr-1.5" />Compare</TabsTrigger>
+            <TabsTrigger value="overlay"><Layers className="w-3.5 h-3.5 mr-1.5" />Overlay</TabsTrigger>
+            <TabsTrigger value="assessment"><Brain className="w-3.5 h-3.5 mr-1.5" />Assessment</TabsTrigger>
             <TabsTrigger value="trends"><Activity className="w-3.5 h-3.5 mr-1.5" />Trends</TabsTrigger>
           </TabsList>
         </Tabs>
@@ -49,6 +53,14 @@ export default function AIDermatology() {
       ) : activeTab === "compare" ? (
         <div className="p-4 lg:p-8 max-w-4xl mx-auto">
           <DermatologyCompare />
+        </div>
+      ) : activeTab === "overlay" ? (
+        <div className="p-4 lg:p-8 max-w-4xl mx-auto">
+          <DermatologyOverlay />
+        </div>
+      ) : activeTab === "assessment" ? (
+        <div className="p-4 lg:p-8 max-w-4xl mx-auto">
+          <DermatologyAssessment />
         </div>
       ) : (
         <div className="p-4 lg:p-8 max-w-4xl mx-auto">

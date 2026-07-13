@@ -1,0 +1,70 @@
+{
+  "name": "ExerciseTemplate",
+  "type": "object",
+  "properties": {
+    "template_name": {
+      "type": "string"
+    },
+    "exercise_name": {
+      "type": "string"
+    },
+    "body_part": {
+      "type": "string",
+      "enum": [
+        "knee",
+        "shoulder",
+        "hip",
+        "spine",
+        "ankle",
+        "wrist",
+        "neck",
+        "full_body",
+        "other"
+      ]
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "default": "medium"
+    },
+    "intensity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "default": "moderate"
+    },
+    "sets": {
+      "type": "number"
+    },
+    "reps": {
+      "type": "number"
+    },
+    "duration_minutes": {
+      "type": "number"
+    },
+    "rom_degrees": {
+      "type": "number"
+    },
+    "default_pain_level": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "template_name",
+    "exercise_name",
+    "body_part"
+  ]
+}

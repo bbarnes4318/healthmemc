@@ -1,0 +1,88 @@
+{
+  "name": "RecoveryLogTemplate",
+  "type": "object",
+  "properties": {
+    "template_name": {
+      "type": "string"
+    },
+    "surgery_name": {
+      "type": "string"
+    },
+    "pain_level": {
+      "type": "number"
+    },
+    "pain_type": {
+      "type": "string",
+      "enum": [
+        "aching",
+        "sharp",
+        "throbbing",
+        "burning",
+        "stinging",
+        "stiffness",
+        "other"
+      ]
+    },
+    "wound_status": {
+      "type": "string",
+      "enum": [
+        "clean_healing",
+        "redness",
+        "swelling",
+        "discharge",
+        "dehiscence",
+        "infection",
+        "fully_healed"
+      ],
+      "default": "clean_healing"
+    },
+    "mobility_level": {
+      "type": "string",
+      "enum": [
+        "bedridden",
+        "limited_assistance",
+        "with_walker",
+        "independent_limited",
+        "fully_mobile"
+      ],
+      "default": "limited_assistance"
+    },
+    "activity_type": {
+      "type": "string",
+      "enum": [
+        "walking",
+        "physical_therapy",
+        "stretching",
+        "strengthening",
+        "cycling",
+        "swimming",
+        "other"
+      ]
+    },
+    "activity_duration_minutes": {
+      "type": "number"
+    },
+    "rom_flexion": {
+      "type": "number"
+    },
+    "rom_extension": {
+      "type": "number"
+    },
+    "rom_abduction": {
+      "type": "number"
+    },
+    "medications_taken": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "template_name",
+    "surgery_name"
+  ]
+}

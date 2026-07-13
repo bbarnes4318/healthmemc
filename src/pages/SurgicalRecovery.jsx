@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Activity, ShieldAlert, LayoutDashboard, ListChecks, TrendingUp, Award } from "lucide-react";
+import { Activity, ShieldAlert, LayoutDashboard, ListChecks, TrendingUp, Award, Bookmark } from "lucide-react";
 import SurgicalRecoveryTracker from "@/components/surgical/SurgicalRecoveryTracker";
 import RecoveryMilestoneTimeline from "@/components/surgical/RecoveryMilestoneTimeline";
 import SurgicalRecoveryDashboard from "@/components/surgical/SurgicalRecoveryDashboard";
 import SurgicalRecoveryTrends from "@/components/surgical/SurgicalRecoveryTrends";
+import RecoveryLogTemplateManager from "@/components/surgical/RecoveryLogTemplateManager";
 
 export default function SurgicalRecoveryPage() {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [trackerView, setTrackerView] = useState("log");
 
   return (
     <div className="p-4 lg:p-8 max-w-4xl mx-auto">
@@ -46,6 +48,14 @@ export default function SurgicalRecoveryPage() {
             <ListChecks className="w-4 h-4" /> Log Entries
           </button>
           <button
+            onClick={() => setActiveTab("templates")}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition ${
+              activeTab === "templates" ? "bg-background shadow-sm text-rose-700" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Bookmark className="w-4 h-4" /> Templates
+          </button>
+          <button
             onClick={() => setActiveTab("trends")}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition ${
               activeTab === "trends" ? "bg-background shadow-sm text-rose-700" : "text-muted-foreground hover:text-foreground"
@@ -63,7 +73,7 @@ export default function SurgicalRecoveryPage() {
           </button>
         </div>
 
-        {activeTab === "dashboard" ? <SurgicalRecoveryDashboard /> : activeTab === "log" ? <SurgicalRecoveryTracker /> : activeTab === "trends" ? <SurgicalRecoveryTrends /> : <RecoveryMilestoneTimeline />}
+        {activeTab === "dashboard" ? <SurgicalRecoveryDashboard /> : activeTab === "log" ? <SurgicalRecoveryTracker /> : activeTab === "trends" ? <SurgicalRecoveryTrends /> : activeTab === "templates" ? <RecoveryLogTemplateManager /> : <RecoveryMilestoneTimeline />}
       </motion.div>
     </div>
   );
