@@ -18,6 +18,7 @@ import NutritionProgressBars from "@/components/wellness/NutritionProgressBars";
 import VoiceGreeting from "@/components/voice/VoiceGreeting";
 import CriticalRecordsBanner from "@/components/records/CriticalRecordsBanner";
 import QuickActionOverlay from "@/components/home/QuickActionOverlay";
+import MasterWellnessDashboard from "@/pages/MasterWellnessDashboard";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a4dfc16013374d3269a9096/3f23b1c41_generated_image.png";
 
@@ -37,6 +38,7 @@ const quickActions = [
   { label: "Surgical Recovery", icon: ActivityIcon, path: "/surgical-recovery", color: "from-rose-500 to-pink-600", desc: "Post-op healing & wound tracking" },
   { label: "Privacy Dashboard", icon: Shield, path: "/privacy-dashboard", color: "from-blue-500 to-indigo-600", desc: "Access logs & security status" },
   { label: "Insurance Tracker", icon: Shield, path: "/insurance-tracker", color: "from-indigo-500 to-blue-600", desc: "Policies, deductibles & claims" },
+  { label: "Master Wellness", icon: TrendingUp, path: "/master-wellness", color: "from-violet-500 to-purple-600", desc: "All health trends in one place" },
 ];
 
 export default function Home() {
@@ -99,7 +101,7 @@ export default function Home() {
             <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="relative">
               <div className="flex items-center gap-2 mb-3">
-                <img src={LOGO_URL} alt="Health Me Medical Center" className="w-8 h-8 rounded-lg object-cover ring-1 ring-white/30" />
+                <img src={LOGO_URL} alt="Health Me Medical Center" className="w-16 h-16 rounded-lg object-cover ring-1 ring-white/30" />
                 <span className="text-[10px] text-sky-100 font-semibold uppercase tracking-wide">Health Me Medical Center</span>
               </div>
               <p className="text-sky-100 text-sm font-medium">Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 17 ? "afternoon" : "evening"},</p>

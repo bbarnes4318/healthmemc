@@ -13,6 +13,9 @@ import {
   Copy, Check, ExternalLink, Search, ChevronRight
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import DoctorComparisonTable from "@/components/specialists/DoctorComparisonTable";
+import { GitCompare } from "lucide-react";
 
 const emptyForm = {
   doctor_name: "",
@@ -35,6 +38,7 @@ export default function DoctorDirectory() {
   const [form, setForm] = useState(emptyForm);
   const [search, setSearch] = useState("");
   const [copiedId, setCopiedId] = useState(null);
+  const [activeTab, setActiveTab] = useState("directory");
   const { toast } = useToast();
 
   const loadData = async () => {
@@ -111,6 +115,17 @@ export default function DoctorDirectory() {
         </div>
       </div>
 
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-5">
+        <TabsList className="grid grid-cols-2 max-w-md">
+          <TabsTrigger value="directory"><Stethoscope className="w-3.5 h-3.5 mr-1.5" />Directory</TabsTrigger>
+          <TabsTrigger value="compare"><GitCompare className="w-3.5 h-3.5 mr-1.5" />Compare</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      {activeTab === "compare" && <DoctorComparisonTable />}
+
+      {activeTab === "directory" && (
+      <>
       {/* Search + Add */}
       <div className="flex items-center gap-2 mb-5">
         <div className="relative flex-1">
@@ -287,6 +302,8 @@ export default function DoctorDirectory() {
             </motion.div>
           ))}
         </div>
+      )}
+      </>
       )}
     </div>
   );

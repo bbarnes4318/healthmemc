@@ -1,0 +1,45 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 9 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "description": "Daily check for insurance claims whose status changed from pending to approved or denied, sending email notifications to the claim owner.",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "claim_status_alert",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "check_claims": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "checkClaimStatusChanges",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Check claim status changes",
+            "description": "Scan for resolved claims"
+          }
+        }
+      }
+    ]
+  },
+  "name": "Claim Status Change Alert"
+}

@@ -13,7 +13,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 import {
   Shield, Plus, Loader2, Trash2, Upload, DollarSign, FileText,
-  TrendingUp, Clock, CheckCircle2, XCircle, CreditCard, Pencil, ChevronRight
+  TrendingUp, Clock, CheckCircle2, XCircle, CreditCard, Pencil, ChevronRight, ScanLine
 } from "lucide-react";
 import { format, differenceInDays } from "date-fns";
 import { motion } from "framer-motion";
@@ -98,6 +98,7 @@ export default function InsuranceTracker() {
   const [deductibleEditId, setDeductileEditId] = useState(null);
   const [deductibleValue, setDeductibleValue] = useState("");
   const [saving, setSaving] = useState(false);
+  const [ocrLoading, setOcrLoading] = useState(false);
   const { toast } = useToast();
 
   const loadData = async () => {
@@ -202,6 +203,46 @@ export default function InsuranceTracker() {
     toast({ title: "Deductible progress updated" });
   };
 
+  const handleOcrUpload = async (file) => {
+    if (!file) return;
+    setOcrLoading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const response = await base44.functions.invoke("extractInsuranceCard", { file_url });
+      const extracted = response.data?.extracted;
+      if (!extracted) {
+        toast({ title: "Could not extract data", description: "Try a clearer photo of your card.", variant: "destructive" });
+        setOcrLoading(false);
+        return;
+      }
+      setPolicyForm((prev) => ({
+        ...prev,
+        provider_name: extracted.provider_name || prev.provider_name,
+        policy_number: extracted.policy_number || prev.policy_number,
+        group_number: extracted.group_number || prev.group_number,
+        subscriber_name: extracted.subscriber_name || prev.subscriber_name,
+        plan_name: extracted.plan_name || prev.plan_name,
+        plan_type: extracted.plan_type || prev.plan_type,
+        effective_date: extracted.effective_date || prev.effective_date,
+        termination_date: extracted.termination_date || prev.termination_date,
+        copay_amount: extracted.copay_amount?.toString() || prev.copay_amount,
+        deductible_amount: extracted.deductible_amount?.toString() || prev.deductible_amount,
+        coinsurance_percentage: extracted.coinsurance_percentage?.toString() || prev.coinsurance_percentage,
+        out_of_pocket_max: extracted.out_of_pocket_max?.toString() || prev.out_of_pocket_max,
+        customer_service_phone: extracted.customer_service_phone || prev.customer_service_phone,
+        card_front_url: file_url,
+      }));
+      toast({
+        title: "Card scanned!",
+        description: `Confidence: ${extracted.confidence || "medium"}. Review and save the policy.`,
+      });
+    } catch (e) {
+      console.error(e);
+      toast({ title: "OCR scan failed", variant: "destructive" });
+    }
+    setOcrLoading(false);
+  };
+
   const startEditPolicy = (card) => {
     setPolicyForm({
       ...emptyPolicy,
@@ -280,7 +321,26 @@ export default function InsuranceTracker() {
 
         {/* POLICIES TAB */}
         <TabsContent value="policies">
-          <div className="flex justify-end mb-3">
+          <div className="flex justify-end mb-3 gap-2">
+            <label className="cursor-pointer">
+              <Button variant="outline" className="cursor-pointer" disabled={ocrLoading}>
+                {ocrLoading ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <ScanLine className="w-4 h-4 mr-1.5" />}
+                {ocrLoading ? "Scanning..." : "Scan Card (OCR)"}
+              </Button>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  if (e.target.files[0]) {
+                    setEditingCardId(null);
+                    setPolicyForm(emptyPolicy);
+                    setPolicyDialogOpen(true);
+                    handleOcrUpload(e.target.files[0]);
+                  }
+                }}
+              />
+            </label>
             <Dialog open={policyDialogOpen} onOpenChange={(open) => { setPolicyDialogOpen(open); if (!open) { setPolicyForm(emptyPolicy); setEditingCardId(null); } }}>
               <DialogTrigger asChild>
                 <Button className="bg-blue-600 hover:bg-blue-700"><Plus className="w-4 h-4 mr-1.5" />Add Policy</Button>

@@ -65,6 +65,17 @@
     },
     "notes": {
       "type": "string"
+    },
+    "last_notified_status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "pending",
+        "approved",
+        "partially_paid",
+        "paid",
+        "denied"
+      ]
     }
   },
   "required": [
