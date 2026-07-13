@@ -61,6 +61,30 @@
       ],
       "default": "limited_assistance"
     },
+    "activity_type": {
+      "type": "string",
+      "enum": [
+        "walking",
+        "physical_therapy",
+        "stretching",
+        "strengthening",
+        "cycling",
+        "swimming",
+        "other"
+      ]
+    },
+    "activity_duration_minutes": {
+      "type": "number"
+    },
+    "rom_flexion": {
+      "type": "number"
+    },
+    "rom_extension": {
+      "type": "number"
+    },
+    "rom_abduction": {
+      "type": "number"
+    },
     "photo_url": {
       "type": "string"
     },

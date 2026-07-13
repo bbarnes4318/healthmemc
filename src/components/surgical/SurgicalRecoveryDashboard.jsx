@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { format, differenceInDays } from "date-fns";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  ReferenceLine, ReferenceDot, Legend, Scatter,
+  ReferenceLine, ReferenceDot, Legend, Scatter, ComposedChart, Bar,
 } from "recharts";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 
@@ -115,7 +115,14 @@ export default function SurgicalRecoveryDashboard() {
           woundLabel: woundLabels[e.wound_status] || e.wound_status,
           mobilityLabel: mobilityLabels[e.mobility_level] || e.mobility_level,
           milestones: e.milestones_reached || [],
+          activity: e.activity_duration_minutes,
+          romFlexion: e.rom_flexion,
+          romExtension: e.rom_extension,
+          romAbduction: e.rom_abduction,
         }));
+
+        const hasRomData = chartData.some((d) => d.romFlexion != null || d.romExtension != null || d.romAbduction != null);
+        const hasActivityData = chartData.some((d) => d.activity != null);
 
         // Milestone scatter points
         const milestonePoints = [];
@@ -178,6 +185,29 @@ export default function SurgicalRecoveryDashboard() {
                   ))}
                 </LineChart>
               </ResponsiveContainer>
+
+              {/* Activity + ROM Trend */}
+              {(hasRomData || hasActivityData) && (
+                <>
+                  <p className="text-xs text-muted-foreground mt-4 mb-3">Activity duration & range of motion progression</p>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <ComposedChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                      <YAxis yAxisId="left" tick={{ fontSize: 10 }} label={{ value: "min", angle: -90, position: "insideLeft", fontSize: 9, fill: "#64748b" }} />
+                      <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10 }} label={{ value: "degrees", angle: 90, position: "insideRight", fontSize: 9, fill: "#64748b" }} />
+                      <Tooltip contentStyle={{ fontSize: 12 }} />
+                      <Legend wrapperStyle={{ fontSize: 10 }} />
+                      {hasActivityData && <Bar yAxisId="left" dataKey="activity" name="Activity (min)" fill="#0ea5e9" radius={[4, 4, 0, 0]} />}
+                      {hasRomData && <Line yAxisId="right" type="monotone" dataKey="romFlexion" name="Flexion°" stroke="#e11d48" strokeWidth={2} dot={{ r: 3 }} />}
+                      {hasRomData && <Line yAxisId="right" type="monotone" dataKey="romExtension" name="Extension°" stroke="#f97316" strokeWidth={2} dot={{ r: 3 }} />}
+                      {chartData.some((d) => d.romAbduction != null) && (
+                        <Line yAxisId="right" type="monotone" dataKey="romAbduction" name="Abduction°" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 3 }} />
+                      )}
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </>
+              )}
 
               {/* Wound status + Mobility progression */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">

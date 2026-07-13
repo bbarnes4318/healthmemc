@@ -17,6 +17,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { format, differenceInDays } from "date-fns";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine,
+  ComposedChart, Bar, Legend,
 } from "recharts";
 
 const woundStatusConfig = {
@@ -66,6 +67,11 @@ export default function SurgicalRecoveryTracker() {
     temperature: "",
     notes: "",
     photo_url: "",
+    activity_type: "walking",
+    activity_duration_minutes: "",
+    rom_flexion: "",
+    rom_extension: "",
+    rom_abduction: "",
   });
   const [milestones, setMilestones] = useState([]);
 
@@ -104,6 +110,10 @@ export default function SurgicalRecoveryTracker() {
         ...form,
         days_post_op: daysPostOp,
         temperature: form.temperature ? parseFloat(form.temperature) : undefined,
+        activity_duration_minutes: form.activity_duration_minutes ? parseInt(form.activity_duration_minutes) : undefined,
+        rom_flexion: form.rom_flexion ? parseFloat(form.rom_flexion) : undefined,
+        rom_extension: form.rom_extension ? parseFloat(form.rom_extension) : undefined,
+        rom_abduction: form.rom_abduction ? parseFloat(form.rom_abduction) : undefined,
         milestones_reached: milestones,
         family_member_id: currentMemberId || undefined,
       });
@@ -113,6 +123,8 @@ export default function SurgicalRecoveryTracker() {
         pain_level: 3, pain_type: "aching", wound_status: "clean_healing",
         mobility_level: "limited_assistance", medications_taken: "", temperature: "",
         notes: "", photo_url: "",
+        activity_type: "walking", activity_duration_minutes: "",
+        rom_flexion: "", rom_extension: "", rom_abduction: "",
       });
       setMilestones([]);
       setDialogOpen(false);
@@ -137,6 +149,10 @@ export default function SurgicalRecoveryTracker() {
       date: format(new Date(l.log_date), "MMM d"),
       pain: l.pain_level,
       day: l.days_post_op,
+      activity: l.activity_duration_minutes,
+      romFlexion: l.rom_flexion,
+      romExtension: l.rom_extension,
+      romAbduction: l.rom_abduction,
     }));
 
   // Group by surgery
@@ -168,6 +184,30 @@ export default function SurgicalRecoveryTracker() {
               <ReferenceLine y={7} stroke="#ef4444" strokeDasharray="3 3" label={{ value: "Severe", fontSize: 10, fill: "#ef4444" }} />
               <Line type="monotone" dataKey="pain" name="Pain Level" stroke="#e11d48" strokeWidth={2} dot={{ r: 4 }} />
             </LineChart>
+          </ResponsiveContainer>
+        </Card>
+      )}
+
+      {/* Activity + ROM Trend Chart */}
+      {chartData.length > 0 && (chartData.some((d) => d.activity != null) || chartData.some((d) => d.romFlexion != null)) && (
+        <Card className="p-5">
+          <h3 className="text-sm font-semibold mb-1">Activity & Range of Motion Trend</h3>
+          <p className="text-xs text-muted-foreground mb-4">Daily activity duration and ROM progression over time</p>
+          <ResponsiveContainer width="100%" height={280}>
+            <ComposedChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+              <YAxis yAxisId="left" tick={{ fontSize: 10 }} label={{ value: "min", angle: -90, position: "insideLeft", fontSize: 9, fill: "#64748b" }} />
+              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10 }} label={{ value: "degrees", angle: 90, position: "insideRight", fontSize: 9, fill: "#64748b" }} />
+              <Tooltip contentStyle={{ fontSize: 12 }} />
+              <Legend wrapperStyle={{ fontSize: 10 }} />
+              <Bar yAxisId="left" dataKey="activity" name="Activity (min)" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
+              <Line yAxisId="right" type="monotone" dataKey="romFlexion" name="Flexion°" stroke="#e11d48" strokeWidth={2} dot={{ r: 3 }} />
+              <Line yAxisId="right" type="monotone" dataKey="romExtension" name="Extension°" stroke="#f97316" strokeWidth={2} dot={{ r: 3 }} />
+              {chartData.some((d) => d.romAbduction != null) && (
+                <Line yAxisId="right" type="monotone" dataKey="romAbduction" name="Abduction°" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 3 }} />
+              )}
+            </ComposedChart>
           </ResponsiveContainer>
         </Card>
       )}
@@ -244,6 +284,17 @@ export default function SurgicalRecoveryTracker() {
                       {log.pain_type && <p className="text-xs text-muted-foreground"><strong>Pain type:</strong> {log.pain_type}</p>}
                       {log.temperature && <p className="text-xs text-muted-foreground"><strong>Temperature:</strong> {log.temperature}°C</p>}
                       {log.medications_taken && <p className="text-xs text-muted-foreground"><strong>Meds taken:</strong> {log.medications_taken}</p>}
+                      {log.activity_duration_minutes != null && (
+                        <p className="text-xs text-muted-foreground"><strong>Activity:</strong> {log.activity_type ? log.activity_type.replace(/_/g, " ") : "Activity"} — {log.activity_duration_minutes} min</p>
+                      )}
+                      {(log.rom_flexion != null || log.rom_extension != null || log.rom_abduction != null) && (
+                        <p className="text-xs text-muted-foreground">
+                          <strong>ROM:</strong>
+                          {log.rom_flexion != null && ` Flexion ${log.rom_flexion}°`}
+                          {log.rom_extension != null && ` · Extension ${log.rom_extension}°`}
+                          {log.rom_abduction != null && ` · Abduction ${log.rom_abduction}°`}
+                        </p>
+                      )}
                       {log.milestones_reached && log.milestones_reached.length > 0 && (
                         <div>
                           <p className="text-xs text-muted-foreground mb-1"><strong>Milestones:</strong></p>
@@ -343,6 +394,44 @@ export default function SurgicalRecoveryTracker() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Daily Activity */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">Activity Type</Label>
+                <Select value={form.activity_type} onValueChange={(v) => setForm({ ...form, activity_type: v })}>
+                  <SelectTrigger className="h-9 mt-1"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["walking", "physical_therapy", "stretching", "strengthening", "cycling", "swimming", "other"].map((t) => (
+                      <SelectItem key={t} value={t} className="capitalize">{t.replace(/_/g, " ")}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-xs">Activity Duration (min)</Label>
+                <Input type="number" placeholder="e.g., 30" value={form.activity_duration_minutes} onChange={(e) => setForm({ ...form, activity_duration_minutes: e.target.value })} className="h-9 mt-1" />
+              </div>
+            </div>
+
+            {/* Range of Motion */}
+            <div className="p-3 bg-rose-50 rounded-lg border border-rose-200">
+              <p className="text-xs font-medium text-rose-700 mb-2">Range of Motion (degrees)</p>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <Label className="text-xs">Flexion°</Label>
+                  <Input type="number" placeholder="e.g., 90" value={form.rom_flexion} onChange={(e) => setForm({ ...form, rom_flexion: e.target.value })} className="h-9 mt-1" />
+                </div>
+                <div>
+                  <Label className="text-xs">Extension°</Label>
+                  <Input type="number" placeholder="e.g., -5" value={form.rom_extension} onChange={(e) => setForm({ ...form, rom_extension: e.target.value })} className="h-9 mt-1" />
+                </div>
+                <div>
+                  <Label className="text-xs">Abduction°</Label>
+                  <Input type="number" placeholder="e.g., 45" value={form.rom_abduction} onChange={(e) => setForm({ ...form, rom_abduction: e.target.value })} className="h-9 mt-1" />
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
