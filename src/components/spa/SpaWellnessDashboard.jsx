@@ -8,6 +8,7 @@ import {
 } from "recharts";
 import { format, subDays, eachDayOfInterval, isSameDay, parseISO } from "date-fns";
 import { motion } from "framer-motion";
+import SpaSessionFrequencyChart from "@/components/spa/SpaSessionFrequencyChart";
 
 const categoryColors = {
   spa_treatment: "#ec4899",
@@ -148,6 +149,9 @@ export default function SpaWellnessDashboard() {
           </motion.div>
         ))}
       </div>
+
+      {/* Session Frequency vs Wellness Trends */}
+      <SpaSessionFrequencyChart />
 
       {/* Mood & Stress Trend with Session Markers */}
       {trendData.some((d) => d.mood !== null) && (

@@ -42,6 +42,7 @@ const emptyForm = {
   stress_level: "moderate",
   sleep_quality: "fair",
   sleep_hours: "",
+  meditation_minutes: "",
   notes: "",
   gratitude: "",
 };
@@ -96,6 +97,7 @@ export default function RecoveryMoodTracker() {
         sleep_quality: form.sleep_quality,
         sleep_score: sleepOpt?.score || 3,
         sleep_hours: form.sleep_hours ? parseFloat(form.sleep_hours) : undefined,
+        meditation_minutes: form.meditation_minutes ? parseInt(form.meditation_minutes) : undefined,
         notes: form.notes,
         gratitude: form.gratitude,
       });
@@ -143,9 +145,15 @@ export default function RecoveryMoodTracker() {
               <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-200">
                 <OptionPicker label="Sleep Quality" options={sleepOptions} value={form.sleep_quality} onChange={(v) => setForm({ ...form, sleep_quality: v })} />
               </div>
-              <div>
-                <Label className="text-xs">Sleep Hours</Label>
-                <Input type="number" step="0.5" placeholder="7.5" value={form.sleep_hours} onChange={(e) => setForm({ ...form, sleep_hours: e.target.value })} />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">Sleep Hours</Label>
+                  <Input type="number" step="0.5" placeholder="7.5" value={form.sleep_hours} onChange={(e) => setForm({ ...form, sleep_hours: e.target.value })} />
+                </div>
+                <div>
+                  <Label className="text-xs">Meditation (min)</Label>
+                  <Input type="number" placeholder="0" value={form.meditation_minutes} onChange={(e) => setForm({ ...form, meditation_minutes: e.target.value })} />
+                </div>
               </div>
               <div>
                 <Label className="text-xs">Gratitude</Label>

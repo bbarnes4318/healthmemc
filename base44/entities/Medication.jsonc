@@ -45,6 +45,10 @@
     "supply_quantity": {
       "type": "number"
     },
+    "refill_requested": {
+      "type": "boolean",
+      "default": false
+    },
     "family_member_id": {
       "type": "string"
     }

@@ -2,9 +2,10 @@ import React, { useState, useEffect, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, Pill, Clock, Loader2 } from "lucide-react";
+import { AlertTriangle, Pill, Clock, Loader2, Mail, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
+import { useToast } from "@/components/ui/use-toast";
 
 function parseDosesPerDay(frequency, timeOfDay) {
   if (timeOfDay && timeOfDay.length > 0) return timeOfDay.length;
@@ -25,6 +26,8 @@ export default function MedicationSupplyAlert() {
   const [medications, setMedications] = useState([]);
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [requestingRefill, setRequestingRefill] = useState(null);
+  const { toast } = useToast();
 
   const load = async () => {
     try {
@@ -42,6 +45,24 @@ export default function MedicationSupplyAlert() {
   };
 
   useEffect(() => { load(); }, [currentMemberId]);
+
+  const handleRequestRefill = async (med) => {
+    setRequestingRefill(med.id);
+    try {
+      const user = await base44.auth.me();
+      if (user?.email) {
+        await base44.integrations.Core.SendEmail({
+          to: user.email,
+          subject: `Refill Reminder: ${med.name}`,
+          body: `This is a reminder from Health Me Medical Center to request a refill for your medication.\n\nMedication: ${med.name}\nDosage: ${med.dosage}\nFrequency: ${med.frequency}\nRemaining: ${med.remaining} pills (${med.daysRemaining} ${med.daysRemaining === 1 ? "day" : "days"} until empty)\nPrescribing Provider: ${med.prescribing_provider || "Not specified"}\n\nPlease contact your provider or pharmacy to request a refill before you run out.\n\n— Health Me Medical Center`,
+        });
+      }
+      await base44.entities.Medication.update(med.id, { refill_requested: true });
+      load();
+      toast({ title: "Refill reminder sent", description: `Notification sent for ${med.name}` });
+    } catch (e) { console.error(e); }
+    setRequestingRefill(null);
+  };
 
   const lowSupplyMeds = useMemo(() => {
     return medications
@@ -87,11 +108,19 @@ export default function MedicationSupplyAlert() {
                   {med.remaining} pills left · {med.dosesPerDay}×/day
                 </p>
               </div>
-              <div className="text-right shrink-0">
+              <div className="flex flex-col items-end gap-1 shrink-0">
                 <p className={`text-sm font-bold ${med.daysRemaining <= 2 ? "text-red-600" : "text-amber-600"}`}>
                   {med.daysRemaining} {med.daysRemaining === 1 ? "day" : "days"}
                 </p>
                 <p className="text-[10px] text-muted-foreground">until empty</p>
+                {med.refill_requested ? (
+                  <span className="text-[9px] text-emerald-600 flex items-center gap-0.5"><CheckCircle className="w-2.5 h-2.5" />Refill requested</span>
+                ) : (
+                  <Button size="sm" variant="outline" className="h-6 text-[10px] text-red-600 border-red-300 hover:bg-red-50" disabled={requestingRefill === med.id} onClick={() => handleRequestRefill(med)}>
+                    {requestingRefill === med.id ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : <Mail className="w-2.5 h-2.5" />}
+                    Request Refill
+                  </Button>
+                )}
               </div>
             </div>
           ))}

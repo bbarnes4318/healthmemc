@@ -1,0 +1,44 @@
+{
+  "name": "NutritionMealTemplate",
+  "type": "object",
+  "properties": {
+    "template_name": {
+      "type": "string"
+    },
+    "meal_type": {
+      "type": "string",
+      "enum": [
+        "breakfast",
+        "lunch",
+        "dinner",
+        "snack"
+      ]
+    },
+    "food_name": {
+      "type": "string"
+    },
+    "calories": {
+      "type": "number"
+    },
+    "protein_g": {
+      "type": "number"
+    },
+    "carbs_g": {
+      "type": "number"
+    },
+    "fat_g": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "template_name",
+    "food_name",
+    "calories"
+  ]
+}

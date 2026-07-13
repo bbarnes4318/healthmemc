@@ -12,6 +12,7 @@ import { format } from "date-fns";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 import NutritionTrendChart from "@/components/wellness/NutritionTrendChart";
 import NutritionGoalSetter from "@/components/wellness/NutritionGoalSetter";
+import NutritionMealTemplates from "@/components/wellness/NutritionMealTemplates";
 
 const mealTypes = [
   { value: "breakfast", label: "Breakfast", icon: "🌅", color: "bg-amber-100 text-amber-700" },
@@ -188,6 +189,9 @@ export default function NutritionLog() {
 
       {/* Nutrition Trends */}
       <NutritionTrendChart logs={logs} healthScore={healthScore} />
+
+      {/* Meal Templates */}
+      <NutritionMealTemplates onMealAdded={load} />
 
       {/* Today's Meals */}
       <div>
