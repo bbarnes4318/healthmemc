@@ -1,0 +1,45 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 8 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "PT Session Reminder Workflow",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "pt_session_reminder_workflow",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "check_pt_logs": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "ptSessionReminder",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Check PT session logs",
+            "description": "Scan for users with active PT plans who haven't logged today and email daily reminders to log exercises and pain scores"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Daily check for physical therapy users \u2014 sends email alerts to log exercise routines and pain scores for recovery consistency"
+}

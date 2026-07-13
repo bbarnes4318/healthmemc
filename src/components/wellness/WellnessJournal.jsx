@@ -11,6 +11,7 @@ import { format, subDays } from "date-fns";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 import MoodTrendChart from "@/components/wellness/MoodTrendChart";
 import { Label } from "@/components/ui/label";
+import VoiceInputButton from "@/components/voice/VoiceInputButton";
 
 const moodOptions = [
   { value: "great", emoji: "😄", label: "Great", score: 5, color: "bg-emerald-500" },
@@ -181,11 +182,17 @@ export default function WellnessJournal() {
             {/* Notes & Gratitude */}
             <div>
               <Label className="text-xs font-medium mb-1.5 block">Notes (optional)</Label>
-              <Textarea placeholder="What's on your mind? Any events or triggers today..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className="resize-none text-sm" />
+              <div className="flex gap-2">
+                <Textarea placeholder="What's on your mind? Any events or triggers today..." value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className="resize-none text-sm" />
+                <VoiceInputButton value={form.notes} onChange={(text) => setForm({ ...form, notes: text })} />
+              </div>
             </div>
             <div>
               <Label className="text-xs font-medium flex items-center gap-1.5 mb-1.5"><Sparkles className="w-3.5 h-3.5 text-amber-500" /> Gratitude (optional)</Label>
-              <Textarea placeholder="One thing you're grateful for today..." value={form.gratitude} onChange={(e) => setForm({ ...form, gratitude: e.target.value })} rows={1} className="resize-none text-sm" />
+              <div className="flex gap-2">
+                <Textarea placeholder="One thing you're grateful for today..." value={form.gratitude} onChange={(e) => setForm({ ...form, gratitude: e.target.value })} rows={1} className="resize-none text-sm" />
+                <VoiceInputButton value={form.gratitude} onChange={(text) => setForm({ ...form, gratitude: text })} />
+              </div>
             </div>
 
             <div className="flex justify-end gap-2">

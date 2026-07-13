@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import { format, subDays, parseISO } from "date-fns";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
+import VoiceInputButton from "@/components/voice/VoiceInputButton";
 
 const bodyParts = [
   { value: "knee", label: "Knee" },
@@ -214,7 +215,10 @@ export default function ExerciseTracker() {
               </div>
               <div>
                 <Label className="text-xs">Notes</Label>
-                <Input placeholder="How did it feel?" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+                <div className="flex gap-2">
+                  <Input placeholder="How did it feel?" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+                  <VoiceInputButton value={form.notes} onChange={(text) => setForm({ ...form, notes: text })} />
+                </div>
               </div>
             </div>
             <DialogFooter className="gap-2 mt-4">

@@ -6,10 +6,11 @@ import PTGoals from "@/components/pt/PTGoals";
 import PTMilestoneTimeline from "@/components/pt/PTMilestoneTimeline";
 import ExerciseTemplateManager from "@/components/pt/ExerciseTemplateManager";
 import PTDailyGoals from "@/components/pt/PTDailyGoals";
+import MasterRecoveryDashboard from "@/components/pt/MasterRecoveryDashboard";
 import BodyDiagram from "@/components/consultations/BodyDiagram";
 import BodyModel3D from "@/components/3d/BodyModel3D";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dumbbell, Bone, Activity, Move, Stethoscope, AlignCenter, ClipboardList, BarChart3, PersonStanding, Box, Award, Bookmark } from "lucide-react";
+import { Dumbbell, Bone, Activity, Move, Stethoscope, AlignCenter, ClipboardList, BarChart3, PersonStanding, Box, Award, Bookmark, LayoutDashboard } from "lucide-react";
 
 const config = {
   title: "AI Physical Therapy",
@@ -37,13 +38,14 @@ export default function AIPhysicalTherapy() {
     <div>
       <div className="sticky top-14 lg:top-0 z-10 bg-white border-b border-border px-4 py-2">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-7 max-w-3xl mx-auto">
+          <TabsList className="grid grid-cols-8 max-w-3xl mx-auto">
             <TabsTrigger value="consult"><Dumbbell className="w-3.5 h-3.5 mr-1.5" />AI Consult</TabsTrigger>
             <TabsTrigger value="bodymap"><PersonStanding className="w-3.5 h-3.5 mr-1.5" />Body Map</TabsTrigger>
             <TabsTrigger value="3dbody"><Box className="w-3.5 h-3.5 mr-1.5" />3D Body</TabsTrigger>
             <TabsTrigger value="tracker"><ClipboardList className="w-3.5 h-3.5 mr-1.5" />Tracker</TabsTrigger>
             <TabsTrigger value="templates"><Bookmark className="w-3.5 h-3.5 mr-1.5" />Templates</TabsTrigger>
             <TabsTrigger value="summary"><BarChart3 className="w-3.5 h-3.5 mr-1.5" />Summary</TabsTrigger>
+            <TabsTrigger value="master"><LayoutDashboard className="w-3.5 h-3.5 mr-1.5" />Master</TabsTrigger>
             <TabsTrigger value="milestones"><Award className="w-3.5 h-3.5 mr-1.5" />Milestones</TabsTrigger>
           </TabsList>
         </Tabs>
@@ -71,6 +73,10 @@ export default function AIPhysicalTherapy() {
           <PTDailyGoals />
           <PTGoals />
           <PTSummary />
+        </div>
+      ) : activeTab === "master" ? (
+        <div className="p-4 lg:p-8 max-w-4xl mx-auto">
+          <MasterRecoveryDashboard />
         </div>
       ) : (
         <div className="p-4 lg:p-8 max-w-3xl mx-auto">
