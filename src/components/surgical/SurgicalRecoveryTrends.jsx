@@ -131,6 +131,34 @@ export default function SurgicalRecoveryTrends() {
         ))}
       </div>
 
+      {/* Pain + ROM Combined Trend Chart */}
+      {hasRomData && (
+        <Card className="p-5">
+          <h3 className="text-sm font-semibold mb-1 flex items-center gap-2">
+            <Activity className="w-4 h-4 text-rose-600" /> Pain Score & Range of Motion — Combined Trend
+          </h3>
+          <p className="text-xs text-muted-foreground mb-4">Pain (left axis) overlaid with ROM degrees (right axis) to track healing progress</p>
+          <ResponsiveContainer width="100%" height={300}>
+            <ComposedChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+              <YAxis yAxisId="pain" domain={[0, 10]} tick={{ fontSize: 10 }} label={{ value: "Pain (0-10)", angle: -90, position: "insideLeft", fontSize: 9, fill: "#e11d48" }} />
+              <YAxis yAxisId="rom" orientation="right" tick={{ fontSize: 10 }} label={{ value: "ROM (degrees)", angle: 90, position: "insideRight", fontSize: 9, fill: "#0ea5e9" }} />
+              <Tooltip contentStyle={{ fontSize: 12 }} />
+              <Legend wrapperStyle={{ fontSize: 10 }} />
+              <ReferenceLine yAxisId="pain" y={5} stroke="#f59e0b" strokeDasharray="3 3" label={{ value: "Moderate", fontSize: 9, fill: "#f59e0b" }} />
+              <ReferenceLine yAxisId="pain" y={7} stroke="#ef4444" strokeDasharray="3 3" label={{ value: "Severe", fontSize: 9, fill: "#ef4444" }} />
+              <Line yAxisId="pain" type="monotone" dataKey="pain" name="Pain Score" stroke="#e11d48" strokeWidth={2.5} dot={{ r: 4 }} />
+              <Line yAxisId="rom" type="monotone" dataKey="romFlexion" name="Flexion°" stroke="#0ea5e9" strokeWidth={2} dot={{ r: 3 }} strokeDasharray="5 3" />
+              <Line yAxisId="rom" type="monotone" dataKey="romExtension" name="Extension°" stroke="#f97316" strokeWidth={2} dot={{ r: 3 }} strokeDasharray="5 3" />
+              {chartData.some((d) => d.romAbduction != null) && (
+                <Line yAxisId="rom" type="monotone" dataKey="romAbduction" name="Abduction°" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 3 }} strokeDasharray="5 3" />
+              )}
+            </ComposedChart>
+          </ResponsiveContainer>
+        </Card>
+      )}
+
       {/* Pain Level Trend with Milestone Markers */}
       <Card className="p-5">
         <h3 className="text-sm font-semibold mb-1 flex items-center gap-2">

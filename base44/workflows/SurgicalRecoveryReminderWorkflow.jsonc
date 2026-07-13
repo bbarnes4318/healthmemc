@@ -1,0 +1,45 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 9 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Surgical Recovery Reminder Workflow",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "surgical_recovery_reminder_workflow",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "check_recovery_logs": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "surgicalRecoveryReminder",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Check surgical recovery logs",
+            "description": "Scan for users with active recovery plans who haven't logged today and email daily reminders"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Daily check for surgical recovery plans \u2014 sends email alerts to users to log their pain scores, activity levels, and range-of-motion metrics"
+}
