@@ -7,7 +7,7 @@ import {
   Smile, Dumbbell, Heart, LifeBuoy, PawPrint, Bell, BellRing, ClipboardCheck, Ear, Eye, Scan,
   KeyRound, MapPin, Settings as SettingsIcon, Users as UsersIcon, History, Siren,
   Share2, TrendingUp, Contact, Star, Info, Syringe, Activity as ActivityIcon, ClipboardList, MessagesSquare, Trophy, Flower2,
-  Video, Globe
+  Video, Globe, CalendarDays, FileBadge
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/layout/GlobalSearch";
@@ -36,6 +36,7 @@ const navItems = [
   { path: "/pharmacy", label: "Pharmacy", icon: Pill },
   { path: "/records", label: "Records", icon: FileText },
   { path: "/appointment-history", label: "Visit History", icon: History },
+  { path: "/appointment-dashboard", label: "Appointments", icon: CalendarDays },
   { path: "/wellness", label: "Wellness", icon: Sparkles },
   { path: "/wellness-spa", label: "Wellness Spa", icon: Flower2 },
   { path: "/wellness-trends", label: "Trends", icon: TrendingUp },
@@ -48,6 +49,7 @@ const navItems = [
   { path: "/specialist-feedback", label: "Specialist Feedback", icon: Star },
   { path: "/immunization", label: "Immunization", icon: Syringe },
   { path: "/surgical-recovery", label: "Surgical Recovery", icon: ActivityIcon },
+  { path: "/primary-doctor-report", label: "Doctor Report", icon: FileBadge },
   { path: "/home-doctor-visit", label: "Home Visit", icon: Home },
   { path: "/intake-forms", label: "Intake Forms", icon: ClipboardList },
   { path: "/family-management", label: "Family", icon: UsersIcon },

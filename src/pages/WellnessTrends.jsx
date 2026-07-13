@@ -16,6 +16,7 @@ import { format, subDays, eachDayOfInterval } from "date-fns";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 import { generateWellnessReportPdf } from "@/lib/generateWellnessReportPdf";
 import { Download } from "lucide-react";
+import ExercisePainTracker from "@/components/health/ExercisePainTracker";
 
 export default function WellnessTrends() {
   const [range, setRange] = useState("weekly");
@@ -418,6 +419,9 @@ export default function WellnessTrends() {
           </BarChart>
         </ResponsiveContainer>
       </Card>
+
+      {/* Exercise Frequency vs Pain Correlation */}
+      <ExercisePainTracker />
     </div>
   );
 }

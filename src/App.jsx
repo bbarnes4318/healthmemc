@@ -65,6 +65,8 @@ import MasterWellnessDashboard from '@/pages/MasterWellnessDashboard';
 import AIPersonalPhysician from '@/pages/AIPersonalPhysician';
 import VirtualConsultations from '@/pages/VirtualConsultations';
 import LanguageDirectory from '@/pages/LanguageDirectory';
+import AppointmentDashboard from '@/pages/AppointmentDashboard';
+import PrimaryDoctorReport from '@/pages/PrimaryDoctorReport';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -137,6 +139,8 @@ const AuthenticatedApp = () => {
           <Route path="/personal-physician" element={<AIPersonalPhysician />} />
           <Route path="/virtual-consultations" element={<VirtualConsultations />} />
           <Route path="/language-directory" element={<LanguageDirectory />} />
+          <Route path="/appointment-dashboard" element={<AppointmentDashboard />} />
+          <Route path="/primary-doctor-report" element={<PrimaryDoctorReport />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />

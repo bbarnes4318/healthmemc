@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Activity, ShieldAlert, LayoutDashboard, ListChecks, TrendingUp, Award, Bookmark } from "lucide-react";
+import { Activity, ShieldAlert, LayoutDashboard, ListChecks, TrendingUp, Award, Bookmark, Camera, ClipboardList } from "lucide-react";
 import SurgicalRecoveryTracker from "@/components/surgical/SurgicalRecoveryTracker";
 import RecoveryMilestoneTimeline from "@/components/surgical/RecoveryMilestoneTimeline";
 import SurgicalRecoveryDashboard from "@/components/surgical/SurgicalRecoveryDashboard";
 import SurgicalRecoveryTrends from "@/components/surgical/SurgicalRecoveryTrends";
 import RecoveryLogTemplateManager from "@/components/surgical/RecoveryLogTemplateManager";
+import IncisionCheckIn from "@/components/surgical/IncisionCheckIn";
+import RecoveryPlanTracker from "@/components/surgical/RecoveryPlanTracker";
 
 export default function SurgicalRecoveryPage() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -71,9 +73,25 @@ export default function SurgicalRecoveryPage() {
           >
             <Award className="w-4 h-4" /> Timeline
           </button>
+          <button
+            onClick={() => setActiveTab("incision")}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition ${
+              activeTab === "incision" ? "bg-background shadow-sm text-rose-700" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Camera className="w-4 h-4" /> Incision
+          </button>
+          <button
+            onClick={() => setActiveTab("plan")}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition ${
+              activeTab === "plan" ? "bg-background shadow-sm text-rose-700" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <ClipboardList className="w-4 h-4" /> Recovery Plan
+          </button>
         </div>
 
-        {activeTab === "dashboard" ? <SurgicalRecoveryDashboard /> : activeTab === "log" ? <SurgicalRecoveryTracker /> : activeTab === "trends" ? <SurgicalRecoveryTrends /> : activeTab === "templates" ? <RecoveryLogTemplateManager /> : <RecoveryMilestoneTimeline />}
+        {activeTab === "dashboard" ? <SurgicalRecoveryDashboard /> : activeTab === "log" ? <SurgicalRecoveryTracker /> : activeTab === "trends" ? <SurgicalRecoveryTrends /> : activeTab === "templates" ? <RecoveryLogTemplateManager /> : activeTab === "incision" ? <IncisionCheckIn /> : activeTab === "plan" ? <RecoveryPlanTracker /> : <RecoveryMilestoneTimeline />}
       </motion.div>
     </div>
   );
