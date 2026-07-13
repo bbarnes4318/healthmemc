@@ -1,0 +1,45 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 * * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Wellness Goal Reminder Workflow",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "wellness_goal_reminder_workflow",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "send_reminders": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "wellnessGoalReminder",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Send wellness goal reminders",
+            "description": "Email users at their chosen reminder time for custom goals"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Sends daily email reminders for custom wellness goals (water intake, meditation, etc.) at the user's chosen time \u2014 runs hourly to catch all goals at their set reminder time"
+}

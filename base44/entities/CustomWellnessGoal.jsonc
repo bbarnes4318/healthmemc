@@ -44,6 +44,17 @@
     },
     "family_member_id": {
       "type": "string"
+    },
+    "reminder_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "reminder_time": {
+      "type": "string"
+    },
+    "last_reminder_date": {
+      "type": "string",
+      "format": "date"
     }
   },
   "required": [

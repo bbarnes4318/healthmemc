@@ -10,8 +10,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 import {
   Loader2, Plus, Target, Droplets, Brain, Dumbbell, Apple, Moon,
-  Activity, Heart, Zap, Trash2, Minus, Check, TrendingUp
+  Activity, Heart, Zap, Trash2, Minus, Check, TrendingUp, Bell, BellOff
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, subDays, parseISO } from "date-fns";
 import {
@@ -45,6 +46,7 @@ export default function CustomWellnessGoalTracker() {
   });
   const [logValues, setLogValues] = useState({});
   const [logSaving, setLogSaving] = useState(null);
+  const [reminderSaving, setReminderSaving] = useState(null);
 
   const today = format(new Date(), "yyyy-MM-dd");
 
@@ -111,6 +113,38 @@ export default function CustomWellnessGoalTracker() {
       toast({ title: "Failed to create goal", variant: "destructive" });
     }
     setSaving(false);
+  };
+
+  const handleToggleReminder = async (goal, enabled) => {
+    setReminderSaving(goal.id);
+    try {
+      await base44.entities.CustomWellnessGoal.update(goal.id, {
+        reminder_enabled: enabled,
+        reminder_time: enabled ? (goal.reminder_time || "09:00") : goal.reminder_time,
+      });
+      toast({ title: enabled ? "Daily reminder enabled" : "Reminder disabled" });
+      load();
+    } catch (e) {
+      console.error(e);
+      toast({ title: "Failed to update reminder", variant: "destructive" });
+    }
+    setReminderSaving(null);
+  };
+
+  const handleSetReminderTime = async (goal, time) => {
+    setReminderSaving(goal.id);
+    try {
+      await base44.entities.CustomWellnessGoal.update(goal.id, {
+        reminder_time: time,
+        reminder_enabled: true,
+      });
+      toast({ title: `Reminder set for ${time}` });
+      load();
+    } catch (e) {
+      console.error(e);
+      toast({ title: "Failed to set reminder time", variant: "destructive" });
+    }
+    setReminderSaving(null);
   };
 
   const handleDeleteGoal = async (goal) => {
@@ -367,6 +401,32 @@ export default function CustomWellnessGoalTracker() {
                         {todayLog && (
                           <span className="text-[10px] text-emerald-600 flex items-center gap-0.5">
                             <Check className="w-2.5 h-2.5" /> Logged today
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Daily Reminder */}
+                      <div className="flex items-center gap-2 mt-2 p-2 rounded-md bg-muted/40 border border-border">
+                        <Bell className={`w-3.5 h-3.5 ${goal.reminder_enabled ? "text-amber-500" : "text-muted-foreground"}`} />
+                        <span className="text-[10px] font-medium text-muted-foreground">Daily reminder</span>
+                        <Switch
+                          checked={goal.reminder_enabled || false}
+                          onCheckedChange={(checked) => handleToggleReminder(goal, checked)}
+                          disabled={reminderSaving === goal.id}
+                          className="scale-75"
+                        />
+                        {goal.reminder_enabled && (
+                          <input
+                            type="time"
+                            value={goal.reminder_time || "09:00"}
+                            onChange={(e) => handleSetReminderTime(goal, e.target.value)}
+                            disabled={reminderSaving === goal.id}
+                            className="h-6 rounded border border-input bg-background px-1.5 text-[10px]"
+                          />
+                        )}
+                        {goal.reminder_enabled && (
+                          <span className="text-[9px] text-amber-600 ml-auto flex items-center gap-0.5">
+                            <Bell className="w-2.5 h-2.5" /> Email sent daily
                           </span>
                         )}
                       </div>
