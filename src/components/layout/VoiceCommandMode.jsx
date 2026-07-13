@@ -34,6 +34,7 @@ const routeCommands = {
   "immunization": "/immunization",
   "surgical recovery": "/surgical-recovery", "recovery": "/surgical-recovery",
   "trends": "/wellness-trends", "wellness trends": "/wellness-trends",
+  "trends explorer": "/health-trends-explorer", "health trends": "/health-trends-explorer", "long term trends": "/health-trends-explorer",
   "doctor directory": "/doctor-directory", "find doctor": "/doctor-directory",
   "about": "/about", "about us": "/about",
   "personal physician": "/personal-physician", "physician": "/personal-physician",

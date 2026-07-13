@@ -70,6 +70,7 @@ import AppointmentDashboard from '@/pages/AppointmentDashboard';
 import PrimaryDoctorReport from '@/pages/PrimaryDoctorReport';
 import WildernessEmergencyGuide from '@/pages/WildernessEmergencyGuide';
 import NewbornBabyCare from '@/pages/NewbornBabyCare';
+import HealthTrendsExplorer from '@/pages/HealthTrendsExplorer';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -147,6 +148,7 @@ const AuthenticatedApp = () => {
           <Route path="/primary-doctor-report" element={<PrimaryDoctorReport />} />
           <Route path="/wilderness-guide" element={<WildernessEmergencyGuide />} />
           <Route path="/newborn-care" element={<NewbornBabyCare />} />
+          <Route path="/health-trends-explorer" element={<HealthTrendsExplorer />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />
