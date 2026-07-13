@@ -1,0 +1,81 @@
+{
+  "name": "BabyDailyLog",
+  "type": "object",
+  "properties": {
+    "log_type": {
+      "type": "string",
+      "enum": [
+        "feeding",
+        "sleep",
+        "diaper"
+      ]
+    },
+    "baby_name": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "time": {
+      "type": "string"
+    },
+    "duration_minutes": {
+      "type": "number"
+    },
+    "feeding_type": {
+      "type": "string",
+      "enum": [
+        "breast",
+        "bottle_formula",
+        "bottle_breastmilk",
+        "solid"
+      ]
+    },
+    "feeding_amount_ml": {
+      "type": "number"
+    },
+    "feeding_side": {
+      "type": "string",
+      "enum": [
+        "left",
+        "right",
+        "both"
+      ]
+    },
+    "diaper_type": {
+      "type": "string",
+      "enum": [
+        "wet",
+        "dirty",
+        "both",
+        "dry"
+      ]
+    },
+    "sleep_quality": {
+      "type": "string",
+      "enum": [
+        "good",
+        "restless",
+        "poor"
+      ]
+    },
+    "notes": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    },
+    "shared_with_doctor": {
+      "type": "boolean",
+      "default": false
+    },
+    "logged_by_name": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "log_type",
+    "date"
+  ]
+}

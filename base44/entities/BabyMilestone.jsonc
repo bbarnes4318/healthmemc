@@ -1,0 +1,52 @@
+{
+  "name": "BabyMilestone",
+  "type": "object",
+  "properties": {
+    "baby_name": {
+      "type": "string"
+    },
+    "milestone_type": {
+      "type": "string",
+      "enum": [
+        "first_smile",
+        "rolling_over",
+        "sitting_up",
+        "crawling",
+        "standing",
+        "first_steps",
+        "first_words",
+        "teething",
+        "solid_food",
+        "laughing",
+        "custom"
+      ],
+      "default": "custom"
+    },
+    "milestone_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "photo_url": {
+      "type": "string"
+    },
+    "baby_age_weeks": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "milestone_type",
+    "milestone_date"
+  ]
+}

@@ -11,7 +11,11 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
+import VoiceInputButton from "@/components/voice/VoiceInputButton";
+import ResponseActions from "@/components/voice/ResponseActions";
 import NewbornSpecialistDirectory from "@/components/newborn/NewbornSpecialistDirectory";
+import BabyMilestoneTracker from "@/components/newborn/BabyMilestoneTracker";
+import BabyDailyJournal from "@/components/newborn/BabyDailyJournal";
 
 const careTopics = [
   { label: "Feeding & Nutrition", icon: Milk, prompt: "My newborn is [age] weeks old. Give me guidance on feeding schedules, how to know if they're getting enough milk, burping techniques, and when to introduce changes. Include both breastfeeding and formula feeding tips." },
@@ -102,10 +106,12 @@ export default function NewbornBabyCare() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <TabsList className="grid grid-cols-3 w-full max-w-md mx-auto">
-            <TabsTrigger value="consult"><Stethoscope className="w-3.5 h-3.5 mr-1.5" />Ask Nurse</TabsTrigger>
-            <TabsTrigger value="tips"><BookOpen className="w-3.5 h-3.5 mr-1.5" />Care Tips</TabsTrigger>
-            <TabsTrigger value="specialists"><Users className="w-3.5 h-3.5 mr-1.5" />Specialists</TabsTrigger>
+          <TabsList className="grid grid-cols-5 w-full max-w-2xl mx-auto">
+            <TabsTrigger value="consult"><Stethoscope className="w-3.5 h-3.5 mr-1" />Ask Nurse</TabsTrigger>
+            <TabsTrigger value="tips"><BookOpen className="w-3.5 h-3.5 mr-1" />Tips</TabsTrigger>
+            <TabsTrigger value="milestones"><Sparkles className="w-3.5 h-3.5 mr-1" />Milestones</TabsTrigger>
+            <TabsTrigger value="journal"><Baby className="w-3.5 h-3.5 mr-1" />Journal</TabsTrigger>
+            <TabsTrigger value="specialists"><Users className="w-3.5 h-3.5 mr-1" />Specialists</TabsTrigger>
           </TabsList>
 
           {/* AI Consultation Tab */}
@@ -147,6 +153,7 @@ export default function NewbornBabyCare() {
                       rows={2}
                       className="resize-none flex-1"
                     />
+                    <VoiceInputButton value={input} onChange={setInput} />
                     <Button onClick={() => startChat(input)} disabled={!input.trim()} className="bg-pink-600 hover:bg-pink-700">
                       <Send className="w-4 h-4" />
                     </Button>
@@ -185,6 +192,9 @@ export default function NewbornBabyCare() {
                           {msg.role === "user"
                             ? <p className="whitespace-pre-wrap">{msg.content}</p>
                             : <ReactMarkdown className="prose prose-sm max-w-none">{msg.content}</ReactMarkdown>}
+                          {msg.role === "assistant" && msg.content && (
+                            <ResponseActions content={msg.content} label="newborn-care-response" />
+                          )}
                         </div>
                       </motion.div>
                     ))}
@@ -209,6 +219,7 @@ export default function NewbornBabyCare() {
                       rows={1}
                       className="resize-none flex-1"
                     />
+                    <VoiceInputButton value={input} onChange={setInput} disabled={loading} />
                     <Button onClick={sendMessage} disabled={!input.trim() || loading} className="bg-pink-600 hover:bg-pink-700">
                       <Send className="w-4 h-4" />
                     </Button>
@@ -269,6 +280,16 @@ export default function NewbornBabyCare() {
                 ))}
               </div>
             </Card>
+          </TabsContent>
+
+          {/* Milestones Tab */}
+          <TabsContent value="milestones">
+            <BabyMilestoneTracker />
+          </TabsContent>
+
+          {/* Daily Journal Tab */}
+          <TabsContent value="journal">
+            <BabyDailyJournal />
           </TabsContent>
 
           {/* Specialists Tab */}
