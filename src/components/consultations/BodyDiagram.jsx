@@ -7,10 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Activity, Loader2, Trash2, Calendar, TrendingUp, ChevronRight } from "lucide-react";
+import { Activity, Loader2, Trash2, Calendar, TrendingUp, ChevronRight, LineChart as LineChartIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 import { format } from "date-fns";
+import PainRegionTrendChart from "@/components/health/PainRegionTrendChart";
 
 const severityColors = {
   mild: { fill: "#fbbf24", bg: "bg-amber-100", text: "text-amber-700", label: "Mild" },
@@ -85,6 +86,7 @@ export default function BodyDiagram() {
   const [form, setForm] = useState({ severity: "mild", symptom_description: "", pain_type: "aching", duration: "", notes: "" });
   const [saving, setSaving] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showTrends, setShowTrends] = useState(false);
 
   const load = async () => {
     try {
@@ -152,9 +154,14 @@ export default function BodyDiagram() {
             <Button size="sm" variant={view === "front" ? "default" : "ghost"} className={`h-7 text-xs ${view === "front" ? "bg-sky-600" : ""}`} onClick={() => setView("front")}>Front</Button>
             <Button size="sm" variant={view === "back" ? "default" : "ghost"} className={`h-7 text-xs ${view === "back" ? "bg-sky-600" : ""}`} onClick={() => setView("back")}>Back</Button>
           </div>
-          <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setShowHistory(!showHistory)}>
-            <Calendar className="w-3.5 h-3.5 mr-1" /> History
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button size="sm" variant={showTrends ? "default" : "outline"} className={`h-7 text-xs ${showTrends ? "bg-sky-600" : ""}`} onClick={() => { setShowTrends(!showTrends); setShowHistory(false); }}>
+              <LineChartIcon className="w-3.5 h-3.5 mr-1" /> Trends
+            </Button>
+            <Button size="sm" variant={showHistory ? "default" : "outline"} className={`h-7 text-xs ${showHistory ? "bg-sky-600" : ""}`} onClick={() => { setShowHistory(!showHistory); setShowTrends(false); }}>
+              <Calendar className="w-3.5 h-3.5 mr-1" /> History
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -244,7 +251,12 @@ export default function BodyDiagram() {
             </div>
           )}
 
-          {showHistory ? (
+          {showTrends ? (
+            <div>
+              <h4 className="text-xs font-semibold mb-3 flex items-center gap-1"><LineChartIcon className="w-3.5 h-3.5 text-sky-600" /> Pain Trends by Region</h4>
+              <PainRegionTrendChart entries={entries} />
+            </div>
+          ) : showHistory ? (
             <div>
               <h4 className="text-xs font-semibold mb-2 flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5 text-sky-600" /> Symptom History</h4>
               {loading ? (
@@ -286,6 +298,7 @@ export default function BodyDiagram() {
                 <p className="flex items-start gap-1.5"><ChevronRight className="w-3 h-3 mt-0.5 shrink-0 text-sky-500" /> Click any body region to log a symptom</p>
                 <p className="flex items-start gap-1.5"><ChevronRight className="w-3 h-3 mt-0.5 shrink-0 text-sky-500" /> Colored dots show your latest pain severity</p>
                 <p className="flex items-start gap-1.5"><ChevronRight className="w-3 h-3 mt-0.5 shrink-0 text-sky-500" /> Switch between front and back views</p>
+                <p className="flex items-start gap-1.5"><ChevronRight className="w-3 h-3 mt-0.5 shrink-0 text-sky-500" /> Use the Trends tab to see if treatments are reducing pain</p>
                 <p className="flex items-start gap-1.5"><ChevronRight className="w-3 h-3 mt-0.5 shrink-0 text-sky-500" /> View the History tab to track changes over time</p>
               </div>
 
