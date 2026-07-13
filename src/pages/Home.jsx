@@ -5,7 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Stethoscope, HeartPulse, Users, Pill, FileText, Sparkles,
-  Calendar, Phone, TrendingUp, Clock, ChevronRight, Shield, Dumbbell, History, Home as HomeIcon, Scan, Info, Syringe, Activity as ActivityIcon, Ear, UserRound
+  Calendar, Phone, TrendingUp, Clock, ChevronRight, Shield, Dumbbell, History, Home as HomeIcon, Scan, Info, Syringe, Activity as ActivityIcon, Ear, UserRound,
+  Video, Globe
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
@@ -40,6 +41,8 @@ const quickActions = [
   { label: "Privacy Dashboard", icon: Shield, path: "/privacy-dashboard", color: "from-blue-500 to-indigo-600", desc: "Access logs & security status" },
   { label: "Insurance Tracker", icon: Shield, path: "/insurance-tracker", color: "from-indigo-500 to-blue-600", desc: "Policies, deductibles & claims" },
   { label: "Master Wellness", icon: TrendingUp, path: "/master-wellness", color: "from-violet-500 to-purple-600", desc: "All health trends in one place" },
+  { label: "Virtual Consultations", icon: Video, path: "/virtual-consultations", color: "from-sky-500 to-indigo-600", desc: "Speak with AI health pros" },
+  { label: "Language Directory", icon: Globe, path: "/language-directory", color: "from-emerald-500 to-teal-600", desc: "Medical phrases in 24+ languages" },
 ];
 
 export default function Home() {

@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Send, Loader2, ArrowLeft, Shield } from "lucide-react";
 import VoiceInputButton from "@/components/voice/VoiceInputButton";
 import ResponseActions from "@/components/voice/ResponseActions";
+import VirtualAvatarSelector from "@/components/shared/VirtualAvatarSelector";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 
@@ -15,6 +16,8 @@ export default function AIServicePage({ config }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [avatar, setAvatar] = useState(null);
+  const [showAvatarSelector, setShowAvatarSelector] = useState(true);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -28,8 +31,11 @@ export default function AIServicePage({ config }) {
     setMessages([userMsg]);
 
     try {
+      const avatarContext = avatar
+        ? `\n\nYou are presenting as a ${avatar.genderLabel} ${avatar.raceLabel} ${title}. Stay in character as this persona throughout the consultation.`
+        : "";
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `${systemPrompt}\n\nPatient says: ${initialPrompt}\n\nRespond helpfully and ask follow-up questions to provide personalized guidance.`
+        prompt: `${systemPrompt}${avatarContext}\n\nPatient says: ${initialPrompt}\n\nRespond helpfully and ask follow-up questions to provide personalized guidance.`
       });
       setMessages([userMsg, { role: "assistant", content: response }]);
     } catch (err) { console.error(err); }
@@ -65,6 +71,10 @@ export default function AIServicePage({ config }) {
             <p className="text-muted-foreground mt-1 text-sm">{subtitle}</p>
           </div>
 
+          {showAvatarSelector && !avatar ? (
+            <VirtualAvatarSelector serviceName={title} onSelect={(a) => { setAvatar(a); setShowAvatarSelector(false); }} />
+          ) : (
+            <>
           <div className="grid grid-cols-2 gap-3 mb-6">
             {topics.map((topic) => (
               <Card
@@ -104,6 +114,8 @@ export default function AIServicePage({ config }) {
               <p className="text-xs text-sky-800">{disclaimer}</p>
             </div>
           )}
+            </>
+          )}
         </motion.div>
       </div>
     );
@@ -120,7 +132,9 @@ export default function AIServicePage({ config }) {
         </div>
         <div>
           <h2 className="font-display font-semibold text-sm">{title}</h2>
-          <p className="text-xs text-muted-foreground">AI Consultation</p>
+          <p className="text-xs text-muted-foreground">
+            {avatar ? `${avatar.avatar} ${avatar.genderLabel} · ${avatar.raceLabel}` : "AI Consultation"}
+          </p>
         </div>
       </div>
 

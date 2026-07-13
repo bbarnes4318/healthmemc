@@ -23,7 +23,8 @@ import MedicationHistoryReport from "@/components/pharmacy/MedicationHistoryRepo
 import MedicationSafetyScanner from "@/components/pharmacy/MedicationSafetyScanner";
 import TreatmentCorrelationAnalyzer from "@/components/health/TreatmentCorrelationAnalyzer";
 import DosageTimingCalculator from "@/components/pharmacy/DosageTimingCalculator";
-import { GitCompare, Clock } from "lucide-react";
+import WeightBasedDosageCalculator from "@/components/pharmacy/WeightBasedDosageCalculator";
+import { GitCompare, Clock, Calculator } from "lucide-react";
 
 export default function Pharmacy() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -81,7 +82,7 @@ export default function Pharmacy() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2 sm:grid-cols-12 mb-6">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-[repeat(13,minmax(0,1fr))] mb-6 overflow-x-auto">
             <TabsTrigger value="medications"><Pill className="w-3.5 h-3.5 mr-1" />My Meds</TabsTrigger>
             <TabsTrigger value="refills"><Package className="w-3.5 h-3.5 mr-1" />Refills</TabsTrigger>
             <TabsTrigger value="receipts"><Receipt className="w-3.5 h-3.5 mr-1" />Receipts</TabsTrigger>
@@ -89,6 +90,7 @@ export default function Pharmacy() {
             <TabsTrigger value="analytics"><BarChart3 className="w-3.5 h-3.5 mr-1" />Analytics</TabsTrigger>
             <TabsTrigger value="correlation"><GitCompare className="w-3.5 h-3.5 mr-1" />Correlate</TabsTrigger>
             <TabsTrigger value="dosage"><Clock className="w-3.5 h-3.5 mr-1" />Dosage</TabsTrigger>
+            <TabsTrigger value="weight-dose"><Calculator className="w-3.5 h-3.5 mr-1" />Wt. Dose</TabsTrigger>
             <TabsTrigger value="lookup">Lookup</TabsTrigger>
             <TabsTrigger value="interactions">Interactions</TabsTrigger>
             <TabsTrigger value="safety"><Shield className="w-3.5 h-3.5 mr-1" />Safety Scan</TabsTrigger>
@@ -126,6 +128,10 @@ export default function Pharmacy() {
 
           <TabsContent value="dosage">
             <DosageTimingCalculator />
+          </TabsContent>
+
+          <TabsContent value="weight-dose">
+            <WeightBasedDosageCalculator />
           </TabsContent>
 
           <TabsContent value="lookup">

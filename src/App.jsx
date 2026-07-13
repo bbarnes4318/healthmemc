@@ -63,6 +63,8 @@ import PrivacyDashboard from '@/pages/PrivacyDashboard';
 import InsuranceTracker from '@/pages/InsuranceTracker';
 import MasterWellnessDashboard from '@/pages/MasterWellnessDashboard';
 import AIPersonalPhysician from '@/pages/AIPersonalPhysician';
+import VirtualConsultations from '@/pages/VirtualConsultations';
+import LanguageDirectory from '@/pages/LanguageDirectory';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -133,6 +135,8 @@ const AuthenticatedApp = () => {
           <Route path="/insurance-tracker" element={<InsuranceTracker />} />
           <Route path="/master-wellness" element={<MasterWellnessDashboard />} />
           <Route path="/personal-physician" element={<AIPersonalPhysician />} />
+          <Route path="/virtual-consultations" element={<VirtualConsultations />} />
+          <Route path="/language-directory" element={<LanguageDirectory />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />

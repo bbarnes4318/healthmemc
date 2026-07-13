@@ -10,6 +10,7 @@ import {
 import { generateEmergencySummaryPdf } from "@/lib/generateEmergencySummaryPdf";
 import EmergencyProfileCard from "@/components/emergency/EmergencyProfileCard";
 import EmergencyPreparednessChecklist from "@/components/emergency/EmergencyPreparednessChecklist";
+import EmergencyVitalsCard from "@/components/emergency/EmergencyVitalsCard";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -197,6 +198,9 @@ Please reach out immediately to check on them. If this is a life-threatening sit
 
         {/* Emergency Profile Summary */}
         <EmergencyProfileCard />
+
+        {/* Printable Vitals Card */}
+        <EmergencyVitalsCard />
 
         {/* Preparedness Checklist */}
         <EmergencyPreparednessChecklist />

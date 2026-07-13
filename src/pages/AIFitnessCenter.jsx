@@ -10,6 +10,7 @@ import { format } from "date-fns";
 import ReactMarkdown from "react-markdown";
 import VoiceInputButton from "@/components/voice/VoiceInputButton";
 import AIFitnessPlanner from "@/components/fitness/AIFitnessPlanner";
+import VirtualAvatarSelector from "@/components/shared/VirtualAvatarSelector";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const typeIcons = {
@@ -73,7 +74,7 @@ const trainers = [
   },
 ];
 
-function TrainerChat({ trainer, onBack }) {
+function TrainerChat({ trainer, avatar, onBack }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -87,8 +88,9 @@ function TrainerChat({ trainer, onBack }) {
     setLoading(true);
     try {
       const history = [...messages, userMsg].map((m) => `${m.role === "user" ? "Client" : "Trainer"}: ${m.content}`).join("\n");
+      const avatarContext = avatar ? `\n\nYou are presenting as a ${avatar.genderLabel} ${avatar.raceLabel} fitness trainer. Stay in character as this persona.` : "";
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `${trainer.systemPrompt}\n\nConversation history:\n${history}\n\nClient: ${text}\n\nRespond as ${trainer.name}:`,
+        prompt: `${trainer.systemPrompt}${avatarContext}\n\nConversation history:\n${history}\n\nClient: ${text}\n\nRespond as ${trainer.name}:`,
       });
       setMessages((prev) => [...prev, { role: "assistant", content: response }]);
     } catch (e) {
@@ -106,7 +108,9 @@ function TrainerChat({ trainer, onBack }) {
         </div>
         <div className="flex-1">
           <h3 className="font-display font-bold text-sm">{trainer.name}</h3>
-          <p className="text-xs text-muted-foreground">{trainer.title}</p>
+          <p className="text-xs text-muted-foreground">
+            {avatar ? `${avatar.avatar} ${avatar.genderLabel} · ${avatar.raceLabel}` : trainer.title}
+          </p>
         </div>
         <Button variant="ghost" size="sm" onClick={onBack}>Back to Trainers</Button>
       </Card>
@@ -256,6 +260,7 @@ function ClassCatalog({ user }) {
 export default function AIFitnessCenter() {
   const [user, setUser] = useState(null);
   const [selectedTrainer, setSelectedTrainer] = useState(null);
+  const [avatar, setAvatar] = useState(null);
 
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
 
@@ -270,8 +275,10 @@ export default function AIFitnessCenter() {
           <p className="text-muted-foreground mt-1 text-sm">Train with AI personal trainers and join live fitness classes</p>
         </div>
 
-        {selectedTrainer ? (
-          <TrainerChat trainer={selectedTrainer} onBack={() => setSelectedTrainer(null)} />
+        {selectedTrainer && avatar ? (
+          <TrainerChat trainer={selectedTrainer} avatar={avatar} onBack={() => { setSelectedTrainer(null); setAvatar(null); }} />
+        ) : selectedTrainer ? (
+          <VirtualAvatarSelector serviceName={selectedTrainer.title} onSelect={setAvatar} />
         ) : (
           <Tabs defaultValue="trainers">
             <TabsList className="grid grid-cols-3 w-full max-w-lg mx-auto mb-6">
