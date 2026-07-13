@@ -11,6 +11,7 @@ import NewbornSpecialistDirectory from "@/components/newborn/NewbornSpecialistDi
 import BabyGrowthChart from "@/components/newborn/BabyGrowthChart";
 import BabyMilestoneTracker from "@/components/newborn/BabyMilestoneTracker";
 import BabyMonthlyReportButton from "@/components/newborn/BabyMonthlyReportButton";
+import QuickLogWidget from "@/components/newborn/QuickLogWidget";
 
 function getTimestamp(log) {
   if (!log.date) return 0;
@@ -335,6 +336,9 @@ export default function NewbornDashboard({ onNavigateTab }) {
 
       {/* Specialist Directory */}
       <NewbornSpecialistDirectory />
+
+      {/* Floating Quick-Log Widget */}
+      <QuickLogWidget onLogged={load} />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { Phone, X, ChevronUp, Loader2, Siren, Stethoscope, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import VoiceCallButton from "@/components/layout/VoiceCallButton";
 
 export default function EmergencyCallBar() {
   const [contacts, setContacts] = useState([]);
@@ -100,6 +101,9 @@ export default function EmergencyCallBar() {
           )}
         </>
       )}
+
+      <div className="w-px h-5 bg-red-200 shrink-0" />
+      <VoiceCallButton contacts={contacts} />
     </div>
   );
 }
