@@ -17,6 +17,7 @@ import RecordInsights from "@/components/records/RecordInsights";
 import { generateRecordPdf } from "@/lib/generateRecordPdf";
 import BulkExportButton from "@/components/records/BulkExportButton";
 import GlobalRecordSearch from "@/components/records/GlobalRecordSearch";
+import PrivacyNotice from "@/components/records/PrivacyNotice";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 
 const categories = [
@@ -134,7 +135,8 @@ export default function MedicalRecords() {
 
   return (
     <div className="p-4 lg:p-8 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+      <PrivacyNotice />
+      <div className="flex items-center justify-between mb-6 mt-6">
         <div>
           <h1 className="text-2xl font-display font-bold">Medical Records</h1>
           <p className="text-sm text-muted-foreground mt-0.5">{records.length} records stored securely</p>
