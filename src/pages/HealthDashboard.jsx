@@ -25,6 +25,8 @@ import LifestyleSymptomCorrelation from "@/components/health/LifestyleSymptomCor
 import CustomWellnessGoalTracker from "@/components/health/CustomWellnessGoalTracker";
 import WellnessGoalTrendsChart from "@/components/health/WellnessGoalTrendsChart";
 import MedicationSymptomOverlay from "@/components/health/MedicationSymptomOverlay";
+import VoiceVitalsLogger from "@/components/health/VoiceVitalsLogger";
+import PainMedicationTrends from "@/components/health/PainMedicationTrends";
 import { Download } from "lucide-react";
 
 const vitalTypes = [
@@ -189,6 +191,9 @@ export default function HealthDashboard() {
         })}
       </div>
 
+      {/* Voice Vitals Logger */}
+      <VoiceVitalsLogger onSaved={loadVitals} />
+
       {/* Chart */}
       <Card className="p-5">
         <div className="flex items-center gap-2 mb-4">
@@ -253,6 +258,9 @@ export default function HealthDashboard() {
 
       {/* Wellness Goal Trends Chart */}
       <WellnessGoalTrendsChart />
+
+      {/* Pain × Medication Trends (Body Map) */}
+      <PainMedicationTrends />
 
       {/* Medication Adherence vs Symptom Severity Overlay */}
       <MedicationSymptomOverlay />
