@@ -20,6 +20,7 @@ import { useRecordNotifications } from "@/hooks/useRecordNotifications";
 const navItems = [
   { path: "/", label: "Home", icon: Home },
   { path: "/ai-doctor", label: "AI Doctor", icon: Stethoscope },
+  { path: "/virtual-consultations", label: "Virtual Visits", icon: Video },
   { path: "/personal-physician", label: "Personal Physician", icon: Stethoscope },
   { path: "/ai-nurse", label: "AI Nurse", icon: HeartPulse },
   { path: "/specialists", label: "Specialists", icon: Users },
@@ -64,7 +65,6 @@ const navItems = [
   { path: "/family-management", label: "Family", icon: UsersIcon },
   { path: "/caregiver-dashboard", label: "Caregiver", icon: UsersIcon },
   { path: "/health-locator", label: "Find Care", icon: MapPin },
-  { path: "/virtual-consultations", label: "Virtual Visits", icon: Video },
   { path: "/language-directory", label: "Languages", icon: Globe },
   { path: "/privacy-dashboard", label: "Privacy", icon: Shield },
   { path: "/settings", label: "Settings", icon: SettingsIcon },
