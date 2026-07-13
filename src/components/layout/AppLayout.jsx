@@ -7,7 +7,7 @@ import {
   Smile, Dumbbell, Heart, LifeBuoy, PawPrint, Bell, BellRing, ClipboardCheck, Ear, Eye, Scan,
   KeyRound, MapPin, Settings as SettingsIcon, Users as UsersIcon, History, Siren,
   Share2, TrendingUp, Contact, Star, Info, Syringe, Activity as ActivityIcon, ClipboardList, MessagesSquare, Trophy, Flower2,
-  Video, Globe, CalendarDays, FileBadge, Boxes, Tent
+  Video, Globe, CalendarDays, FileBadge, Boxes, Tent, Baby
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/layout/GlobalSearch";
@@ -23,6 +23,7 @@ const navItems = [
   { path: "/dental-care", label: "Dental Care", icon: Smile },
   { path: "/physical-therapy", label: "Physical Therapy", icon: Dumbbell },
   { path: "/senior-care", label: "Senior Care", icon: Heart },
+  { path: "/newborn-care", label: "Newborn Care", icon: Baby },
   { path: "/assisted-living", label: "Assisted Living", icon: LifeBuoy },
   { path: "/pet-care", label: "Pet Care", icon: PawPrint },
   { path: "/sports-medicine", label: "Sports Medicine", icon: Dumbbell },
