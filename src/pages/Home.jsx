@@ -15,6 +15,7 @@ import FamilyOverviewCard from "@/components/family/FamilyOverviewCard";
 import FamilyHealthScoreCard from "@/components/family/FamilyHealthScoreCard";
 import PricingPlans from "@/components/about/PricingPlans";
 import NutritionProgressBars from "@/components/wellness/NutritionProgressBars";
+import VoiceGreeting from "@/components/voice/VoiceGreeting";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a4dfc16013374d3269a9096/3f23b1c41_generated_image.png";
 
@@ -81,6 +82,7 @@ export default function Home() {
 
   return (
     <div className="p-4 lg:p-8 max-w-6xl mx-auto space-y-6">
+      <VoiceGreeting userName={user?.full_name} />
       {/* Welcome & Health Score */}
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
         <motion.div

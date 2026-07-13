@@ -14,6 +14,7 @@ import {
 import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 import { useToast } from "@/components/ui/use-toast";
+import VoiceInputButton from "@/components/voice/VoiceInputButton";
 import { format, differenceInDays } from "date-fns";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine,
@@ -441,7 +442,10 @@ export default function SurgicalRecoveryTracker() {
               </div>
               <div>
                 <Label className="text-xs">Medications Taken</Label>
-                <Input placeholder="Pain meds, antibiotics" value={form.medications_taken} onChange={(e) => setForm({ ...form, medications_taken: e.target.value })} className="h-9 mt-1" />
+                <div className="flex gap-2 mt-1">
+                  <Input placeholder="Pain meds, antibiotics" value={form.medications_taken} onChange={(e) => setForm({ ...form, medications_taken: e.target.value })} className="h-9" />
+                  <VoiceInputButton value={form.medications_taken} onChange={(text) => setForm({ ...form, medications_taken: text })} />
+                </div>
               </div>
             </div>
 
@@ -471,8 +475,14 @@ export default function SurgicalRecoveryTracker() {
             </div>
 
             <div>
-              <Label className="text-xs">Notes</Label>
-              <Textarea placeholder="How are you feeling? Any concerns?" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className="resize-none" />
+              <div className="flex items-center justify-between">
+                <Label className="text-xs">Notes</Label>
+                <span className="text-[10px] text-muted-foreground flex items-center gap-1">Speak your notes</span>
+              </div>
+              <div className="flex gap-2 mt-1">
+                <Textarea placeholder="How are you feeling? Any concerns?" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={2} className="resize-none" />
+                <VoiceInputButton value={form.notes} onChange={(text) => setForm({ ...form, notes: text })} />
+              </div>
             </div>
           </div>
           <DialogFooter className="gap-2 mt-4">
