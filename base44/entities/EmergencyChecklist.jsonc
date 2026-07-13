@@ -1,0 +1,42 @@
+{
+  "name": "EmergencyChecklist",
+  "type": "object",
+  "properties": {
+    "item_text": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "medications",
+        "records",
+        "contacts",
+        "supplies",
+        "documents",
+        "custom"
+      ],
+      "default": "custom"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "item_text"
+  ]
+}

@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { generateEmergencySummaryPdf } from "@/lib/generateEmergencySummaryPdf";
 import EmergencyProfileCard from "@/components/emergency/EmergencyProfileCard";
+import EmergencyPreparednessChecklist from "@/components/emergency/EmergencyPreparednessChecklist";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -196,6 +197,9 @@ Please reach out immediately to check on them. If this is a life-threatening sit
 
         {/* Emergency Profile Summary */}
         <EmergencyProfileCard />
+
+        {/* Preparedness Checklist */}
+        <EmergencyPreparednessChecklist />
 
         {/* Printable Emergency Summary */}
         <Card className="p-5">
