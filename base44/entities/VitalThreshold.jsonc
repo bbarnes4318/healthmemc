@@ -1,0 +1,39 @@
+{
+  "name": "VitalThreshold",
+  "type": "object",
+  "properties": {
+    "vital_type": {
+      "type": "string",
+      "enum": [
+        "heart_rate",
+        "blood_pressure",
+        "oxygen_saturation",
+        "blood_glucose",
+        "weight",
+        "sleep_hours",
+        "temperature",
+        "activity_minutes"
+      ]
+    },
+    "low_threshold": {
+      "type": "number"
+    },
+    "high_threshold": {
+      "type": "number"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "family_member_id": {
+      "type": "string"
+    },
+    "last_alert_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "vital_type"
+  ]
+}

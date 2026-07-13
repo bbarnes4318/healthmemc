@@ -71,6 +71,7 @@ import PrimaryDoctorReport from '@/pages/PrimaryDoctorReport';
 import WildernessEmergencyGuide from '@/pages/WildernessEmergencyGuide';
 import NewbornBabyCare from '@/pages/NewbornBabyCare';
 import HealthTrendsExplorer from '@/pages/HealthTrendsExplorer';
+import VitalThresholdSettings from '@/pages/VitalThresholdSettings';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -149,6 +150,7 @@ const AuthenticatedApp = () => {
           <Route path="/wilderness-guide" element={<WildernessEmergencyGuide />} />
           <Route path="/newborn-care" element={<NewbornBabyCare />} />
           <Route path="/health-trends-explorer" element={<HealthTrendsExplorer />} />
+          <Route path="/vital-thresholds" element={<VitalThresholdSettings />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />

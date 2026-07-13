@@ -48,6 +48,7 @@ const navItems = [
   { path: "/wellness-trends", label: "Trends", icon: TrendingUp },
   { path: "/master-wellness", label: "Master Wellness", icon: TrendingUp },
   { path: "/health-trends-explorer", label: "Trends Explorer", icon: Activity },
+  { path: "/vital-thresholds", label: "Vital Alerts", icon: BellRing },
   { path: "/dashboard", label: "Dashboard", icon: Activity },
   { path: "/provider-dashboard", label: "Provider", icon: ClipboardCheck },
   { path: "/clinician-dashboard", label: "Clinician Access", icon: KeyRound },

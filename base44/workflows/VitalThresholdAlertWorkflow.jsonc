@@ -1,0 +1,45 @@
+{
+  "description": "Checks vital sign records against user-configured thresholds every 2 hours and sends email alerts when breached.",
+  "name": "Vital Threshold Alert Workflow",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "vital_threshold_alert",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "check_vitals": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "checkVitalThresholds",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Check vital thresholds",
+            "description": "Scan vitals & send alerts"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": 2,
+      "interval_unit": "hours",
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  }
+}

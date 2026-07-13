@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Stethoscope, HeartPulse, Users, Pill, FileText, Sparkles,
   Calendar, Phone, TrendingUp, Clock, ChevronRight, Shield, Dumbbell, History, Home as HomeIcon, Scan, Info, Syringe, Activity as ActivityIcon, Ear, UserRound,
-  Video, Globe, Smile
+  Video, Globe, Smile, Eye, Baby, Bell
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
@@ -42,8 +42,11 @@ const quickActions = [
   { label: "Wellness Center", icon: Sparkles, path: "/wellness", color: "from-cyan-500 to-sky-600", desc: "Nutrition, exercise & more" },
   { label: "AI Pro Sports Medicine", icon: Dumbbell, path: "/sports-medicine", color: "from-orange-500 to-red-600", desc: "Injury, recovery & performance" },
   { label: "Home Doctor Visit", icon: HomeIcon, path: "/home-doctor-visit", color: "from-sky-600 to-blue-700", desc: "A physician comes to you" },
+  { label: "Eye Care", icon: Eye, path: "/eye-doctor", color: "from-blue-500 to-cyan-600", desc: "Vision health & eye exams" },
   { label: "AI Dermatology", icon: Scan, path: "/dermatology", color: "from-teal-500 to-cyan-600", desc: "Track moles, rashes & skin changes" },
   { label: "Ear Care", icon: Ear, path: "/ear-care", color: "from-purple-500 to-fuchsia-600", desc: "Hearing tests & ear health" },
+  { label: "Baby Medical Care", icon: Baby, path: "/newborn-care", color: "from-pink-500 to-rose-600", desc: "Newborn health, growth & milestones" },
+  { label: "Vital Sign Alerts", icon: Bell, path: "/vital-thresholds", color: "from-rose-500 to-orange-600", desc: "Set thresholds & get notified" },
   { label: "Immunization History", icon: Syringe, path: "/immunization", color: "from-emerald-500 to-teal-600", desc: "Vaccines & booster reminders" },
   { label: "Surgical Recovery", icon: ActivityIcon, path: "/surgical-recovery", color: "from-rose-500 to-pink-600", desc: "Post-op healing & wound tracking" },
   { label: "Privacy Dashboard", icon: Shield, path: "/privacy-dashboard", color: "from-blue-500 to-indigo-600", desc: "Access logs & security status" },
