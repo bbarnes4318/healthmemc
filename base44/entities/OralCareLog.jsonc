@@ -1,0 +1,40 @@
+{
+  "name": "OralCareLog",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "bad_breath_severity": {
+      "type": "number",
+      "default": 1
+    },
+    "brushed_morning": {
+      "type": "boolean",
+      "default": false
+    },
+    "brushed_evening": {
+      "type": "boolean",
+      "default": false
+    },
+    "flossed": {
+      "type": "boolean",
+      "default": false
+    },
+    "mouthwash": {
+      "type": "boolean",
+      "default": false
+    },
+    "tongue_cleaned": {
+      "type": "boolean",
+      "default": false
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "date"
+  ]
+}

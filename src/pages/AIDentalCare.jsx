@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import AIServicePage from "@/components/services/AIServicePage";
 import ToothMap from "@/components/dental/ToothMap";
+import MouthModel3D from "@/components/dental/MouthModel3D";
+import OralCareChart from "@/components/dental/OralCareChart";
 import DentalVisitLogSection from "@/components/dental/DentalVisitLogSection";
 import DentalDashboard from "@/components/dental/DentalDashboard";
 import DentalPainLogSection from "@/components/dental/DentalPainLogSection";
 import DentalExportButton from "@/components/dental/DentalExportButton";
 import NextCleaningScheduler from "@/components/dental/NextCleaningScheduler";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Smile, AlertCircle, Droplet, Sparkles, AlertTriangle, Star, Bone as ToothIcon, ClipboardList, BarChart3, Activity } from "lucide-react";
+import { Smile, AlertCircle, Droplet, Sparkles, AlertTriangle, Star, Bone as ToothIcon, ClipboardList, BarChart3, Activity, Box } from "lucide-react";
 
 const config = {
   title: "AI Dental Care",
@@ -35,9 +37,10 @@ export default function AIDentalCare() {
     <div>
       <div className="sticky top-14 lg:top-0 z-10 bg-white border-b border-border px-4 py-2 flex items-center justify-between gap-2">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
-          <TabsList className="grid grid-cols-5 max-w-2xl mx-auto">
+          <TabsList className="grid grid-cols-6 max-w-3xl mx-auto">
             <TabsTrigger value="consult"><Smile className="w-3.5 h-3.5 mr-1.5" />AI Consult</TabsTrigger>
             <TabsTrigger value="toothmap"><ToothIcon className="w-3.5 h-3.5 mr-1.5" />Tooth Map</TabsTrigger>
+            <TabsTrigger value="3dmouth"><Box className="w-3.5 h-3.5 mr-1.5" />3D Mouth</TabsTrigger>
             <TabsTrigger value="visits"><ClipboardList className="w-3.5 h-3.5 mr-1.5" />Visits</TabsTrigger>
             <TabsTrigger value="pain"><Activity className="w-3.5 h-3.5 mr-1.5" />Pain Log</TabsTrigger>
             <TabsTrigger value="dashboard"><BarChart3 className="w-3.5 h-3.5 mr-1.5" />Dashboard</TabsTrigger>
@@ -51,6 +54,10 @@ export default function AIDentalCare() {
         <div className="p-4 lg:p-8 max-w-3xl mx-auto">
           <ToothMap />
         </div>
+      ) : activeTab === "3dmouth" ? (
+        <div className="p-4 lg:p-8 max-w-4xl mx-auto">
+          <MouthModel3D />
+        </div>
       ) : activeTab === "visits" ? (
         <div className="p-4 lg:p-8 max-w-3xl mx-auto">
           <DentalVisitLogSection />
@@ -63,6 +70,7 @@ export default function AIDentalCare() {
         <div className="p-4 lg:p-8 max-w-4xl mx-auto space-y-4">
           <NextCleaningScheduler />
           <DentalDashboard />
+          <OralCareChart />
         </div>
       )}
     </div>
