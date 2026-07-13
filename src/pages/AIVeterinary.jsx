@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import AIServicePage from "@/components/services/AIServicePage";
 import PetModel3D from "@/components/3d/PetModel3D";
 import PetHealthReminders from "@/components/veterinary/PetHealthReminders";
+import PetEmergencyCard from "@/components/veterinary/PetEmergencyCard";
+import PetNutritionLog from "@/components/veterinary/PetNutritionLog";
+import PetHealthTimeline from "@/components/veterinary/PetHealthTimeline";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PawPrint, Stethoscope, Syringe, Apple, Brain, Shield, Box, Bell } from "lucide-react";
+import { PawPrint, Stethoscope, Syringe, Apple, Brain, Shield, Box, Bell, HeartPulse, Utensils, ClipboardList } from "lucide-react";
 
 const config = {
   title: "AI Veterinary Care",
@@ -31,9 +34,12 @@ export default function AIVeterinary() {
     <div>
       <div className="sticky top-14 lg:top-0 z-10 bg-white border-b border-border px-4 py-2">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-3 max-w-lg mx-auto">
+          <TabsList className="grid grid-cols-3 md:grid-cols-6 max-w-3xl mx-auto">
             <TabsTrigger value="consult"><PawPrint className="w-3.5 h-3.5 mr-1.5" />AI Consult</TabsTrigger>
             <TabsTrigger value="3dpet"><Box className="w-3.5 h-3.5 mr-1.5" />3D Pet</TabsTrigger>
+            <TabsTrigger value="emergency"><HeartPulse className="w-3.5 h-3.5 mr-1.5" />Emergency</TabsTrigger>
+            <TabsTrigger value="nutrition"><Utensils className="w-3.5 h-3.5 mr-1.5" />Nutrition</TabsTrigger>
+            <TabsTrigger value="timeline"><ClipboardList className="w-3.5 h-3.5 mr-1.5" />Health Log</TabsTrigger>
             <TabsTrigger value="reminders"><Bell className="w-3.5 h-3.5 mr-1.5" />Reminders</TabsTrigger>
           </TabsList>
         </Tabs>
@@ -43,6 +49,18 @@ export default function AIVeterinary() {
       ) : activeTab === "3dpet" ? (
         <div className="p-4 lg:p-8 max-w-4xl mx-auto">
           <PetModel3D />
+        </div>
+      ) : activeTab === "emergency" ? (
+        <div className="p-4 lg:p-8 max-w-4xl mx-auto">
+          <PetEmergencyCard />
+        </div>
+      ) : activeTab === "nutrition" ? (
+        <div className="p-4 lg:p-8 max-w-3xl mx-auto">
+          <PetNutritionLog />
+        </div>
+      ) : activeTab === "timeline" ? (
+        <div className="p-4 lg:p-8 max-w-3xl mx-auto">
+          <PetHealthTimeline />
         </div>
       ) : (
         <div className="p-4 lg:p-8 max-w-3xl mx-auto">

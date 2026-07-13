@@ -1,0 +1,67 @@
+{
+  "name": "PetProfile",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "pet_type": {
+      "type": "string",
+      "enum": [
+        "dog",
+        "cat",
+        "bird",
+        "rabbit",
+        "other"
+      ],
+      "default": "dog"
+    },
+    "breed": {
+      "type": "string"
+    },
+    "birth_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "sex": {
+      "type": "string",
+      "enum": [
+        "male",
+        "female",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "weight_kg": {
+      "type": "number"
+    },
+    "known_allergies": {
+      "type": "string"
+    },
+    "current_medications": {
+      "type": "string"
+    },
+    "microchip_id": {
+      "type": "string"
+    },
+    "vet_clinic": {
+      "type": "string"
+    },
+    "vet_phone": {
+      "type": "string"
+    },
+    "emergency_contact": {
+      "type": "string"
+    },
+    "photo_url": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "pet_type"
+  ]
+}

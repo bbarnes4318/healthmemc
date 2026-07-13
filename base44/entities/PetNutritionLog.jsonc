@@ -1,0 +1,62 @@
+{
+  "name": "PetNutritionLog",
+  "type": "object",
+  "properties": {
+    "pet_profile_id": {
+      "type": "string"
+    },
+    "pet_name": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "meal_type": {
+      "type": "string",
+      "enum": [
+        "breakfast",
+        "lunch",
+        "dinner",
+        "snack"
+      ],
+      "default": "dinner"
+    },
+    "food_name": {
+      "type": "string"
+    },
+    "portion_size": {
+      "type": "number"
+    },
+    "portion_unit": {
+      "type": "string",
+      "enum": [
+        "cups",
+        "grams",
+        "oz",
+        "ml",
+        "can",
+        "treat"
+      ],
+      "default": "cups"
+    },
+    "appetite": {
+      "type": "string",
+      "enum": [
+        "good",
+        "fair",
+        "poor",
+        "refused"
+      ],
+      "default": "good"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "pet_name",
+    "date",
+    "meal_type"
+  ]
+}
