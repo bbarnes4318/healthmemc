@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
               {
                 name: item_name,
                 quantity: 1,
-                price: price,
+                price: parseFloat(price),
               },
             ],
           },

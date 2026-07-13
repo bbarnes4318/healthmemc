@@ -24,6 +24,9 @@ Deno.serve(async (req) => {
     const reminded = [];
     const errors = [];
 
+    // Fetch existing pending reminders once (outside loop for efficiency)
+    const existingReminders = await base44.asServiceRole.entities.Appointment.filter({ status: "pending" });
+
     for (const [userId, latestCleaning] of Object.entries(userLatestCleaning)) {
       const visitDate = new Date(latestCleaning.visit_date);
 
@@ -50,12 +53,11 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      // Check if we already sent a reminder (look for existing pending dental checkup appointment for this user)
-      const existingAppts = await base44.asServiceRole.entities.Appointment.filter({});
-      const alreadyReminded = existingAppts.some(
-        (a) => a.created_by_id === userId &&
-               a.title === "6-Month Dental Cleaning Reminder" &&
-               a.status === "pending"
+      // Check if we already sent a reminder — use [user:ID] marker in notes since
+      // service-role-created appointments don't have the user's created_by_id
+      const alreadyReminded = existingReminders.some(
+        (a) => a.title === "6-Month Dental Cleaning Reminder" &&
+               a.notes && a.notes.includes(`[user:${userId}]`)
       );
 
       if (alreadyReminded) continue;
@@ -92,7 +94,7 @@ Health Me Medical Center`,
           date: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
           type: "checkup",
           status: "pending",
-          notes: `Automated reminder: Last dental cleaning was on ${latestCleaning.visit_date} with ${latestCleaning.dentist_name || "your dentist"}. Your 6-month cleaning is overdue — please schedule your next appointment.`,
+          notes: `[user:${userId}] Automated reminder: Last dental cleaning was on ${latestCleaning.visit_date} with ${latestCleaning.dentist_name || "your dentist"}. Your 6-month cleaning is overdue — please schedule your next appointment.`,
           reminder_sent: true,
         });
 
