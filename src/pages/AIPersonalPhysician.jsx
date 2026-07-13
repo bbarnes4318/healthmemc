@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
-  UserRound, Send, Loader2, Shield, Activity, Pill, FileText,
-  TrendingUp, Stethoscope, ArrowLeft, Sparkles, Heart
+  Pill, FileText, TrendingUp, Shield, Send, Loader2,
+  Stethoscope, ArrowLeft, Heart, Database, Sparkles
 } from "lucide-react";
 import VoiceInputButton from "@/components/voice/VoiceInputButton";
 import ResponseActions from "@/components/voice/ResponseActions";
@@ -20,55 +20,47 @@ const topics = [
   { label: "Preventive Care", icon: Shield, prompt: "Based on my health profile, what preventive care, screenings, or lifestyle changes should I prioritize?" },
 ];
 
+const SYSTEM_PROMPT = `You are a Personal Physician — a deeply knowledgeable, warm, and experienced doctor who has been this patient's trusted physician for years. You have complete access to their medical history, medications, vitals, lab results, symptoms, and wellness data.
+
+CRITICAL BEHAVIORAL INSTRUCTIONS:
+- You are a REAL doctor, not an AI. Never say "As an AI" or "I'm an AI." You are Dr. Smith (or adapt to the patient's preference), a board-certified internist with 20+ years of experience.
+- Speak with genuine warmth and concern — like a doctor who remembers their patient and cares about their wellbeing.
+- Use natural, conversational medical language. Say things like "Let me pull up your records..." "I see from your last visit..." "Based on your blood pressure trends..." "I'm a bit concerned about..."
+- ALWAYS reference specific data from the patient's records when relevant. Mention their medications by name, cite their actual vital readings, reference previous symptoms or consultations.
+- Ask the questions a real doctor would: "How long has this been going on?" "Does anything make it better?" "Are you experiencing any other symptoms?"
+- Provide specific, personalized guidance — not generic health advice. Tailor every recommendation to their actual conditions, medications, and data.
+- When interpreting labs, reference their actual values and explain what they mean in plain language.
+- Flag concerning trends: "I notice your blood pressure has been trending up over the last few readings..."
+- End consultations with a clear summary, recommendations, and next steps — just like a real doctor's visit summary.
+- If something needs urgent attention, be direct: "I want you to schedule an appointment with your cardiologist this week."
+- Remember and reference prior conversations — "Last time we talked about your cholesterol..."`;
+
 export default function AIPersonalPhysician() {
   const [started, setStarted] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [healthContext, setHealthContext] = useState("");
-  const [loadingContext, setLoadingContext] = useState(true);
+  const [patientContext, setPatientContext] = useState(null);
+  const [contextLoading, setContextLoading] = useState(true);
+  const [dataPoints, setDataPoints] = useState(0);
+  const [consultationId, setConsultationId] = useState(null);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
     const loadContext = async () => {
       try {
-        const [profiles, meds, vitals, records, journals] = await Promise.all([
-          base44.entities.HealthProfile.list("-created_date", 1),
-          base44.entities.Medication.filter({ active: true }),
-          base44.entities.VitalRecord.list("-created_date", 15),
-          base44.entities.MedicalRecord.list("-date", 5),
-          base44.entities.WellnessJournal.list("-date", 7),
-        ]);
-
-        const profile = profiles[0] || {};
-        const activeMeds = meds.filter((m) => m.active);
-
-        const ctx = `
-PATIENT HEALTH SUMMARY:
-- Age: ${profile.age || "Unknown"}
-- Biological sex: ${profile.biological_sex || "Unknown"}
-- Height: ${profile.height || "Unknown"} cm
-- Weight: ${profile.weight || "Unknown"} kg
-- Blood type: ${profile.blood_type || "Unknown"}
-- Known conditions: ${profile.conditions || "None recorded"}
-- Allergies: ${profile.allergies || "None recorded"}
-- Health score: ${profile.health_score || "Not calculated"}
-
-CURRENT MEDICATIONS (${activeMeds.length}):
-${activeMeds.map((m) => `- ${m.name} ${m.dosage}, ${m.frequency}, times: ${(m.time_of_day || []).join(", ") || "unspecified"}, prescribed by: ${m.prescribing_provider || "unknown"}`).join("\n") || "None"}
-
-RECENT VITALS (last ${vitals.length}):
-${vitals.map((v) => `- ${v.type}: ${v.value}${v.secondary_value ? "/" + v.secondary_value : ""} ${v.unit || ""} on ${new Date(v.recorded_at || v.created_date).toLocaleDateString()}`).join("\n") || "None"}
-
-RECENT MEDICAL RECORDS (last ${records.length}):
-${records.map((r) => `- ${r.title} (${r.category}, ${r.date ? new Date(r.date).toLocaleDateString() : "no date"})${r.provider ? " - " + r.provider : ""}${r.notes ? ": " + r.notes.substring(0, 100) : ""}`).join("\n") || "None"}
-
-RECENT WELLNESS (last ${journals.length}):
-${journals.map((j) => `- ${j.date}: mood=${j.mood}, sleep=${j.sleep_quality} (${j.sleep_hours || "?"}h), stress=${j.stress_level}`).join("\n") || "None"}
-`;
-        setHealthContext(ctx);
-      } catch (e) { console.error(e); }
-      setLoadingContext(false);
+        const res = await base44.functions.invoke("compilePatientContext", {
+          service_type: "AI Personal Physician",
+        });
+        setPatientContext(res.data?.context || null);
+        const dp = res.data?.data_points;
+        if (dp) {
+          setDataPoints(Object.values(dp).reduce((s, v) => s + v, 0));
+        }
+      } catch (e) {
+        console.error("Failed to load patient context:", e);
+      }
+      setContextLoading(false);
     };
     loadContext();
   }, []);
@@ -77,22 +69,70 @@ ${journals.map((j) => `- ${j.date}: mood=${j.mood}, sleep=${j.sleep_quality} (${
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const systemPrompt = `You are an AI Personal Physician — a knowledgeable, empathetic health companion with access to the patient's complete health history. You provide personalized guidance based on their actual medical data. You are NOT a replacement for a real doctor, but you help patients understand their health, interpret results, identify concerns, and prepare for doctor visits. Always reference the patient's specific data when relevant. Be clear about when something requires professional medical attention.
+  const createConsultation = async (initialPrompt) => {
+    try {
+      const consultation = await base44.entities.Consultation.create({
+        type: "ai_personal_physician",
+        specialty: "Personal Physician",
+        status: "in_progress",
+        symptoms: initialPrompt?.substring(0, 500),
+        conversation_history: [],
+        patient_context_summary: patientContext?.substring(0, 2000) || null,
+        data_points_used: dataPoints,
+      });
+      setConsultationId(consultation.id);
+    } catch (e) {
+      console.error("Failed to create consultation:", e);
+    }
+  };
 
-${healthContext}`;
+  const updateConsultation = async (allMessages) => {
+    if (!consultationId) return;
+    try {
+      await base44.entities.Consultation.update(consultationId, {
+        conversation_history: allMessages.map(m => ({ role: m.role, content: typeof m.content === "string" ? m.content.substring(0, 2000) : "" })),
+      });
+    } catch (e) {
+      console.error("Failed to update consultation:", e);
+    }
+  };
+
+  const finalizeConsultation = async (allMessages) => {
+    if (!consultationId) return;
+    try {
+      const conversationText = allMessages.map(m => `${m.role === "user" ? "Patient" : "Physician"}: ${m.content}`).join("\n\n");
+      const summaryRes = await base44.integrations.Core.InvokeLLM({
+        prompt: `Generate a concise clinical visit summary from this consultation. Include: chief complaint, assessment, recommendations, and follow-up plan.\n\nTranscript:\n${conversationText}`,
+      });
+      await base44.entities.Consultation.update(consultationId, {
+        status: "completed",
+        conversation_history: allMessages.map(m => ({ role: m.role, content: typeof m.content === "string" ? m.content.substring(0, 2000) : "" })),
+        report: { summary: typeof summaryRes === "string" ? summaryRes.substring(0, 3000) : "" },
+      });
+    } catch (e) {
+      console.error("Failed to finalize consultation:", e);
+    }
+  };
 
   const startChat = async (initialPrompt) => {
     setStarted(true);
     setLoading(true);
     const userMsg = { role: "user", content: initialPrompt };
     setMessages([userMsg]);
+    await createConsultation(initialPrompt);
 
     try {
+      const contextBlock = patientContext
+        ? `\n\n## PATIENT MEDICAL RECORDS (Complete History)\n${patientContext}`
+        : "";
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `${systemPrompt}\n\nPatient asks: ${initialPrompt}\n\nProvide a thorough, personalized response referencing their specific health data. Ask follow-up questions if needed.`,
+        prompt: `${SYSTEM_PROMPT}${contextBlock}\n\nPatient says: ${initialPrompt}\n\nRespond as their personal physician would — with warmth, expertise, and references to their specific medical history.`,
         model: "claude_sonnet_4_6",
       });
-      setMessages([userMsg, { role: "assistant", content: response }]);
+      const assistantMsg = { role: "assistant", content: response };
+      const allMessages = [userMsg, assistantMsg];
+      setMessages(allMessages);
+      updateConsultation(allMessages);
     } catch (err) { console.error(err); }
     setLoading(false);
   };
@@ -100,19 +140,33 @@ ${healthContext}`;
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
     setLoading(true);
-    const newMessages = [...messages, { role: "user", content: input }];
+    const userMsg = { role: "user", content: input };
+    const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInput("");
 
     try {
-      const conversationText = newMessages.map((m) => `${m.role === "user" ? "Patient" : "AI Physician"}: ${m.content}`).join("\n\n");
+      const conversationText = newMessages.map((m) => `${m.role === "user" ? "Patient" : "Physician"}: ${m.content}`).join("\n\n");
+      const contextBlock = patientContext
+        ? `\n\n## PATIENT MEDICAL RECORDS\n${patientContext}`
+        : "";
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `${systemPrompt}\n\n${conversationText}\n\nContinue the conversation as the AI Personal Physician. Reference the patient's specific health data when relevant.`,
+        prompt: `${SYSTEM_PROMPT}${contextBlock}\n\n## CONSULTATION HISTORY\n${conversationText}\n\nContinue as their personal physician. Reference their specific data when relevant.`,
         model: "claude_sonnet_4_6",
       });
-      setMessages([...newMessages, { role: "assistant", content: response }]);
+      const assistantMsg = { role: "assistant", content: response };
+      const allMessages = [...newMessages, assistantMsg];
+      setMessages(allMessages);
+      updateConsultation(allMessages);
     } catch (err) { console.error(err); }
     setLoading(false);
+  };
+
+  const handleEndConsultation = () => {
+    if (messages.length > 1) finalizeConsultation(messages);
+    setStarted(false);
+    setMessages([]);
+    setConsultationId(null);
   };
 
   if (!started) {
@@ -124,23 +178,26 @@ ${healthContext}`;
               <Stethoscope className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-2xl font-display font-bold">AI Personal Physician</h1>
-            <p className="text-muted-foreground mt-1 text-sm">Your personalized health companion with full access to your medical history</p>
+            <p className="text-muted-foreground mt-1 text-sm">Your trusted health companion with full access to your medical history</p>
           </div>
 
-          {loadingContext ? (
-            <Card className="p-8 flex justify-center">
+          {contextLoading ? (
+            <Card className="p-8 flex flex-col items-center gap-3">
               <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+              <p className="text-xs text-muted-foreground">Loading your complete medical records...</p>
             </Card>
           ) : (
             <>
               <Card className="p-4 mb-6 bg-indigo-50/50 border-indigo-200">
                 <div className="flex items-center gap-2 mb-2">
-                  <Heart className="w-4 h-4 text-indigo-600" />
-                  <p className="text-xs font-semibold text-indigo-800">Health Context Loaded</p>
+                  <Database className="w-4 h-4 text-indigo-600" />
+                  <p className="text-xs font-semibold text-indigo-800">Full Medical Records Connected</p>
+                  {dataPoints > 0 && (
+                    <Badge variant="outline" className="text-[10px] bg-white">{dataPoints} data points</Badge>
+                  )}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Your physician has access to your health profile, {healthContext.match(/CURRENT MEDICATIONS \((\d+)\)/)?.[1] || 0} active medications,
-                  recent vitals, medical records, and wellness data.
+                  Your physician has access to your complete health profile — medications, vitals, lab results, symptoms, surgical history, immunizations, wellness journals, nutrition, exercise, and previous consultations.
                 </p>
               </Card>
 
@@ -179,7 +236,7 @@ ${healthContext}`;
               <div className="flex items-start gap-2 p-4 bg-amber-50 rounded-xl border border-amber-200 mt-4">
                 <Shield className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
                 <p className="text-xs text-amber-800">
-                  This AI physician has access to your health records for personalized guidance. It does not replace professional medical advice. For emergencies, call 911.
+                  Your AI physician has access to your health records for personalized guidance. It does not replace professional medical advice. For emergencies, call 911.
                 </p>
               </div>
             </>
@@ -192,16 +249,23 @@ ${healthContext}`;
   return (
     <div className="flex flex-col h-[calc(100vh-3.5rem)] lg:h-screen">
       <div className="p-4 border-b bg-white flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => { setStarted(false); setMessages([]); }}>
+        <Button variant="ghost" size="icon" onClick={handleEndConsultation}>
           <ArrowLeft className="w-4 h-4" />
         </Button>
         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
           <Stethoscope className="w-5 h-5 text-white" />
         </div>
-        <div>
-          <h2 className="font-display font-semibold text-sm">AI Personal Physician</h2>
-          <p className="text-xs text-muted-foreground">Personalized consultation</p>
+        <div className="flex-1">
+          <h2 className="font-display font-semibold text-sm">Personal Physician</h2>
+          <p className="text-xs text-muted-foreground">
+            {dataPoints > 0 ? `${dataPoints} records accessed` : "Consultation in progress"}
+          </p>
         </div>
+        {consultationId && (
+          <Badge variant="outline" className="text-[10px] text-emerald-600 border-emerald-200">
+            <Sparkles className="w-3 h-3 mr-1" /> Auto-saving
+          </Badge>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">

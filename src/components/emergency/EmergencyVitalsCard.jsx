@@ -29,7 +29,7 @@ export default function EmergencyVitalsCard() {
   }, []);
 
   const getLatestVital = (type) => {
-    const filtered = vitals.filter((v) => v.vital_type === type);
+    const filtered = vitals.filter((v) => v.type === type);
     return filtered.length > 0 ? filtered[0] : null;
   };
 
@@ -136,7 +136,7 @@ export default function EmergencyVitalsCard() {
             <div className="vitals-grid">
               <div className="vital-box">
                 <div className="vital-label">Blood Pressure</div>
-                <div className="vital-value">{bp ? `${bp.systolic}/${bp.diastolic}` : "—"}</div>
+                <div className="vital-value">{bp ? `${bp.value}${bp.secondary_value ? `/${bp.secondary_value}` : ""}` : "—"}</div>
                 <div className="vital-unit">mmHg {bp?.recorded_at && `· ${new Date(bp.recorded_at).toLocaleDateString()}`}</div>
               </div>
               <div className="vital-box">

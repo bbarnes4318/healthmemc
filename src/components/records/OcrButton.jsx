@@ -16,10 +16,13 @@ export default function OcrButton({ record, onExtracted }) {
         record_id: record.id,
       });
       const text = res.data?.extracted_text;
+      const labValues = res.data?.lab_values_extracted || 0;
       if (text && text.length > 0) {
         toast({
-          title: "Text extracted",
-          description: `${text.length} characters of searchable text added to this record's notes.`,
+          title: "OCR complete",
+          description: labValues > 0
+            ? `${text.length} characters extracted. ${labValues} lab values added to your trend charts.`
+            : `${text.length} characters of searchable text added to this record's notes.`,
         });
         onExtracted?.();
       } else {

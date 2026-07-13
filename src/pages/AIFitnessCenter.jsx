@@ -78,7 +78,46 @@ function TrainerChat({ trainer, avatar, onBack }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [patientContext, setPatientContext] = useState(null);
+  const [consultationId, setConsultationId] = useState(null);
   const TIcon = trainer.icon;
+
+  useEffect(() => {
+    const loadContext = async () => {
+      try {
+        const res = await base44.functions.invoke("compilePatientContext", {
+          service_type: "AI Fitness",
+        });
+        setPatientContext(res.data?.context || null);
+      } catch (e) { console.error("Context load failed:", e); }
+    };
+    loadContext();
+  }, []);
+
+  const ensureConsultation = async () => {
+    if (consultationId) return consultationId;
+    try {
+      const c = await base44.entities.Consultation.create({
+        type: "ai_fitness",
+        specialty: trainer.title,
+        status: "in_progress",
+        conversation_history: [],
+        avatar_gender: avatar?.gender || null,
+        avatar_race: avatar?.race || null,
+      });
+      setConsultationId(c.id);
+      return c.id;
+    } catch (e) { console.error(e); return null; }
+  };
+
+  const saveMessages = async (allMessages, cid) => {
+    if (!cid) return;
+    try {
+      await base44.entities.Consultation.update(cid, {
+        conversation_history: allMessages.map(m => ({ role: m.role, content: typeof m.content === "string" ? m.content.substring(0, 2000) : "" })),
+      });
+    } catch (e) { console.error(e); }
+  };
 
   const sendMessage = async (text) => {
     if (!text.trim() || loading) return;
@@ -87,12 +126,20 @@ function TrainerChat({ trainer, avatar, onBack }) {
     setInput("");
     setLoading(true);
     try {
+      const cid = await ensureConsultation();
       const history = [...messages, userMsg].map((m) => `${m.role === "user" ? "Client" : "Trainer"}: ${m.content}`).join("\n");
       const avatarContext = avatar ? `\n\nYou are presenting as a ${avatar.genderLabel} ${avatar.raceLabel} fitness trainer. Stay in character as this persona.` : "";
+      const contextBlock = patientContext
+        ? `\n\n## CLIENT HEALTH & FITNESS DATA\n${patientContext}\n\nReference their actual exercise history, vitals, and health data when giving advice.`
+        : "";
+      const behaviorPrompt = `\n\nBEHAVIOR: You are a REAL fitness professional, not an AI. Speak naturally with motivation and expertise. Reference their actual workout history, vitals, and health data when relevant. Never say "As an AI."`;
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `${trainer.systemPrompt}${avatarContext}\n\nConversation history:\n${history}\n\nClient: ${text}\n\nRespond as ${trainer.name}:`,
+        prompt: `${trainer.systemPrompt}${behaviorPrompt}${avatarContext}${contextBlock}\n\nConversation history:\n${history}\n\nClient: ${text}\n\nRespond as ${trainer.name}:`,
       });
-      setMessages((prev) => [...prev, { role: "assistant", content: response }]);
+      const assistantMsg = { role: "assistant", content: response };
+      const allMessages = [...messages, userMsg, assistantMsg];
+      setMessages((prev) => [...prev, assistantMsg]);
+      saveMessages(allMessages, cid);
     } catch (e) {
       console.error(e);
       setMessages((prev) => [...prev, { role: "assistant", content: "I'm having trouble responding right now. Please try again." }]);
@@ -110,6 +157,7 @@ function TrainerChat({ trainer, avatar, onBack }) {
           <h3 className="font-display font-bold text-sm">{trainer.name}</h3>
           <p className="text-xs text-muted-foreground">
             {avatar ? `${avatar.avatar} ${avatar.genderLabel} · ${avatar.raceLabel}` : trainer.title}
+            {patientContext && " · Records connected"}
           </p>
         </div>
         <Button variant="ghost" size="sm" onClick={onBack}>Back to Trainers</Button>

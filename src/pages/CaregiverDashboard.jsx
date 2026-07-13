@@ -8,6 +8,7 @@ import { Loader2, Users, Pill, Calendar, TrendingUp, AlertCircle, CheckCircle, X
 import RefillAlertBanner from "@/components/pharmacy/RefillAlertBanner";
 import AlertConfigPanel from "@/components/caregiver/AlertConfigPanel";
 import CaregiverVisitLog from "@/components/caregiver/CaregiverVisitLog";
+import CaregiverSummaryReportButton from "@/components/caregiver/CaregiverSummaryReportButton";
 import ActivityFeed from "@/components/caregiver/ActivityFeed";
 import VoiceNoteRecorder from "@/components/caregiver/VoiceNoteRecorder";
 import SharedCalendar from "@/components/caregiver/SharedCalendar";
@@ -235,6 +236,10 @@ export default function CaregiverDashboard() {
 
       <div className="mb-6">
         <CaregiverVisitLog />
+      </div>
+
+      <div className="mb-6 flex justify-end">
+        <CaregiverSummaryReportButton />
       </div>
 
       <div className="mb-6">

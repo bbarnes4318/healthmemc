@@ -7,7 +7,20 @@
       "enum": [
         "ai_doctor",
         "ai_nurse",
-        "ai_specialist"
+        "ai_specialist",
+        "ai_dentist",
+        "ai_veterinarian",
+        "ai_physical_therapist",
+        "ai_eye_doctor",
+        "ai_ent",
+        "ai_dermatologist",
+        "ai_senior_care",
+        "ai_assisted_living",
+        "ai_sports_medicine",
+        "ai_fitness",
+        "ai_personal_physician",
+        "ai_wellness_spa",
+        "ai_er"
       ]
     },
     "specialty": {
@@ -114,6 +127,21 @@
         "high",
         "emergency"
       ]
+    },
+    "avatar_gender": {
+      "type": "string"
+    },
+    "avatar_race": {
+      "type": "string"
+    },
+    "patient_context_summary": {
+      "type": "string"
+    },
+    "data_points_used": {
+      "type": "number"
+    },
+    "family_member_id": {
+      "type": "string"
     }
   },
   "required": [

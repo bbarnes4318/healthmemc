@@ -21,6 +21,7 @@ import MedicationAdherenceMonthly from "@/components/pharmacy/MedicationAdherenc
 import MonthlyProgressReportButton from "@/components/health/MonthlyProgressReportButton";
 import CriticalRecordsBanner from "@/components/records/CriticalRecordsBanner";
 import TreatmentCorrelationAnalyzer from "@/components/health/TreatmentCorrelationAnalyzer";
+import LifestyleSymptomCorrelation from "@/components/health/LifestyleSymptomCorrelation";
 import { Download } from "lucide-react";
 
 const vitalTypes = [
@@ -246,6 +247,9 @@ export default function HealthDashboard() {
 
       {/* Treatment Correlation Analyzer */}
       <TreatmentCorrelationAnalyzer />
+
+      {/* Lifestyle × Symptom Correlation */}
+      <LifestyleSymptomCorrelation />
     </div>
   );
 }
