@@ -1,0 +1,33 @@
+{
+  "name": "CustomWellnessLog",
+  "type": "object",
+  "properties": {
+    "goal_id": {
+      "type": "string"
+    },
+    "goal_name": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "value": {
+      "type": "number"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "goal_id",
+    "date",
+    "value"
+  ]
+}

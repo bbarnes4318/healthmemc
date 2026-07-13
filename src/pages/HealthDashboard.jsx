@@ -22,6 +22,7 @@ import MonthlyProgressReportButton from "@/components/health/MonthlyProgressRepo
 import CriticalRecordsBanner from "@/components/records/CriticalRecordsBanner";
 import TreatmentCorrelationAnalyzer from "@/components/health/TreatmentCorrelationAnalyzer";
 import LifestyleSymptomCorrelation from "@/components/health/LifestyleSymptomCorrelation";
+import CustomWellnessGoalTracker from "@/components/health/CustomWellnessGoalTracker";
 import { Download } from "lucide-react";
 
 const vitalTypes = [
@@ -244,6 +245,9 @@ export default function HealthDashboard() {
         <DermatologyTrendChart />
         <VisionTrendChart />
       </div>
+
+      {/* Custom Wellness Goals */}
+      <CustomWellnessGoalTracker />
 
       {/* Treatment Correlation Analyzer */}
       <TreatmentCorrelationAnalyzer />

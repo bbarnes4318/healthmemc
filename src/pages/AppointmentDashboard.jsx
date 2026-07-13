@@ -18,6 +18,7 @@ import { format, isAfter, isToday, parseISO } from "date-fns";
 import { motion } from "framer-motion";
 import AppointmentCalendar from "@/components/appointments/AppointmentCalendar";
 import RescheduleDialog from "@/components/appointments/RescheduleDialog";
+import AppointmentCareNotes from "@/components/appointments/AppointmentCareNotes";
 
 const statusConfig = {
   pending: { label: "Pending", color: "bg-amber-100 text-amber-700" },
@@ -224,6 +225,7 @@ export default function AppointmentDashboard() {
                                   </span>
                                 </div>
                                 {appt.notes && <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2">{appt.notes}</p>}
+                                <AppointmentCareNotes appointment={appt} onUpdate={load} />
                                 <div className="flex gap-2 mt-2 flex-wrap">
                                   {appt.status !== "confirmed" && (
                                     <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => handleStatusChange(appt.id, "confirmed")}>

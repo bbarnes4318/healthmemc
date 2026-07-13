@@ -1,0 +1,54 @@
+{
+  "name": "CustomWellnessGoal",
+  "type": "object",
+  "properties": {
+    "goal_name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "hydration",
+        "mindfulness",
+        "fitness",
+        "nutrition",
+        "sleep",
+        "pain_management",
+        "custom"
+      ],
+      "default": "custom"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "target_value": {
+      "type": "number"
+    },
+    "frequency": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly"
+      ],
+      "default": "daily"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "icon": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "goal_name",
+    "target_value",
+    "unit"
+  ]
+}

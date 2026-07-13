@@ -46,6 +46,20 @@
     "reminder_sent": {
       "type": "boolean",
       "default": false
+    },
+    "private_care_notes": {
+      "type": "string"
+    },
+    "care_notes_author": {
+      "type": "string"
+    },
+    "care_notes_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes_shared_with_family": {
+      "type": "boolean",
+      "default": false
     }
   },
   "required": [
