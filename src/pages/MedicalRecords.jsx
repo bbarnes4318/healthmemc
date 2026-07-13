@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   FileText, Plus, Upload, Loader2, Calendar, Trash2,
-  Download, Filter, Search, List, GitBranch, FileDown, FlaskConical, GitCompare, Shield, TrendingUp as TrendingUpIcon
+  Download, Filter, Search, List, GitBranch, FileDown, FlaskConical, GitCompare, Shield, TrendingUp as TrendingUpIcon, ArrowUpDown
 } from "lucide-react";
 import OcrButton from "@/components/records/OcrButton";
 import { motion } from "framer-motion";
@@ -51,6 +51,7 @@ export default function MedicalRecords() {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [filterCat, setFilterCat] = useState("all");
+  const [sortOrder, setSortOrder] = useState("newest");
   const [searchTerm, setSearchTerm] = useState("");
   const [form, setForm] = useState({ title: "", category: "visit_summary", date: "", provider: "", notes: "", priority: "normal" });
   const [fileUrl, setFileUrl] = useState(null);
@@ -127,6 +128,10 @@ export default function MedicalRecords() {
       if (!r.title?.toLowerCase().includes(q) && !r.notes?.toLowerCase().includes(q) && !r.provider?.toLowerCase().includes(q)) return false;
     }
     return true;
+  }).sort((a, b) => {
+    if (!a.date) return 1;
+    if (!b.date) return -1;
+    return sortOrder === "newest" ? new Date(b.date) - new Date(a.date) : new Date(a.date) - new Date(b.date);
   });
 
   if (loading) {
@@ -228,6 +233,18 @@ export default function MedicalRecords() {
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
               {categories.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        )}
+        {viewMode === "list" && (
+          <Select value={sortOrder} onValueChange={setSortOrder}>
+            <SelectTrigger className="w-full sm:w-40">
+              <ArrowUpDown className="w-3.5 h-3.5 mr-2" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">Newest First</SelectItem>
+              <SelectItem value="oldest">Oldest First</SelectItem>
             </SelectContent>
           </Select>
         )}

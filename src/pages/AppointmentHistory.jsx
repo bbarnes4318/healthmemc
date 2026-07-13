@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Search, Loader2, FileText, Calendar, Stethoscope, HeartPulse, Users,
-  AlertTriangle, CheckCircle, ArrowLeft, ChevronRight, Activity
+  AlertTriangle, CheckCircle, ArrowLeft, ChevronRight, Activity, ArrowUpDown, Filter
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -38,17 +38,20 @@ export default function AppointmentHistory() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
+  const [filterMember, setFilterMember] = useState("all");
+  const [sortOrder, setSortOrder] = useState("newest");
+  const [familyMembers, setFamilyMembers] = useState([]);
   const [selectedConsult, setSelectedConsult] = useState(null);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const data = await base44.entities.Consultation.filter(
-          { status: "completed" },
-          "-created_date",
-          200
-        );
+        const [data, members] = await Promise.all([
+          base44.entities.Consultation.filter({ status: "completed" }, "-created_date", 200),
+          base44.entities.FamilyMember.list("-created_date", 50),
+        ]);
         setConsultations(data);
+        setFamilyMembers(members);
       } catch (e) { console.error(e); }
       setLoading(false);
     };
@@ -57,6 +60,7 @@ export default function AppointmentHistory() {
 
   const filtered = consultations.filter((c) => {
     if (filterType !== "all" && c.type !== filterType) return false;
+    if (filterMember !== "all" && c.family_member_id !== filterMember) return false;
     if (searchTerm) {
       const q = searchTerm.toLowerCase();
       const summary = c.report?.summary?.toLowerCase() || "";
@@ -65,6 +69,10 @@ export default function AppointmentHistory() {
       if (!summary.includes(q) && !symptoms.includes(q) && !specialty.includes(q)) return false;
     }
     return true;
+  }).sort((a, b) => {
+    return sortOrder === "newest"
+      ? new Date(b.created_date) - new Date(a.created_date)
+      : new Date(a.created_date) - new Date(b.created_date);
   });
 
   if (loading) {
@@ -106,6 +114,24 @@ export default function AppointmentHistory() {
             className="pl-9"
           />
         </div>
+        <select
+          value={filterMember}
+          onChange={(e) => setFilterMember(e.target.value)}
+          className="h-9 rounded-lg border border-input bg-card px-3 text-sm"
+        >
+          <option value="all">All Family Members</option>
+          {familyMembers.map((m) => (
+            <option key={m.id} value={m.id}>{m.name || "Unnamed"}</option>
+          ))}
+        </select>
+        <select
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value)}
+          className="h-9 rounded-lg border border-input bg-card px-3 text-sm"
+        >
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+        </select>
         <div className="flex gap-1 border rounded-lg p-0.5 bg-card">
           {[
             { value: "all", label: "All" },

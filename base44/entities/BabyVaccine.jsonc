@@ -1,0 +1,49 @@
+{
+  "name": "BabyVaccine",
+  "type": "object",
+  "properties": {
+    "baby_name": {
+      "type": "string"
+    },
+    "vaccine_name": {
+      "type": "string"
+    },
+    "vaccine_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "next_due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "age_at_vaccination": {
+      "type": "string"
+    },
+    "administered_by": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "completed",
+        "missed",
+        "upcoming"
+      ],
+      "default": "scheduled"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "vaccine_name",
+    "vaccine_date"
+  ]
+}

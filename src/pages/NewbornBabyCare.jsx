@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Baby, Send, Loader2, Shield, Heart, Milk, Moon, Thermometer,
-  Droplets, Activity, BookOpen, Stethoscope, Sparkles, AlertCircle, Users
+  Droplets, Activity, BookOpen, Stethoscope, Sparkles, AlertCircle, Users, Syringe
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -16,6 +16,8 @@ import ResponseActions from "@/components/voice/ResponseActions";
 import NewbornSpecialistDirectory from "@/components/newborn/NewbornSpecialistDirectory";
 import BabyMilestoneTracker from "@/components/newborn/BabyMilestoneTracker";
 import BabyDailyJournal from "@/components/newborn/BabyDailyJournal";
+import BabyVaccineTracker from "@/components/newborn/BabyVaccineTracker";
+import NewbornDashboard from "@/components/newborn/NewbornDashboard";
 
 const careTopics = [
   { label: "Feeding & Nutrition", icon: Milk, prompt: "My newborn is [age] weeks old. Give me guidance on feeding schedules, how to know if they're getting enough milk, burping techniques, and when to introduce changes. Include both breastfeeding and formula feeding tips." },
@@ -50,7 +52,7 @@ CRITICAL BEHAVIORAL INSTRUCTIONS:
 - Be encouraging — remind parents they're doing a great job and that it gets easier.`;
 
 export default function NewbornBabyCare() {
-  const [activeTab, setActiveTab] = useState("consult");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [started, setStarted] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -106,13 +108,19 @@ export default function NewbornBabyCare() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-          <TabsList className="grid grid-cols-5 w-full max-w-2xl mx-auto">
-            <TabsTrigger value="consult"><Stethoscope className="w-3.5 h-3.5 mr-1" />Ask Nurse</TabsTrigger>
-            <TabsTrigger value="tips"><BookOpen className="w-3.5 h-3.5 mr-1" />Tips</TabsTrigger>
-            <TabsTrigger value="milestones"><Sparkles className="w-3.5 h-3.5 mr-1" />Milestones</TabsTrigger>
-            <TabsTrigger value="journal"><Baby className="w-3.5 h-3.5 mr-1" />Journal</TabsTrigger>
-            <TabsTrigger value="specialists"><Users className="w-3.5 h-3.5 mr-1" />Specialists</TabsTrigger>
+          <TabsList className="w-full max-w-2xl mx-auto overflow-x-auto flex justify-start">
+            <TabsTrigger value="dashboard" className="flex-1 min-w-[80px]"><Baby className="w-3.5 h-3.5 mr-1" />Dashboard</TabsTrigger>
+            <TabsTrigger value="consult" className="flex-1 min-w-[80px]"><Stethoscope className="w-3.5 h-3.5 mr-1" />Ask Nurse</TabsTrigger>
+            <TabsTrigger value="tips" className="flex-1 min-w-[80px]"><BookOpen className="w-3.5 h-3.5 mr-1" />Tips</TabsTrigger>
+            <TabsTrigger value="milestones" className="flex-1 min-w-[80px]"><Sparkles className="w-3.5 h-3.5 mr-1" />Milestones</TabsTrigger>
+            <TabsTrigger value="journal" className="flex-1 min-w-[80px]"><Milk className="w-3.5 h-3.5 mr-1" />Journal</TabsTrigger>
+            <TabsTrigger value="vaccines" className="flex-1 min-w-[80px]"><Syringe className="w-3.5 h-3.5 mr-1" />Vaccines</TabsTrigger>
           </TabsList>
+
+          {/* Dashboard Tab */}
+          <TabsContent value="dashboard">
+            <NewbornDashboard onNavigateTab={setActiveTab} />
+          </TabsContent>
 
           {/* AI Consultation Tab */}
           <TabsContent value="consult">
@@ -292,9 +300,9 @@ export default function NewbornBabyCare() {
             <BabyDailyJournal />
           </TabsContent>
 
-          {/* Specialists Tab */}
-          <TabsContent value="specialists">
-            <NewbornSpecialistDirectory />
+          {/* Vaccines Tab */}
+          <TabsContent value="vaccines">
+            <BabyVaccineTracker />
           </TabsContent>
         </Tabs>
       </motion.div>

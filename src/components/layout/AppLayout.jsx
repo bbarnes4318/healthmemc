@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/layout/GlobalSearch";
 import ProfileSwitcher from "@/components/layout/ProfileSwitcher";
 import RefillAlertBanner from "@/components/pharmacy/RefillAlertBanner";
+import EmergencyCallBar from "@/components/layout/EmergencyCallBar";
+import VoiceCommandMode from "@/components/layout/VoiceCommandMode";
 import { useRecordNotifications } from "@/hooks/useRecordNotifications";
 
 const navItems = [
@@ -224,12 +226,14 @@ export default function AppLayout() {
             </div>
             <ProfileSwitcher />
           </div>
+          <EmergencyCallBar />
           <div className="px-4 pt-3">
             <RefillAlertBanner compact />
           </div>
           <Outlet />
         </div>
       </main>
+      <VoiceCommandMode />
     </div>
   );
 }
