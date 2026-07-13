@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
 
 Deno.serve(async (req) => {
   try {
@@ -7,26 +7,27 @@ Deno.serve(async (req) => {
     const now = new Date();
     const sixMonthsAgo = new Date(now.getTime() - 6 * 30 * 24 * 60 * 60 * 1000);
 
-    // Fetch all dental visit logs
     const allVisits = await base44.asServiceRole.entities.DentalVisitLog.list("-visit_date", 500);
 
-    // Group by user (created_by_id) and find latest visit per user
-    const userLatestVisit = {};
+    // Group by user (created_by_id) and find latest CLEANING visit per user
+    const userLatestCleaning = {};
     for (const visit of allVisits) {
       const userId = visit.created_by_id;
       if (!userId) continue;
-      if (!userLatestVisit[userId]) {
-        userLatestVisit[userId] = visit;
+      // Only consider cleaning or examination visits (routine cleanings)
+      if (visit.procedure_type !== "cleaning" && visit.procedure_type !== "examination") continue;
+      if (!userLatestCleaning[userId]) {
+        userLatestCleaning[userId] = visit;
       }
     }
 
     const reminded = [];
     const errors = [];
 
-    for (const [userId, latestVisit] of Object.entries(userLatestVisit)) {
-      const visitDate = new Date(latestVisit.visit_date);
+    for (const [userId, latestCleaning] of Object.entries(userLatestCleaning)) {
+      const visitDate = new Date(latestCleaning.visit_date);
 
-      // Skip if last visit was within 6 months
+      // Skip if last cleaning was within 6 months
       if (visitDate > sixMonthsAgo) continue;
 
       // Look up user email
@@ -49,60 +50,67 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      // Check if we already sent a reminder (look for existing pending dental checkup appointment)
+      // Check if we already sent a reminder (look for existing pending dental checkup appointment for this user)
       const existingAppts = await base44.asServiceRole.entities.Appointment.filter({});
       const alreadyReminded = existingAppts.some(
         (a) => a.created_by_id === userId &&
-               a.title === "6-Month Dental Checkup Reminder" &&
+               a.title === "6-Month Dental Cleaning Reminder" &&
                a.status === "pending"
       );
 
       if (alreadyReminded) continue;
 
       const monthsSince = Math.floor((now - visitDate) / (30 * 24 * 60 * 60 * 1000));
+      const dueDate = new Date(visitDate.getTime() + 6 * 30 * 24 * 60 * 60 * 1000);
 
       try {
-        // Send email reminder
+        // Send email reminder prompting to book
         await base44.asServiceRole.integrations.Core.SendEmail({
           to: userEmail,
-          subject: "Time to Schedule Your 6-Month Dental Checkup",
+          subject: "Time to Schedule Your 6-Month Dental Cleaning",
           body: `Hello ${userName},
 
-This is a friendly reminder that it has been approximately ${monthsSince} months since your last dental visit on ${visitDate.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })} with ${latestVisit.dentist_name || "your dentist"}.
+This is a friendly reminder that it has been approximately ${monthsSince} months since your last dental cleaning on ${visitDate.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })} with ${latestCleaning.dentist_name || "your dentist"}.
 
-Regular dental checkups every 6 months are essential for maintaining good oral health. They help catch issues early — cavities, gum disease, oral cancer screenings, and more — before they become serious and costly.
+Your next cleaning was due on ${dueDate.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}.
 
-We recommend scheduling your next checkup and cleaning at your earliest convenience.
+Regular dental cleanings every 6 months are essential for:
+- Removing plaque and tartar buildup
+- Preventing cavities and gum disease
+- Early detection of oral health issues
+- Maintaining fresh breath and a bright smile
+
+We recommend scheduling your next cleaning appointment at your earliest convenience. A placeholder has been added to your appointment calendar to help you remember.
 
 Stay healthy,
 Health Me Medical Center`,
         });
 
-        // Create a pending appointment as a reminder marker to prevent duplicate emails
+        // Create a pending appointment as a calendar placeholder + reminder marker
         await base44.asServiceRole.entities.Appointment.create({
-          title: "6-Month Dental Checkup Reminder",
+          title: "6-Month Dental Cleaning Reminder",
           date: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
           type: "checkup",
           status: "pending",
-          notes: `Automated reminder: Last dental visit was on ${latestVisit.visit_date} with ${latestVisit.dentist_name || "your dentist"}. Please schedule your 6-month checkup.`,
+          notes: `Automated reminder: Last dental cleaning was on ${latestCleaning.visit_date} with ${latestCleaning.dentist_name || "your dentist"}. Your 6-month cleaning is overdue — please schedule your next appointment.`,
           reminder_sent: true,
         });
 
-        reminded.push({ userId, email: userEmail, monthsSince });
+        reminded.push({ userId, email: userEmail, monthsSince, lastCleaningDate: latestCleaning.visit_date, dueDate: dueDate.toISOString() });
       } catch (sendErr) {
-        console.error(`Failed to send dental reminder to ${userEmail}:`, sendErr.message);
+        console.error(`Failed to send dental cleaning reminder to ${userEmail}:`, sendErr.message);
         errors.push({ userId, error: sendErr.message });
       }
     }
 
     return Response.json({
-      checked: Object.keys(userLatestVisit).length,
+      checked: Object.keys(userLatestCleaning).length,
       reminded: reminded.length,
       reminded,
       errors,
     });
   } catch (error) {
-    console.error("Dental checkup reminder error:", error.message);
+    console.error("Dental cleaning reminder error:", error.message);
     return Response.json({ error: error.message }, { status: 500 });
   }
 });

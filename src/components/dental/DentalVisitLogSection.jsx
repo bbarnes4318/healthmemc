@@ -12,6 +12,8 @@ import { Plus, Loader2, Trash2, Calendar, Stethoscope, Bone as Tooth, Clock, Dol
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import DentalTemplateSelector from "@/components/dental/DentalTemplateSelector";
+import { painLevelColors } from "@/lib/dentalProcedureTemplates";
 
 const procedureTypes = [
   { value: "cleaning", label: "Cleaning" },
@@ -114,6 +116,26 @@ export default function DentalVisitLogSection() {
           <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
             <DialogHeader><DialogTitle>Log Dental Visit</DialogTitle></DialogHeader>
             <div className="space-y-3 mt-2">
+              <div className="flex items-center justify-between gap-2 p-2.5 bg-cyan-50 rounded-lg border border-cyan-200">
+                <span className="text-xs text-cyan-700 font-medium">Pre-fill from a procedure template</span>
+                <DentalTemplateSelector onApply={(tpl) => setForm({
+                  ...form,
+                  procedure_type: tpl.procedure_type,
+                  procedure_notes: tpl.procedure_notes,
+                  recovery_instructions: tpl.recovery_instructions,
+                  follow_up_recommended: tpl.follow_up_recommended,
+                  follow_up_notes: tpl.follow_up_notes,
+                  cost: tpl.typical_cost ? String(tpl.typical_cost) : "",
+                  _templatePainLevel: tpl.typical_pain_level,
+                })} />
+              </div>
+              {form._templatePainLevel && (
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-muted-foreground">Typical pain level for this procedure:</span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full border ${painLevelColors[form._templatePainLevel] || ""}`}>{form._templatePainLevel}</span>
+                  <span className="text-[10px] text-muted-foreground">(Log actual pain in the Pain Log tab)</span>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label className="text-xs">Dentist Name *</Label>

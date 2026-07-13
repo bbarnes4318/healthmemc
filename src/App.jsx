@@ -58,6 +58,7 @@ import FamilyManagementPage from '@/pages/FamilyManagementPage';
 import MedicalForum from '@/pages/MedicalForum';
 import AIFitnessCenter from '@/pages/AIFitnessCenter';
 import FamilyFitnessChallenge from '@/pages/FamilyFitnessChallenge';
+import AIWellnessSpa from '@/pages/AIWellnessSpa';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -123,6 +124,7 @@ const AuthenticatedApp = () => {
           <Route path="/medical-forum" element={<MedicalForum />} />
           <Route path="/fitness-center" element={<AIFitnessCenter />} />
           <Route path="/family-fitness" element={<FamilyFitnessChallenge />} />
+          <Route path="/wellness-spa" element={<AIWellnessSpa />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />
