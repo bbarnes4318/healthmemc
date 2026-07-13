@@ -54,11 +54,13 @@ const logCommands = {
   "new vital": "/dashboard", "log vital": "/dashboard", "add vital": "/dashboard",
   "new journal": "/wellness", "log journal": "/wellness", "wellness journal": "/wellness",
   "new goal": "/wellness", "set goal": "/wellness",
+  "log pain": "/dashboard", "new pain": "/dashboard", "pain level": "/dashboard", "log pain level": "/dashboard",
+  "body map": "/ai-doctor", "pain map": "/ai-doctor",
 };
 
 const commandHints = [
   "Go to dashboard", "Open pharmacy", "New feeding", "Log sleep",
-  "New milestone", "Log weight", "Open baby care", "New medication",
+  "Log pain", "New milestone", "Log weight", "New medication",
 ];
 
 export default function VoiceCommandMode() {
