@@ -8,13 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   FileText, Plus, Upload, Loader2, Calendar, Trash2,
-  Download, Filter, Search, List, GitBranch, FileDown, FlaskConical, GitCompare, Shield
+  Download, Filter, Search, List, GitBranch, FileDown, FlaskConical, GitCompare, Shield, TrendingUp as TrendingUpIcon
 } from "lucide-react";
 import OcrButton from "@/components/records/OcrButton";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import MedicalTimeline from "@/components/records/MedicalTimeline";
 import LabComparison from "@/components/records/LabComparison";
+import LabTrendDashboard from "@/components/records/LabTrendDashboard";
 import RecordInsights from "@/components/records/RecordInsights";
 import { generateRecordPdf } from "@/lib/generateRecordPdf";
 import BulkExportButton from "@/components/records/BulkExportButton";
@@ -256,6 +257,14 @@ export default function MedicalRecords() {
             <GitCompare className="w-3.5 h-3.5 mr-1.5" /> Compare
           </Button>
           <Button
+            variant={viewMode === "trends" ? "default" : "ghost"}
+            size="sm"
+            className={`h-8 text-xs ${viewMode === "trends" ? "bg-sky-600 hover:bg-sky-700" : ""}`}
+            onClick={() => setViewMode("trends")}
+          >
+            <TrendingUpIcon className="w-3.5 h-3.5 mr-1.5" /> Trends
+          </Button>
+          <Button
             variant={viewMode === "search" ? "default" : "ghost"}
             size="sm"
             className={`h-8 text-xs ${viewMode === "search" ? "bg-sky-600 hover:bg-sky-700" : ""}`}
@@ -273,6 +282,8 @@ export default function MedicalRecords() {
         <MedicalTimeline />
       ) : viewMode === "compare" ? (
         <LabComparison />
+      ) : viewMode === "trends" ? (
+        <LabTrendDashboard />
       ) : filtered.length === 0 ? (
         <Card className="p-12 text-center">
           <FileText className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
