@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  Loader2, Plus, Phone, Mail, MapPin, Search, Stethoscope, Baby, Trash2, Edit3
+  Loader2, Plus, Phone, Mail, MapPin, Search, Stethoscope, Baby, Trash2, Edit3, Clock
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -51,6 +51,7 @@ export default function NewbornSpecialistDirectory() {
     phone: "",
     email: "",
     address: "",
+    office_hours: "",
     notes: "",
   });
 
@@ -81,7 +82,7 @@ export default function NewbornSpecialistDirectory() {
     try {
       await base44.entities.DoctorDirectory.create(form);
       toast({ title: "Specialist added" });
-      setForm({ doctor_name: "", specialty: "Pediatrician", practice_name: "", phone: "", email: "", address: "", notes: "" });
+      setForm({ doctor_name: "", specialty: "Pediatrician", practice_name: "", phone: "", email: "", address: "", office_hours: "", notes: "" });
       setShowForm(false);
       load();
     } catch (e) {
@@ -190,9 +191,18 @@ export default function NewbornSpecialistDirectory() {
                 />
               </div>
               <div>
+                <label className="text-xs font-medium mb-1 block">Office Hours</label>
+                <Input
+                  placeholder="Mon-Fri 9am-5pm, Sat 10am-2pm"
+                  value={form.office_hours}
+                  onChange={(e) => setForm({ ...form, office_hours: e.target.value })}
+                  className="h-8 text-sm"
+                />
+              </div>
+              <div>
                 <label className="text-xs font-medium mb-1 block">Notes</label>
                 <Input
-                  placeholder="Office hours, specialties, etc."
+                  placeholder="Special instructions, preferences, etc."
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
                   className="h-8 text-sm"
@@ -268,6 +278,11 @@ export default function NewbornSpecialistDirectory() {
                     {s.address && (
                       <p className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
                         <MapPin className="w-3 h-3 shrink-0" /> {s.address}
+                      </p>
+                    )}
+                    {s.office_hours && (
+                      <p className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
+                        <Clock className="w-3 h-3 shrink-0 text-sky-600" /> {s.office_hours}
                       </p>
                     )}
                     {s.notes && <p className="text-[10px] text-muted-foreground mt-1 italic">{s.notes}</p>}

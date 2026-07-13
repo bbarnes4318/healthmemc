@@ -1,0 +1,37 @@
+{
+  "name": "BabyGrowthLog",
+  "type": "object",
+  "properties": {
+    "baby_name": {
+      "type": "string"
+    },
+    "measurement_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "age_weeks": {
+      "type": "number"
+    },
+    "age_months": {
+      "type": "number"
+    },
+    "height_cm": {
+      "type": "number"
+    },
+    "weight_kg": {
+      "type": "number"
+    },
+    "head_circumference_cm": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "measurement_date"
+  ]
+}

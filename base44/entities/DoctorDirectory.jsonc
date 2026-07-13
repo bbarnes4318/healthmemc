@@ -20,6 +20,9 @@
     "address": {
       "type": "string"
     },
+    "office_hours": {
+      "type": "string"
+    },
     "clinician_access_id": {
       "type": "string"
     },

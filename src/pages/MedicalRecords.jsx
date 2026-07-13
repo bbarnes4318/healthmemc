@@ -11,6 +11,7 @@ import {
   Download, Filter, Search, List, GitBranch, FileDown, FlaskConical, GitCompare, Shield, TrendingUp as TrendingUpIcon, ArrowUpDown
 } from "lucide-react";
 import OcrButton from "@/components/records/OcrButton";
+import ResponseActions from "@/components/voice/ResponseActions";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import MedicalTimeline from "@/components/records/MedicalTimeline";
@@ -335,6 +336,9 @@ export default function MedicalRecords() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
+                  {record.notes && (
+                    <ResponseActions content={`${record.title}. ${record.provider ? `Provider: ${record.provider}.` : ""} ${record.notes}`} label="medical-record" />
+                  )}
                   <Button variant="ghost" size="icon" className="h-8 w-8 text-sky-600 hover:text-sky-700" title="Download PDF summary" onClick={() => generateRecordPdf(record)}>
                     <FileDown className="w-4 h-4" />
                   </Button>

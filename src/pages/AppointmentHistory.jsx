@@ -12,6 +12,7 @@ import {
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
+import ResponseActions from "@/components/voice/ResponseActions";
 import { format } from "date-fns";
 
 const typeIcons = {
@@ -234,6 +235,22 @@ export default function AppointmentHistory() {
                   {selectedConsult.specialty && ` — ${selectedConsult.specialty}`}
                 </DialogTitle>
               </DialogHeader>
+
+              {(() => {
+                const r = selectedConsult.report || {};
+                const parts = [
+                  selectedConsult.symptoms && `Reported symptoms: ${selectedConsult.symptoms}`,
+                  r.summary && `Summary: ${r.summary}`,
+                  r.diagnoses?.length && `Possible diagnoses: ${r.diagnoses.map(d => `${d.name} (${d.confidence})`).join(", ")}`,
+                  r.recommended_tests?.length && `Recommended tests: ${r.recommended_tests.join(", ")}`,
+                  r.recommended_treatments?.length && `Recommended treatments: ${r.recommended_treatments.join(", ")}`,
+                  r.follow_up_plan && `Follow-up plan: ${r.follow_up_plan}`,
+                  r.lifestyle_recommendations?.length && `Lifestyle recommendations: ${r.lifestyle_recommendations.join(", ")}`,
+                  r.emergency_warnings?.length && `Emergency warnings: ${r.emergency_warnings.join(", ")}`,
+                ].filter(Boolean);
+                if (parts.length === 0) return null;
+                return <ResponseActions content={parts.join(". ")} label="consultation-report" />;
+              })()}
 
               <div className="space-y-4 mt-2">
                 {/* Date & Severity */}

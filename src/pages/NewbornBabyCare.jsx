@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Baby, Send, Loader2, Shield, Heart, Milk, Moon, Thermometer,
-  Droplets, Activity, BookOpen, Stethoscope, Sparkles, AlertCircle, Users, Syringe
+  Droplets, Activity, BookOpen, Stethoscope, Sparkles, AlertCircle, Users, Syringe, TrendingUp
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -17,6 +17,7 @@ import NewbornSpecialistDirectory from "@/components/newborn/NewbornSpecialistDi
 import BabyMilestoneTracker from "@/components/newborn/BabyMilestoneTracker";
 import BabyDailyJournal from "@/components/newborn/BabyDailyJournal";
 import BabyVaccineTracker from "@/components/newborn/BabyVaccineTracker";
+import BabyGrowthChart from "@/components/newborn/BabyGrowthChart";
 import NewbornDashboard from "@/components/newborn/NewbornDashboard";
 
 const careTopics = [
@@ -114,6 +115,7 @@ export default function NewbornBabyCare() {
             <TabsTrigger value="tips" className="flex-1 min-w-[80px]"><BookOpen className="w-3.5 h-3.5 mr-1" />Tips</TabsTrigger>
             <TabsTrigger value="milestones" className="flex-1 min-w-[80px]"><Sparkles className="w-3.5 h-3.5 mr-1" />Milestones</TabsTrigger>
             <TabsTrigger value="journal" className="flex-1 min-w-[80px]"><Milk className="w-3.5 h-3.5 mr-1" />Journal</TabsTrigger>
+            <TabsTrigger value="growth" className="flex-1 min-w-[80px]"><TrendingUp className="w-3.5 h-3.5 mr-1" />Growth</TabsTrigger>
             <TabsTrigger value="vaccines" className="flex-1 min-w-[80px]"><Syringe className="w-3.5 h-3.5 mr-1" />Vaccines</TabsTrigger>
           </TabsList>
 
@@ -298,6 +300,11 @@ export default function NewbornBabyCare() {
           {/* Daily Journal Tab */}
           <TabsContent value="journal">
             <BabyDailyJournal />
+          </TabsContent>
+
+          {/* Growth Tab */}
+          <TabsContent value="growth">
+            <BabyGrowthChart />
           </TabsContent>
 
           {/* Vaccines Tab */}
