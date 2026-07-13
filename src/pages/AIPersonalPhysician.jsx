@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Pill, FileText, TrendingUp, Shield, Send, Loader2,
-  Stethoscope, ArrowLeft, Heart, Database, Sparkles
+  Stethoscope, ArrowLeft, Heart, Database, Sparkles, UserCheck
 } from "lucide-react";
 import VoiceInputButton from "@/components/voice/VoiceInputButton";
 import ResponseActions from "@/components/voice/ResponseActions";
@@ -44,6 +44,7 @@ export default function AIPersonalPhysician() {
   const [contextLoading, setContextLoading] = useState(true);
   const [dataPoints, setDataPoints] = useState(0);
   const [consultationId, setConsultationId] = useState(null);
+  const [secondOpinionLoading, setSecondOpinionLoading] = useState(false);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -162,6 +163,49 @@ export default function AIPersonalPhysician() {
     setLoading(false);
   };
 
+  const getSecondOpinion = async () => {
+    if (messages.length < 2 || secondOpinionLoading) return;
+    setSecondOpinionLoading(true);
+    const separator = { role: "assistant", content: "🔄 **— Independent Second Opinion —**" };
+    setMessages((prev) => [...prev, separator]);
+
+    try {
+      const conversationText = messages
+        .filter((m) => m.content && !m.content.startsWith("🔄"))
+        .map((m) => `${m.role === "user" ? "Patient" : "Physician"}: ${m.content}`)
+        .join("\n\n");
+      const contextBlock = patientContext
+        ? `\n\n## PATIENT MEDICAL RECORDS\n${patientContext}`
+        : "";
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are an independent physician providing a SECOND OPINION. You have not seen this patient before. Review the following consultation transcript and provide your own independent assessment.
+
+IMPORTANT:
+- Analyze the case fresh, as if you are a different doctor reviewing it for the first time.
+- Confirm or disagree with the initial assessment where appropriate. Be honest if you have a different view.
+- Highlight anything the first opinion may have missed — alternative diagnoses, medication interactions, additional tests to consider.
+- Reference the patient's actual medical records when relevant.
+- Structure your response clearly: your assessment, where you agree/disagree with the first opinion, and your additional recommendations.
+- Speak as a real, experienced physician would — warm, professional, and thorough.
+
+${contextBlock}
+
+## CONSULTATION TRANSCRIPT
+${conversationText}
+
+Provide your independent second opinion:`,
+        model: "claude_sonnet_4_6",
+      });
+      setMessages((prev) => [...prev, { role: "assistant", content: response }]);
+      const allMessages = [...messages, separator, { role: "assistant", content: response }];
+      updateConsultation(allMessages);
+    } catch (err) {
+      console.error(err);
+      setMessages((prev) => [...prev, { role: "assistant", content: "I wasn't able to generate a second opinion at this time. Please try again." }]);
+    }
+    setSecondOpinionLoading(false);
+  };
+
   const handleEndConsultation = () => {
     if (messages.length > 1) finalizeConsultation(messages);
     setStarted(false);
@@ -265,6 +309,18 @@ export default function AIPersonalPhysician() {
           <Badge variant="outline" className="text-[10px] text-emerald-600 border-emerald-200">
             <Sparkles className="w-3 h-3 mr-1" /> Auto-saving
           </Badge>
+        )}
+        {messages.length >= 2 && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-xs shrink-0"
+            onClick={getSecondOpinion}
+            disabled={secondOpinionLoading || loading}
+          >
+            {secondOpinionLoading ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <UserCheck className="w-3.5 h-3.5 mr-1.5" />}
+            2nd Opinion
+          </Button>
         )}
       </div>
 
