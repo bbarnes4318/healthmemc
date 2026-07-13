@@ -16,6 +16,7 @@ import LabMarkerTrend from "@/components/health/LabMarkerTrend";
 import DermatologyTrendChart from "@/components/health/DermatologyTrendChart";
 import VisionTrendChart from "@/components/health/VisionTrendChart";
 import { generateHealthDashboardPdf } from "@/lib/generateHealthDashboardPdf";
+import MedicationAdherenceTrend from "@/components/pharmacy/MedicationAdherenceTrend";
 import { Download } from "lucide-react";
 
 const vitalTypes = [
@@ -210,6 +211,9 @@ export default function HealthDashboard() {
           </ResponsiveContainer>
         )}
       </Card>
+
+      {/* Medication Adherence Trend */}
+      <MedicationAdherenceTrend />
 
       {/* Lab Marker Trends */}
       <div className="flex items-center gap-2 mb-2">
