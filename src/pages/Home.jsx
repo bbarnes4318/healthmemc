@@ -19,6 +19,8 @@ import InsuranceCoverageChart from "@/components/insurance/InsuranceCoverageChar
 import FAQSection from "@/components/home/FAQSection";
 import BenefitsSection from "@/components/home/BenefitsSection";
 import FitnessPainMedicationReportButton from "@/components/health/FitnessPainMedicationReportButton";
+import ExercisePainTrendReport from "@/components/health/ExercisePainTrendReport";
+import PharmacyInventoryTracker from "@/components/pharmacy/PharmacyInventoryTracker";
 import NutritionProgressBars from "@/components/wellness/NutritionProgressBars";
 import VoiceGreeting from "@/components/voice/VoiceGreeting";
 import CriticalRecordsBanner from "@/components/records/CriticalRecordsBanner";
@@ -261,6 +263,9 @@ export default function Home() {
         </Card>
       </div>
 
+      {/* Pharmacy Inventory Tracker */}
+      <PharmacyInventoryTracker />
+
       {/* Nutrition Goal Progress */}
       <NutritionProgressBars />
 
@@ -312,6 +317,9 @@ export default function Home() {
           })()}
         </div>
       </Card>
+
+      {/* Exercise vs Pain Trend Report */}
+      <ExercisePainTrendReport />
 
       {/* Physician Report Export */}
       <Card className="p-5">
