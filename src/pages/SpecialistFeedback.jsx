@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from "@/components/ui/use-toast";
 import {
   Star, Plus, Loader2, Trash2, MessageSquare, ThumbsUp, Tag,
-  Calendar, Stethoscope, Search, X, Quote, GitCompare, DollarSign
+  Calendar, Stethoscope, Search, X, Quote, GitCompare, DollarSign, ArrowUpDown
 } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
@@ -52,6 +52,7 @@ export default function SpecialistFeedback() {
   const [form, setForm] = useState(emptyForm);
   const [search, setSearch] = useState("");
   const [filterSpec, setFilterSpec] = useState("all");
+  const [sortBy, setSortBy] = useState("recent");
   const [newNote, setNewNote] = useState("");
   const [newTag, setNewTag] = useState("");
   const [activeTab, setActiveTab] = useState("reviews");
@@ -130,6 +131,15 @@ export default function SpecialistFeedback() {
       f.tags?.some((t) => t.toLowerCase().includes(q));
   });
 
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortBy === "recent") return new Date(b.visit_date || b.created_date) - new Date(a.visit_date || a.created_date);
+    if (sortBy === "rating_high") return (b.rating || 0) - (a.rating || 0);
+    if (sortBy === "rating_low") return (a.rating || 0) - (b.rating || 0);
+    if (sortBy === "specialty") return (a.specialty || "").localeCompare(b.specialty || "");
+    if (sortBy === "name") return (a.specialist_name || "").localeCompare(b.specialist_name || "");
+    return 0;
+  });
+
   const avgRating = feedback.length > 0
     ? (feedback.reduce((s, f) => s + (f.rating || 0), 0) / feedback.length).toFixed(1)
     : "—";
@@ -193,6 +203,16 @@ export default function SpecialistFeedback() {
           <SelectContent>
             <SelectItem value="all">All Specialties</SelectItem>
             {specialties.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="w-[150px]"><ArrowUpDown className="w-3.5 h-3.5 mr-1.5" /><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="recent">Most Recent</SelectItem>
+            <SelectItem value="rating_high">Highest Rating</SelectItem>
+            <SelectItem value="rating_low">Lowest Rating</SelectItem>
+            <SelectItem value="specialty">Specialty A-Z</SelectItem>
+            <SelectItem value="name">Doctor Name A-Z</SelectItem>
           </SelectContent>
         </Select>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -338,7 +358,7 @@ export default function SpecialistFeedback() {
       {/* Feedback Cards */}
       {loading ? (
         <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-amber-600" /></div>
-      ) : filtered.length === 0 ? (
+      ) : sorted.length === 0 ? (
         <Card className="p-12 text-center">
           <MessageSquare className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-muted-foreground text-sm">{search || filterSpec !== "all" ? "No reviews found" : "No specialist reviews yet"}</p>
@@ -346,7 +366,7 @@ export default function SpecialistFeedback() {
         </Card>
       ) : (
         <div className="space-y-3">
-          {filtered.map((f, i) => (
+          {sorted.map((f, i) => (
             <motion.div key={f.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 * i }}>
               <Card className="p-4">
                 <div className="flex items-start gap-3">

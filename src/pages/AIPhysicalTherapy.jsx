@@ -7,6 +7,7 @@ import PTMilestoneTimeline from "@/components/pt/PTMilestoneTimeline";
 import ExerciseTemplateManager from "@/components/pt/ExerciseTemplateManager";
 import PTDailyGoals from "@/components/pt/PTDailyGoals";
 import MasterRecoveryDashboard from "@/components/pt/MasterRecoveryDashboard";
+import TreatmentCorrelationAnalyzer from "@/components/health/TreatmentCorrelationAnalyzer";
 import BodyDiagram from "@/components/consultations/BodyDiagram";
 import BodyModel3D from "@/components/3d/BodyModel3D";
 import PainHeatmap3D from "@/components/3d/PainHeatmap3D";
@@ -75,10 +76,11 @@ export default function AIPhysicalTherapy() {
           <ExerciseTemplateManager />
         </div>
       ) : activeTab === "summary" ? (
-        <div className="p-4 lg:p-8 max-w-3xl mx-auto">
+        <div className="p-4 lg:p-8 max-w-3xl mx-auto space-y-4">
           <PTDailyGoals />
           <PTGoals />
           <PTSummary />
+          <TreatmentCorrelationAnalyzer />
         </div>
       ) : activeTab === "master" ? (
         <div className="p-4 lg:p-8 max-w-4xl mx-auto">
