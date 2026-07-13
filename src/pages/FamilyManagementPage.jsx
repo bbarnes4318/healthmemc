@@ -4,6 +4,7 @@ import { Users, UserPlus } from "lucide-react";
 import FamilyManagement from "@/components/family/FamilyManagement";
 import FamilyCareDashboard from "@/components/family/FamilyCareDashboard";
 import FamilyAppointmentCalendar from "@/components/family/FamilyAppointmentCalendar";
+import FamilyRecordSharePortal from "@/components/family/FamilyRecordSharePortal";
 
 export default function FamilyManagementPage() {
   return (
@@ -17,6 +18,7 @@ export default function FamilyManagementPage() {
           <p className="text-muted-foreground mt-1 text-sm">Manage profiles for your children, parents, and dependents — linked to your dashboard</p>
         </div>
 
+        <FamilyRecordSharePortal />
         <FamilyCareDashboard />
         <FamilyAppointmentCalendar />
         <FamilyManagement />

@@ -19,6 +19,7 @@ import RefillActionPanel from "@/components/pharmacy/RefillActionPanel";
 import PharmacyExpenseTracker from "@/components/pharmacy/PharmacyExpenseTracker";
 import OneClickRefillButton from "@/components/pharmacy/OneClickRefillButton";
 import MonthlyExpenseReport from "@/components/pharmacy/MonthlyExpenseReport";
+import MonthlyAdherenceReport from "@/components/pharmacy/MonthlyAdherenceReport";
 import MedicationHistoryReport from "@/components/pharmacy/MedicationHistoryReport";
 import MedicationSafetyScanner from "@/components/pharmacy/MedicationSafetyScanner";
 import TreatmentCorrelationAnalyzer from "@/components/health/TreatmentCorrelationAnalyzer";
@@ -95,6 +96,7 @@ export default function Pharmacy() {
             <TabsTrigger value="interactions">Interactions</TabsTrigger>
             <TabsTrigger value="safety"><Shield className="w-3.5 h-3.5 mr-1" />Safety Scan</TabsTrigger>
             <TabsTrigger value="adherence"><Activity className="w-3.5 h-3.5 mr-1" />Adherence</TabsTrigger>
+            <TabsTrigger value="monthly-report"><FileText className="w-3.5 h-3.5 mr-1" />Monthly Report</TabsTrigger>
             <TabsTrigger value="reminders"><Bell className="w-3.5 h-3.5 mr-1" />Reminders</TabsTrigger>
             <TabsTrigger value="history"><FileText className="w-3.5 h-3.5 mr-1" />History</TabsTrigger>
           </TabsList>
@@ -174,6 +176,10 @@ export default function Pharmacy() {
 
           <TabsContent value="adherence">
             <AdherenceTracker />
+          </TabsContent>
+
+          <TabsContent value="monthly-report">
+            <MonthlyAdherenceReport />
           </TabsContent>
 
           <TabsContent value="reminders">

@@ -8,6 +8,9 @@
     "recipient_name": {
       "type": "string"
     },
+    "family_member_id": {
+      "type": "string"
+    },
     "share_medical_records": {
       "type": "boolean",
       "default": true
@@ -24,6 +27,16 @@
       "type": "boolean",
       "default": false
     },
+    "share_recovery": {
+      "type": "boolean",
+      "default": false
+    },
+    "assigned_record_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "access_token": {
       "type": "string"
     },
@@ -38,6 +51,10 @@
         "revoked"
       ],
       "default": "active"
+    },
+    "last_accessed_at": {
+      "type": "string",
+      "format": "date-time"
     }
   },
   "required": [

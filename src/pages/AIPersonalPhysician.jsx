@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import VoiceInputButton from "@/components/voice/VoiceInputButton";
 import ResponseActions from "@/components/voice/ResponseActions";
+import PrimaryCareDoctors from "@/components/physician/PrimaryCareDoctors";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 
@@ -276,6 +277,10 @@ Provide your independent second opinion:`,
                   </Button>
                 </div>
               </Card>
+
+              <div className="mt-4">
+                <PrimaryCareDoctors />
+              </div>
 
               <div className="flex items-start gap-2 p-4 bg-amber-50 rounded-xl border border-amber-200 mt-4">
                 <Shield className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
