@@ -1,0 +1,45 @@
+{
+  "description": "Daily check for medical records flagged as critical or urgent, sending email alerts to patients for immediate review.",
+  "name": "Critical Record Alert Workflow",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "critical_record_alert",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "check_critical_records": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "checkCriticalRecords",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Check critical records",
+            "description": "Scan for flagged records & send alerts"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 8 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  }
+}

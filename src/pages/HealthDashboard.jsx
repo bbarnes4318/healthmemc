@@ -18,6 +18,8 @@ import VisionTrendChart from "@/components/health/VisionTrendChart";
 import { generateHealthDashboardPdf } from "@/lib/generateHealthDashboardPdf";
 import MedicationAdherenceTrend from "@/components/pharmacy/MedicationAdherenceTrend";
 import MedicationAdherenceMonthly from "@/components/pharmacy/MedicationAdherenceMonthly";
+import MonthlyProgressReportButton from "@/components/health/MonthlyProgressReportButton";
+import CriticalRecordsBanner from "@/components/records/CriticalRecordsBanner";
 import { Download } from "lucide-react";
 
 const vitalTypes = [
@@ -212,6 +214,15 @@ export default function HealthDashboard() {
           </ResponsiveContainer>
         )}
       </Card>
+
+      {/* Critical Records Alert */}
+      <CriticalRecordsBanner />
+
+      {/* Monthly Progress Report Button */}
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="text-sm font-semibold">Monthly Health Progress Report</h3>
+        <MonthlyProgressReportButton variant="default" className="bg-orange-600 hover:bg-orange-700" />
+      </div>
 
       {/* 30-Day Medication Adherence Bar Chart */}
       <MedicationAdherenceMonthly />

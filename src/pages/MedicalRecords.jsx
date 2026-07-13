@@ -8,9 +8,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   FileText, Plus, Upload, Loader2, Calendar, Trash2,
-  Download, Filter, Search, List, GitBranch, FileDown, FlaskConical, GitCompare
+  Download, Filter, Search, List, GitBranch, FileDown, FlaskConical, GitCompare, Shield
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import MedicalTimeline from "@/components/records/MedicalTimeline";
 import LabComparison from "@/components/records/LabComparison";
 import RecordInsights from "@/components/records/RecordInsights";
@@ -18,6 +19,7 @@ import { generateRecordPdf } from "@/lib/generateRecordPdf";
 import BulkExportButton from "@/components/records/BulkExportButton";
 import GlobalRecordSearch from "@/components/records/GlobalRecordSearch";
 import PrivacyNotice from "@/components/records/PrivacyNotice";
+import CriticalRecordsBanner from "@/components/records/CriticalRecordsBanner";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 
 const categories = [
@@ -48,7 +50,7 @@ export default function MedicalRecords() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [filterCat, setFilterCat] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [form, setForm] = useState({ title: "", category: "visit_summary", date: "", provider: "", notes: "" });
+  const [form, setForm] = useState({ title: "", category: "visit_summary", date: "", provider: "", notes: "", priority: "normal" });
   const [fileUrl, setFileUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -101,7 +103,7 @@ export default function MedicalRecords() {
         file_url: fileUrl || undefined,
         family_member_id: currentMemberId || undefined,
       });
-      setForm({ title: "", category: "visit_summary", date: "", provider: "", notes: "" });
+      setForm({ title: "", category: "visit_summary", date: "", provider: "", notes: "", priority: "normal" });
       setFileUrl(null);
       setDialogOpen(false);
       loadRecords();
@@ -135,7 +137,16 @@ export default function MedicalRecords() {
 
   return (
     <div className="p-4 lg:p-8 max-w-4xl mx-auto">
+      <CriticalRecordsBanner />
+      <div className="h-4" />
       <PrivacyNotice />
+      <div className="flex justify-end -mt-2 mb-2">
+        <Link to="/privacy-dashboard">
+          <Button variant="outline" size="sm" className="h-7 text-xs">
+            <Shield className="w-3.5 h-3.5 mr-1.5" /> View Privacy Dashboard
+          </Button>
+        </Link>
+      </div>
       <div className="flex items-center justify-between mb-6 mt-6">
         <div>
           <h1 className="text-2xl font-display font-bold">Medical Records</h1>
@@ -163,6 +174,17 @@ export default function MedicalRecords() {
               </Select>
               <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
               <Input placeholder="Provider name" value={form.provider} onChange={(e) => setForm({ ...form, provider: e.target.value })} />
+              <Select value={form.priority} onValueChange={(v) => setForm({ ...form, priority: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="normal">Normal Priority</SelectItem>
+                  <SelectItem value="urgent">⚠️ Urgent — Needs Review</SelectItem>
+                  <SelectItem value="critical">🚨 Critical — Immediate Review</SelectItem>
+                </SelectContent>
+              </Select>
+              {form.priority !== "normal" && (
+                <Input placeholder="Reason for flagging (optional)" value={form.flagged_reason || ""} onChange={(e) => setForm({ ...form, flagged_reason: e.target.value })} />
+              )}
               <Textarea placeholder="Notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} className="resize-none" />
               <label className="flex items-center gap-2 px-4 py-2 border rounded-lg cursor-pointer hover:bg-muted transition text-sm">
                 <Upload className="w-4 h-4" />
@@ -259,13 +281,19 @@ export default function MedicalRecords() {
         <div className="space-y-3">
           {filtered.map((record, i) => (
             <motion.div key={record.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
-              <Card className="p-4 flex items-center gap-4">
-                <div className="w-10 h-10 rounded-lg bg-sky-100 flex items-center justify-center shrink-0">
-                  <FileText className="w-5 h-5 text-sky-600" />
+              <Card className={`p-4 flex items-center gap-4 ${record.priority === "critical" ? "border-red-300 bg-red-50/30" : record.priority === "urgent" ? "border-amber-300 bg-amber-50/30" : ""}`}>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${record.priority === "critical" ? "bg-red-100" : record.priority === "urgent" ? "bg-amber-100" : "bg-sky-100"}`}>
+                  <FileText className={`w-5 h-5 ${record.priority === "critical" ? "text-red-600" : record.priority === "urgent" ? "text-amber-600" : "text-sky-600"}`} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm font-semibold truncate">{record.title}</h3>
                   <div className="flex items-center gap-2 mt-1">
+                    {record.priority === "critical" && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-red-200 text-red-800">🚨 CRITICAL</span>
+                    )}
+                    {record.priority === "urgent" && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-amber-200 text-amber-800">⚠️ URGENT</span>
+                    )}
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${categoryColors[record.category] || categoryColors.other}`}>
                       {categories.find((c) => c.value === record.category)?.label || record.category}
                     </span>

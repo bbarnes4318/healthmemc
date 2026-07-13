@@ -33,6 +33,27 @@
     },
     "family_member_id": {
       "type": "string"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "urgent",
+        "critical"
+      ],
+      "default": "normal"
+    },
+    "review_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "reviewed",
+        "flagged"
+      ],
+      "default": "pending"
+    },
+    "flagged_reason": {
+      "type": "string"
     }
   },
   "required": [

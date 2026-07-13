@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { Card } from "@/components/ui/card";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { RotateCcw, Activity, Loader2, Trash2, Calendar, ChevronRight, MousePointerClick, PersonStanding } from "lucide-react";
+import { RotateCcw, Activity, Loader2, Trash2, Calendar, ChevronRight, MousePointerClick, PersonStanding, Flame, TrendingDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
@@ -17,6 +17,30 @@ import { format } from "date-fns";
 const BODY_COLOR = 0xe8d5c4;
 const HOVER_COLOR = 0xfbbf24;
 const SELECTED_COLOR = 0xef4444;
+
+// PT body_part → BodyModel3D region mapping
+const ptToRegions = {
+  knee: ["left_knee", "right_knee"],
+  shoulder: ["left_shoulder", "right_shoulder"],
+  hip: ["left_hip", "right_hip"],
+  spine: ["back", "lower_back"],
+  ankle: ["left_foot", "right_foot"],
+  wrist: ["left_arm", "right_arm"],
+  neck: ["neck"],
+  full_body: ["chest", "abdomen", "back", "lower_back"],
+};
+
+const painHeatColors = [
+  { max: 2, hex: 0xfde68a, css: "#fde68a", label: "Low Pain (0-2)" },
+  { max: 5, hex: 0xfb923c, css: "#fb923c", label: "Moderate (3-5)" },
+  { max: 7, hex: 0xf97316, css: "#f97316", label: "High (6-7)" },
+  { max: 10, hex: 0xef4444, css: "#ef4444", label: "Severe (8-10)" },
+];
+
+function painToColor(pain) {
+  if (pain == null) return null;
+  return painHeatColors.find((c) => pain <= c.max) || painHeatColors[painHeatColors.length - 1];
+}
 
 const severityColors = {
   mild: { hex: 0xfbbf24, css: "#fbbf24", bg: "bg-amber-100", text: "text-amber-700", label: "Mild" },
@@ -168,6 +192,8 @@ export default function BodyModel3D() {
   const [form, setForm] = useState({ severity: "mild", symptom_description: "", pain_type: "aching", duration: "", notes: "" });
   const [saving, setSaving] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [heatmapMode, setHeatmapMode] = useState(false);
+  const [exerciseLogs, setExerciseLogs] = useState([]);
 
   const load = async () => {
     try {
@@ -178,7 +204,16 @@ export default function BodyModel3D() {
     setLoading(false);
   };
 
+  const loadExerciseLogs = async () => {
+    try {
+      const data = await base44.entities.ExerciseLog.list("-date", 200);
+      const filtered = currentMemberId ? data.filter((e) => e.family_member_id === currentMemberId) : data;
+      setExerciseLogs(filtered);
+    } catch (e) { console.error(e); }
+  };
+
   useEffect(() => { load(); }, [currentMemberId]);
+  useEffect(() => { if (heatmapMode) loadExerciseLogs(); }, [heatmapMode, currentMemberId]);
 
   // 3D scene
   useEffect(() => {
@@ -311,6 +346,30 @@ export default function BodyModel3D() {
     }
   });
 
+  // Aggregate PT pain data per body_part → map to regions
+  const ptHeatByRegion = useMemo(() => {
+    const byPart = {};
+    exerciseLogs.forEach((e) => {
+      const part = e.body_part;
+      if (!byPart[part]) byPart[part] = { painSum: 0, painCount: 0, romValues: [], logCount: 0 };
+      if (e.pain_level != null) { byPart[part].painSum += e.pain_level; byPart[part].painCount++; }
+      if (e.rom_degrees != null) byPart[part].romValues.push(e.rom_degrees);
+      byPart[part].logCount++;
+    });
+
+    const regionMap = {};
+    for (const [part, data] of Object.entries(byPart)) {
+      const avgPain = data.painCount > 0 ? data.painSum / data.painCount : null;
+      const latestRom = data.romValues.length ? data.romValues[data.romValues.length - 1] : null;
+      const regions = ptToRegions[part] || [];
+      const painColor = painToColor(avgPain);
+      regions.forEach((r) => {
+        regionMap[r] = { avgPain, latestRom, painColor, logCount: data.logCount, part };
+      });
+    }
+    return regionMap;
+  }, [exerciseLogs]);
+
   // Update colors
   useEffect(() => {
     if (!sceneReady) return;
@@ -319,7 +378,22 @@ export default function BodyModel3D() {
       let color = BODY_COLOR;
       let emissive = 0x000000;
 
-      if (selectedRegion === region) {
+      if (heatmapMode) {
+        // PT Heatmap overlay mode
+        const torsoRegions = ["chest", "abdomen", "back", "lower_back"];
+        let heatData = ptHeatByRegion[region];
+        if (mesh.userData.isTorso) {
+          const allTorso = torsoRegions.map((r) => ptHeatByRegion[r]).filter(Boolean);
+          if (allTorso.length > 0) {
+            const worst = allTorso.sort((a, b) => (b.avgPain || 0) - (a.avgPain || 0))[0];
+            heatData = worst;
+          }
+        }
+        if (heatData?.painColor) {
+          color = heatData.painColor.hex;
+          emissive = heatData.painColor.hex;
+        }
+      } else if (selectedRegion === region) {
         color = SELECTED_COLOR;
         emissive = 0x331111;
       } else if (mesh.userData.isTorso) {
@@ -340,8 +414,9 @@ export default function BodyModel3D() {
 
       mesh.material.color.setHex(color);
       mesh.material.emissive.setHex(emissive);
+      mesh.material.emissiveIntensity = emissive !== 0x000000 ? 0.3 : 0;
     });
-  }, [sceneReady, selectedRegion, hoveredRegion, entries]);
+  }, [sceneReady, selectedRegion, hoveredRegion, entries, heatmapMode, ptHeatByRegion]);
 
   const handleSave = async () => {
     if (!selectedRegion) return;
@@ -375,11 +450,27 @@ export default function BodyModel3D() {
           <h3 className="text-sm font-semibold flex items-center gap-2">
             <PersonStanding className="w-4 h-4 text-orange-600" /> 3D Body Model
           </h3>
-          <p className="text-xs text-muted-foreground">Drag to rotate 360° · Click a body region to log symptoms · {currentMemberName}</p>
+          <p className="text-xs text-muted-foreground">
+            {heatmapMode
+              ? "PT Pain Heatmap · Red = high pain · Drag to rotate · " + currentMemberName
+              : "Drag to rotate 360° · Click a body region to log symptoms · " + currentMemberName}
+          </p>
         </div>
-        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setShowHistory(!showHistory)}>
-          <Calendar className="w-3.5 h-3.5 mr-1" /> History
-        </Button>
+        <div className="flex items-center gap-1.5">
+          <Button
+            size="sm"
+            variant={heatmapMode ? "default" : "outline"}
+            className={`h-7 text-xs ${heatmapMode ? "bg-orange-600 hover:bg-orange-700" : ""}`}
+            onClick={() => setHeatmapMode(!heatmapMode)}
+          >
+            <Flame className="w-3.5 h-3.5 mr-1" /> {heatmapMode ? "Heatmap On" : "PT Heatmap"}
+          </Button>
+          {!heatmapMode && (
+            <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setShowHistory(!showHistory)}>
+              <Calendar className="w-3.5 h-3.5 mr-1" /> History
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-4">
@@ -388,6 +479,56 @@ export default function BodyModel3D() {
         </div>
 
         <div className="flex-1 min-w-0">
+          {heatmapMode ? (
+            <div>
+              {/* Heatmap Legend */}
+              <div className="mb-4">
+                <h4 className="text-xs font-semibold mb-2 flex items-center gap-1"><Flame className="w-3.5 h-3.5 text-orange-600" /> Pain Heat Legend</h4>
+                <div className="space-y-1.5">
+                  {painHeatColors.map((c) => (
+                    <div key={c.label} className="flex items-center gap-1.5">
+                      <div className="w-3 h-3 rounded-full" style={{ background: c.css }} />
+                      <span className="text-[10px] text-muted-foreground">{c.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Active Heat Areas */}
+              {Object.keys(ptHeatByRegion).length === 0 ? (
+                <div className="p-4 bg-muted/30 rounded-lg text-center">
+                  <p className="text-xs text-muted-foreground">No PT logs with pain data yet.</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Log exercises with pain levels to see your heatmap.</p>
+                </div>
+              ) : (
+                <div>
+                  <h4 className="text-xs font-semibold mb-2 flex items-center gap-1">
+                    <TrendingDown className="w-3.5 h-3.5 text-orange-600" /> Active Pain Areas
+                  </h4>
+                  <div className="space-y-1.5 max-h-64 overflow-y-auto">
+                    {Object.entries(ptHeatByRegion)
+                      .filter(([r]) => ptHeatByRegion[r]?.painColor)
+                      .sort(([, a], [, b]) => (b.avgPain || 0) - (a.avgPain || 0))
+                      .map(([region, data]) => (
+                        <div key={region} className="flex items-center gap-2 p-2 bg-muted/30 rounded-lg">
+                          <div className="w-3 h-3 rounded-full shrink-0" style={{ background: data.painColor.css }} />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium">{regionLabels[region] || region}</p>
+                            <p className="text-[10px] text-muted-foreground">
+                              {data.avgPain != null ? `Avg pain: ${data.avgPain.toFixed(1)}/10` : "No pain data"}
+                              {data.latestRom != null ? ` · ROM: ${data.latestRom}°` : ""}
+                              {` · ${data.logCount} log${data.logCount !== 1 ? "s" : ""}`}
+                            </p>
+                          </div>
+                          <span className="text-[10px] text-muted-foreground shrink-0">{data.painColor.label}</span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div>
           <div className="flex items-center gap-3 mb-3 flex-wrap">
             {Object.entries(severityColors).map(([key, val]) => (
               <div key={key} className="flex items-center gap-1">
@@ -460,6 +601,8 @@ export default function BodyModel3D() {
                   </div>
                 </div>
               )}
+            </div>
+          )}
             </div>
           )}
         </div>

@@ -16,6 +16,7 @@ import FamilyHealthScoreCard from "@/components/family/FamilyHealthScoreCard";
 import PricingPlans from "@/components/about/PricingPlans";
 import NutritionProgressBars from "@/components/wellness/NutritionProgressBars";
 import VoiceGreeting from "@/components/voice/VoiceGreeting";
+import CriticalRecordsBanner from "@/components/records/CriticalRecordsBanner";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a4dfc16013374d3269a9096/3f23b1c41_generated_image.png";
 
@@ -33,6 +34,7 @@ const quickActions = [
   { label: "Ear Care", icon: Ear, path: "/ear-care", color: "from-purple-500 to-fuchsia-600", desc: "Hearing tests & ear health" },
   { label: "Immunization History", icon: Syringe, path: "/immunization", color: "from-emerald-500 to-teal-600", desc: "Vaccines & booster reminders" },
   { label: "Surgical Recovery", icon: ActivityIcon, path: "/surgical-recovery", color: "from-rose-500 to-pink-600", desc: "Post-op healing & wound tracking" },
+  { label: "Privacy Dashboard", icon: Shield, path: "/privacy-dashboard", color: "from-blue-500 to-indigo-600", desc: "Access logs & security status" },
 ];
 
 export default function Home() {
@@ -83,6 +85,7 @@ export default function Home() {
   return (
     <div className="p-4 lg:p-8 max-w-6xl mx-auto space-y-6">
       <VoiceGreeting userName={user?.full_name} />
+      <CriticalRecordsBanner />
       {/* Welcome & Health Score */}
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
         <motion.div
