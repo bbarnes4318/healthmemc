@@ -108,7 +108,7 @@ export default function Home() {
             <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="relative">
               <div className="flex items-center gap-2 mb-3">
-                <img src={LOGO_URL} alt="Health Me Medical Center" className="w-16 h-16 rounded-lg object-cover ring-1 ring-white/30" />
+                <img src={LOGO_URL} alt="Health Me Medical Center" className="w-[640px] h-[640px] rounded-lg object-cover ring-1 ring-white/30" />
                 <span className="text-[10px] text-sky-100 font-semibold uppercase tracking-wide">Health Me Medical Center</span>
               </div>
               <p className="text-sky-100 text-sm font-medium">Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 17 ? "afternoon" : "evening"},</p>
