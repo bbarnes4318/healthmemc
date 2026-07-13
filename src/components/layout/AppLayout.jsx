@@ -91,8 +91,8 @@ export default function AppLayout() {
       <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-border fixed h-full z-30">
         <div className="p-6 border-b border-border">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-[360px] h-[360px] rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center">
-              <Activity className="w-[200px] h-[200px] text-white" />
+            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center">
+              <Activity className="w-8 h-8 text-white" />
             </div>
             <div>
               <h1 className="font-display font-bold text-base leading-tight">Health Me Medical Center</h1>
@@ -140,8 +140,8 @@ export default function AppLayout() {
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-border flex items-center justify-between px-4 z-40">
         <Link to="/" className="flex items-center gap-2">
-          <div className="w-[320px] h-[320px] rounded-lg bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center">
-            <Activity className="w-[160px] h-[160px] text-white" />
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center">
+            <Activity className="w-6 h-6 text-white" />
           </div>
           <span className="font-display font-bold text-sm">Health Me Medical</span>
         </Link>
@@ -156,8 +156,8 @@ export default function AppLayout() {
           <div className="absolute left-0 top-0 bottom-0 w-72 bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="p-6 border-b border-border flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-[360px] h-[360px] rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center">
-                  <Activity className="w-[200px] h-[200px] text-white" />
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center">
+                  <Activity className="w-8 h-8 text-white" />
                 </div>
                 <h1 className="font-display font-bold">Health Me Medical Center</h1>
               </div>
