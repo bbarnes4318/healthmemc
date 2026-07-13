@@ -17,6 +17,7 @@ import SpaScheduleBuilder from "@/components/spa/SpaScheduleBuilder";
 import WellnessSessionTracker from "@/components/spa/WellnessSessionTracker";
 import RecoveryMoodTracker from "@/components/spa/RecoveryMoodTracker";
 import SpaWellnessDashboard from "@/components/spa/SpaWellnessDashboard";
+import GuidedProgramGenerator from "@/components/spa/GuidedProgramGenerator";
 
 const spaConfig = {
   title: "AI Wellness Spa",
@@ -248,8 +249,9 @@ export default function AIWellnessSpa() {
 
       <div className="sticky top-14 lg:top-0 z-10 bg-white border-b border-border px-4 py-2">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
-          <TabsList className="grid grid-cols-4 max-w-3xl mx-auto">
+          <TabsList className="grid grid-cols-3 max-w-3xl mx-auto">
             <TabsTrigger value="consult"><Flower2 className="w-3.5 h-3.5 mr-1.5" />AI Consult</TabsTrigger>
+            <TabsTrigger value="guided"><Sparkles className="w-3.5 h-3.5 mr-1.5" />Guided Programs</TabsTrigger>
             <TabsTrigger value="schedule"><Calendar className="w-3.5 h-3.5 mr-1.5" />Schedule</TabsTrigger>
             <TabsTrigger value="sessions"><Brain className="w-3.5 h-3.5 mr-1.5" />Sessions</TabsTrigger>
             <TabsTrigger value="mood"><Heart className="w-3.5 h-3.5 mr-1.5" />Mood</TabsTrigger>
@@ -263,6 +265,10 @@ export default function AIWellnessSpa() {
 
       {activeTab === "consult" ? (
         <AIServicePage config={spaConfig} />
+      ) : activeTab === "guided" ? (
+        <div className="p-4 lg:p-8 max-w-3xl mx-auto">
+          <GuidedProgramGenerator />
+        </div>
       ) : activeTab === "schedule" ? (
         <div className="p-4 lg:p-8 max-w-4xl mx-auto">
           <SpaScheduleBuilder />

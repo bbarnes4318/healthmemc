@@ -1,7 +1,7 @@
 import { jsPDF } from "jspdf";
 
 export function generateEmergencySummaryPdf(data) {
-  const { user, profile, medications, vitals, insuranceCards } = data;
+  const { user, profile, medications, vitals, insuranceCards, trustedContacts } = data;
   const doc = new jsPDF();
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
@@ -159,6 +159,32 @@ export function generateEmergencySummaryPdf(data) {
     if (profile.emergency_contact_relationship) ecLine += `  (${profile.emergency_contact_relationship})`;
     doc.text(ecLine, m + 4, y + 12);
     y += 20;
+  }
+
+  // Trusted Contacts
+  if (trustedContacts?.length > 0) {
+    const shown = trustedContacts.slice(0, 8);
+    const tcH = 11 + shown.length * 5;
+    ensureSpace(tcH + 4);
+    doc.setFillColor(236, 253, 245);
+    doc.roundedRect(m, y, maxW, tcH, 2, 2, "F");
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(6, 95, 70);
+    doc.text("TRUSTED CONTACTS", m + 4, y + 7);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(6, 78, 59);
+    shown.forEach((c, i) => {
+      let line = c.name || "";
+      if (c.relationship) line += ` (${c.relationship})`;
+      if (c.phone) line += `  |  Ph: ${c.phone}`;
+      if (c.email) line += `  |  ${c.email}`;
+      doc.text(`  - ${line}`, m + 4, y + 12 + i * 5);
+    });
+    if (trustedContacts.length > 8) {
+      doc.text(`  ... and ${trustedContacts.length - 8} more`, m + 4, y + 12 + shown.length * 5);
+    }
+    y += tcH + 4;
   }
 
   // Insurance

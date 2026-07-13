@@ -8,6 +8,7 @@ import {
   Bell, Loader2, CheckCircle, Mail, Send, MapPin, FileDown
 } from "lucide-react";
 import { generateEmergencySummaryPdf } from "@/lib/generateEmergencySummaryPdf";
+import EmergencyProfileCard from "@/components/emergency/EmergencyProfileCard";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -25,13 +26,14 @@ export default function Emergency() {
   const handleGenerateEmergencyPdf = async () => {
     setGeneratingPdf(true);
     try {
-      const [user, meds, vitals, insurance] = await Promise.all([
+      const [user, meds, vitals, insurance, trusted] = await Promise.all([
         base44.auth.me(),
         base44.entities.Medication.filter({ active: true }),
         base44.entities.VitalRecord.list("-recorded_at", 50),
         base44.entities.InsuranceCard.filter({}),
+        base44.entities.TrustedContact.filter({ status: "active" }),
       ]);
-      generateEmergencySummaryPdf({ user, profile, medications: meds, vitals, insuranceCards: insurance });
+      generateEmergencySummaryPdf({ user, profile, medications: meds, vitals, insuranceCards: insurance, trustedContacts: trusted });
     } catch (err) { console.error(err); }
     setGeneratingPdf(false);
   };
@@ -191,6 +193,9 @@ Please reach out immediately to check on them. If this is a life-threatening sit
             </div>
           </div>
         </Card>
+
+        {/* Emergency Profile Summary */}
+        <EmergencyProfileCard />
 
         {/* Printable Emergency Summary */}
         <Card className="p-5">
