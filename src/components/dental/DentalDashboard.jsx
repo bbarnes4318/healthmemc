@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, BarChart3, Calendar, TrendingUp, Stethoscope, AlertCircle, Clock, DollarSign, Activity, ChevronRight, Bone as Tooth } from "lucide-react";
+import DentalPainTrendChart from "@/components/dental/DentalPainTrendChart";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, PieChart, Pie, Cell, Legend,
@@ -306,6 +307,9 @@ export default function DentalDashboard() {
           )}
         </Card>
       </div>
+
+      {/* 3-Month Pain Intensity & Frequency Trend */}
+      <DentalPainTrendChart painLogs={painLogs} />
 
       {/* Procedure frequency bar chart */}
       <Card className="p-5">

@@ -1,0 +1,45 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 9 * * 1",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Pet Health Reminder Workflow",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "pet_health_reminder_workflow",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "check_pet_reminders": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "petHealthReminder",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Check pet health schedules",
+            "description": "Scan for due/overdue items and email owners"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Weekly check for upcoming or overdue pet vet visits and vaccinations \u2014 sends email alerts to pet owners"
+}

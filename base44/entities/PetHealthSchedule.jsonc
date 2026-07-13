@@ -1,0 +1,76 @@
+{
+  "name": "PetHealthSchedule",
+  "type": "object",
+  "properties": {
+    "pet_name": {
+      "type": "string"
+    },
+    "pet_type": {
+      "type": "string",
+      "enum": [
+        "dog",
+        "cat",
+        "bird",
+        "rabbit",
+        "other"
+      ],
+      "default": "dog"
+    },
+    "breed": {
+      "type": "string"
+    },
+    "record_type": {
+      "type": "string",
+      "enum": [
+        "vet_visit",
+        "vaccination",
+        "dental_cleaning",
+        "grooming",
+        "parasite_prevention",
+        "other"
+      ],
+      "default": "vaccination"
+    },
+    "vaccine_type": {
+      "type": "string"
+    },
+    "last_done_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "next_due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "frequency_months": {
+      "type": "number",
+      "default": 12
+    },
+    "clinic_name": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "reminder_sent": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "due_soon",
+        "overdue",
+        "completed"
+      ],
+      "default": "upcoming"
+    }
+  },
+  "required": [
+    "pet_name",
+    "pet_type",
+    "record_type",
+    "next_due_date"
+  ]
+}
