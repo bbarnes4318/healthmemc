@@ -24,6 +24,7 @@ const dataTypes = [
   { value: "blood_glucose", label: "Glucose", icon: Droplets, unit: "mg/dL", color: "#8b5cf6" },
   { value: "oxygen_saturation", label: "SpO2", icon: Droplets, unit: "%", color: "#06b6d4" },
   { value: "activity_minutes", label: "Activity", icon: Footprints, unit: "min", color: "#22c55e" },
+  { value: "steps", label: "Steps", icon: Footprints, unit: "steps", color: "#f59e0b" },
 ];
 
 const painScoreMap = { mild: 3, moderate: 6, severe: 9 };

@@ -7,7 +7,7 @@ import {
   Smile, Dumbbell, Heart, LifeBuoy, PawPrint, Bell, BellRing, ClipboardCheck, Ear, Eye, Scan,
   KeyRound, MapPin, Settings as SettingsIcon, Users as UsersIcon, History, Siren,
   Share2, TrendingUp, Contact, Star, Info, Syringe, Activity as ActivityIcon, ClipboardList, MessagesSquare, Trophy, Flower2,
-  Video, Globe, CalendarDays, FileBadge, Boxes, Tent, Baby
+  Video, Globe, CalendarDays, FileBadge, Boxes, Tent, Baby, Watch
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GlobalSearch from "@/components/layout/GlobalSearch";
@@ -49,6 +49,7 @@ const navItems = [
   { path: "/master-wellness", label: "Master Wellness", icon: TrendingUp },
   { path: "/health-trends-explorer", label: "Trends Explorer", icon: Activity },
   { path: "/vital-thresholds", label: "Vital Alerts", icon: BellRing },
+  { path: "/wearable-sync", label: "Wearable Sync", icon: Watch },
   { path: "/dashboard", label: "Dashboard", icon: Activity },
   { path: "/provider-dashboard", label: "Provider", icon: ClipboardCheck },
   { path: "/clinician-dashboard", label: "Clinician Access", icon: KeyRound },

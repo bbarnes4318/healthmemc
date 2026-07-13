@@ -72,6 +72,7 @@ import WildernessEmergencyGuide from '@/pages/WildernessEmergencyGuide';
 import NewbornBabyCare from '@/pages/NewbornBabyCare';
 import HealthTrendsExplorer from '@/pages/HealthTrendsExplorer';
 import VitalThresholdSettings from '@/pages/VitalThresholdSettings';
+import WearableSync from '@/pages/WearableSync';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -151,6 +152,7 @@ const AuthenticatedApp = () => {
           <Route path="/newborn-care" element={<NewbornBabyCare />} />
           <Route path="/health-trends-explorer" element={<HealthTrendsExplorer />} />
           <Route path="/vital-thresholds" element={<VitalThresholdSettings />} />
+          <Route path="/wearable-sync" element={<WearableSync />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />

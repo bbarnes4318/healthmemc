@@ -1,0 +1,45 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "wearable_sync_workflow",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "sync_wearables": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "syncWearableData",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Sync Wearable Data",
+            "description": "Fetch HR, activity, sleep from all connected devices"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Daily automatic sync of wearable device data (heart rate, activity, sleep, steps) from connected Oura Rings into VitalRecord for Health Trends Explorer",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 8 * * *",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Wearable Sync Workflow"
+}

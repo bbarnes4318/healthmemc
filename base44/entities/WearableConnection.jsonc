@@ -1,0 +1,50 @@
+{
+  "name": "WearableConnection",
+  "type": "object",
+  "properties": {
+    "wearable_type": {
+      "type": "string",
+      "enum": [
+        "oura",
+        "fitbit",
+        "garmin",
+        "withings",
+        "apple_health",
+        "google_fit",
+        "other"
+      ]
+    },
+    "access_token": {
+      "type": "string"
+    },
+    "refresh_token": {
+      "type": "string"
+    },
+    "connected_user_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "disconnected",
+        "error"
+      ],
+      "default": "active"
+    },
+    "last_sync_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_error": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "wearable_type",
+    "access_token"
+  ]
+}

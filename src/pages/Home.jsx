@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Stethoscope, HeartPulse, Users, Pill, FileText, Sparkles,
   Calendar, Phone, TrendingUp, Clock, ChevronRight, Shield, Dumbbell, History, Home as HomeIcon, Scan, Info, Syringe, Activity as ActivityIcon, Ear, UserRound,
-  Video, Globe, Smile, Eye, Baby, Bell
+  Video, Globe, Smile, Eye, Baby, Bell, Watch
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
@@ -26,6 +26,7 @@ import VoiceGreeting from "@/components/voice/VoiceGreeting";
 import CriticalRecordsBanner from "@/components/records/CriticalRecordsBanner";
 import QuickActionOverlay from "@/components/home/QuickActionOverlay";
 import VirtualVisitSection from "@/components/home/VirtualVisitSection";
+import HeroCommercial from "@/components/home/HeroCommercial";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a4dfc16013374d3269a9096/3f23b1c41_generated_image.png";
 
@@ -53,6 +54,7 @@ const quickActions = [
   { label: "Master Wellness", icon: TrendingUp, path: "/master-wellness", color: "from-violet-500 to-purple-600", desc: "All health trends in one place" },
   { label: "Virtual Consultations", icon: Video, path: "/virtual-consultations", color: "from-sky-500 to-indigo-600", desc: "Speak with AI health pros" },
   { label: "Language Directory", icon: Globe, path: "/language-directory", color: "from-emerald-500 to-teal-600", desc: "Medical phrases in 24+ languages" },
+  { label: "Wearable Sync", icon: Watch, path: "/wearable-sync", color: "from-cyan-500 to-blue-600", desc: "Auto-sync fitness device data" },
 ];
 
 export default function Home() {
@@ -103,6 +105,7 @@ export default function Home() {
   return (
     <div className="p-4 lg:p-8 max-w-6xl mx-auto space-y-6">
       <VoiceGreeting userName={user?.full_name} />
+      <HeroCommercial />
       <CriticalRecordsBanner />
       {/* Welcome & Health Score */}
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
