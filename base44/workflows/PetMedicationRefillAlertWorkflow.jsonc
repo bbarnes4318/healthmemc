@@ -1,0 +1,45 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 9 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Pet Medication Refill Alert Workflow",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "pet_medication_refill_alert_workflow",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "check_refills": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "petMedicationRefillAlert",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Check low medication supply",
+            "description": "Scan for medications with low remaining supply and email owners to request refills"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Daily check for pet medications running low on supply \u2014 sends email alerts to request refills from the vet"
+}

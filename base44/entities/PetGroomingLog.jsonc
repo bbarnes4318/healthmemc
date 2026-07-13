@@ -1,0 +1,42 @@
+{
+  "name": "PetGroomingLog",
+  "type": "object",
+  "properties": {
+    "pet_profile_id": {
+      "type": "string"
+    },
+    "pet_name": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "grooming_type": {
+      "type": "string",
+      "enum": [
+        "brushing",
+        "nail_trim",
+        "bath",
+        "ear_cleaning",
+        "teeth_brushing",
+        "haircut",
+        "gland_expression",
+        "other"
+      ],
+      "default": "brushing"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "next_due_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "pet_name",
+    "date",
+    "grooming_type"
+  ]
+}

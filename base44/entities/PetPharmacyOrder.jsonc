@@ -1,0 +1,60 @@
+{
+  "name": "PetPharmacyOrder",
+  "type": "object",
+  "properties": {
+    "pet_name": {
+      "type": "string"
+    },
+    "medication_name": {
+      "type": "string"
+    },
+    "dosage": {
+      "type": "string"
+    },
+    "quantity_requested": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "filled",
+        "delivered",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "prescribing_vet": {
+      "type": "string"
+    },
+    "vet_phone": {
+      "type": "string"
+    },
+    "pharmacy_name": {
+      "type": "string"
+    },
+    "order_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "estimated_ready_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "cost": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "refill_requested": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "pet_name",
+    "medication_name"
+  ]
+}

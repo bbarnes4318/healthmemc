@@ -1,0 +1,35 @@
+{
+  "name": "PetWeightLog",
+  "type": "object",
+  "properties": {
+    "pet_profile_id": {
+      "type": "string"
+    },
+    "pet_name": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "weight_kg": {
+      "type": "number"
+    },
+    "weight_unit": {
+      "type": "string",
+      "enum": [
+        "kg",
+        "lb"
+      ],
+      "default": "kg"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "pet_name",
+    "date",
+    "weight_kg"
+  ]
+}
