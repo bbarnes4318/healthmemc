@@ -15,6 +15,9 @@ import WellnessStreakCards from "@/components/wellness/WellnessStreakCards";
 import FamilyOverviewCard from "@/components/family/FamilyOverviewCard";
 import FamilyHealthScoreCard from "@/components/family/FamilyHealthScoreCard";
 import PricingPlans from "@/components/about/PricingPlans";
+import InsuranceCoverageChart from "@/components/insurance/InsuranceCoverageChart";
+import FAQSection from "@/components/home/FAQSection";
+import BenefitsSection from "@/components/home/BenefitsSection";
 import NutritionProgressBars from "@/components/wellness/NutritionProgressBars";
 import VoiceGreeting from "@/components/voice/VoiceGreeting";
 import CriticalRecordsBanner from "@/components/records/CriticalRecordsBanner";
@@ -317,8 +320,17 @@ export default function Home() {
         </p>
       </div>
 
+      {/* Benefits Section */}
+      <BenefitsSection />
+
+      {/* Insurance Coverage Comparison */}
+      <InsuranceCoverageChart />
+
       {/* Membership Plans */}
       <PricingPlans currentTier={profile?.membership_tier || "free"} />
+
+      {/* FAQ */}
+      <FAQSection />
     </div>
   );
 }

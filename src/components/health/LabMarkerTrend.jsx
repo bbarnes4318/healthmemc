@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, FlaskConical, TrendingUp, TrendingDown, ArrowUp, ArrowDown, Minus } from "lucide-react";
+import { Loader2, FlaskConical, TrendingUp, TrendingDown, ArrowUp, ArrowDown, Minus, Upload, FileText } from "lucide-react";
+import { useFamilyMember } from "@/context/FamilyMemberContext";
+import { toast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -81,6 +83,9 @@ export default function LabMarkerTrend() {
   const [extracting, setExtracting] = useState(false);
   const [extractedData, setExtractedData] = useState([]);
   const [selectedMarker, setSelectedMarker] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const { currentMemberId } = useFamilyMember();
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const load = async () => {
@@ -217,6 +222,39 @@ export default function LabMarkerTrend() {
     return { delta, pctChange, direction, latestOutOfRange, prevOutOfRange, isImprovement, latestVal, prevVal };
   }, [chartData, ref]);
 
+  const handleUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const uploadRes = await base44.integrations.Core.UploadFile({ file });
+      const newRecord = await base44.entities.MedicalRecord.create({
+        title: file.name.replace(/\.[^/.]+$/, ""),
+        category: "lab_results",
+        date: new Date().toISOString().split("T")[0],
+        file_url: uploadRes.file_url,
+        family_member_id: currentMemberId || undefined,
+        review_status: "pending",
+      });
+      toast({
+        title: "Lab report uploaded",
+        description: "Extracting health markers from your report...",
+      });
+      // Re-fetch and re-extract
+      const data = await base44.entities.MedicalRecord.filter({ category: "lab_results" }, "-date", 20);
+      setLabRecords(data);
+      await extractAll(data);
+    } catch (e) {
+      toast({
+        title: "Upload failed",
+        description: e.message || "Could not upload the file.",
+        variant: "destructive",
+      });
+    }
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -230,7 +268,22 @@ export default function LabMarkerTrend() {
       <Card className="p-8 text-center">
         <FlaskConical className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
         <p className="text-sm text-muted-foreground">No lab reports uploaded yet</p>
-        <p className="text-xs text-muted-foreground mt-1">Upload lab result documents in Medical Records to track markers over time.</p>
+        <p className="text-xs text-muted-foreground mt-1 mb-4">Upload a lab result PDF or image to automatically extract and track your key health markers.</p>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".pdf,.png,.jpg,.jpeg"
+          onChange={handleUpload}
+          className="hidden"
+        />
+        <Button
+          className="bg-sky-600 hover:bg-sky-700"
+          disabled={uploading}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          {uploading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
+          {uploading ? "Uploading..." : "Upload Lab Report"}
+        </Button>
       </Card>
     );
   }
@@ -256,9 +309,29 @@ export default function LabMarkerTrend() {
 
   return (
     <Card className="p-5">
-      <div className="flex items-center gap-2 mb-4">
-        <FlaskConical className="w-4 h-4 text-sky-600" />
-        <h3 className="font-display font-semibold text-sm">Lab Marker Trends</h3>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <FlaskConical className="w-4 h-4 text-sky-600" />
+          <h3 className="font-display font-semibold text-sm">Lab Marker Trends</h3>
+        </div>
+        <div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf,.png,.jpg,.jpeg"
+            onChange={handleUpload}
+            className="hidden"
+          />
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={uploading}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : <Upload className="w-3.5 h-3.5 mr-1.5" />}
+            {uploading ? "Uploading..." : "Upload Lab"}
+          </Button>
+        </div>
       </div>
 
       {/* Marker Selector */}
