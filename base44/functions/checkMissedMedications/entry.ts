@@ -21,30 +21,32 @@ Deno.serve(async (req) => {
       return Response.json({ checked: missedLogs.length, alerted: 0, message: "No missed medications pending alerts" });
     }
 
-    // Group missed logs by user (created_by_id)
+    let totalAlertsSent = 0;
+    const alertedLogIds = [];
+
+    // Group missed logs by user (created_by_id), skipping service-role IDs
     const byUser = {};
     for (const log of pendingAlerts) {
       const userId = log.created_by_id;
+      if (!userId || userId.startsWith("service_")) {
+        // Can't resolve service-role created records to a real user; mark as alerted
+        alertedLogIds.push(log.id);
+        continue;
+      }
       if (!byUser[userId]) byUser[userId] = [];
       byUser[userId].push(log);
     }
 
-    let totalAlertsSent = 0;
-    const alertedLogIds = [];
-
     for (const userId of Object.keys(byUser)) {
       const userLogs = byUser[userId];
 
-      // Get user info
-      let user;
-      try {
-        user = await base44.asServiceRole.entities.User.get(userId);
-      } catch (e) {
-        console.error(`Failed to get user ${userId}:`, e.message);
+      // Get user info (use filter to avoid throwing on invalid IDs)
+      const users = await base44.asServiceRole.entities.User.filter({ id: userId });
+      const user = users[0];
+      if (!user || !user.email) {
+        for (const log of userLogs) alertedLogIds.push(log.id);
         continue;
       }
-
-      if (!user) continue;
 
       // Get trusted contacts for this user with missed medication alerts enabled
       const contacts = await base44.asServiceRole.entities.TrustedContact.filter({

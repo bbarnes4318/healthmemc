@@ -22,8 +22,10 @@ Deno.serve(async (req) => {
     const emailsSent = [];
 
     for (const userId of Object.keys(usersWithRecovery)) {
+      if (userId.startsWith("service_")) continue;
       try {
-        const ownerUser = await base44.asServiceRole.entities.User.get(userId);
+        const users = await base44.asServiceRole.entities.User.filter({ id: userId });
+        const ownerUser = users[0];
         if (!ownerUser || !ownerUser.email) continue;
 
         const userLogs = usersWithRecovery[userId].logs;

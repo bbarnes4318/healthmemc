@@ -47,13 +47,13 @@ Deno.serve(async (req) => {
     const usersToNotify = {};
     for (const m of newMilestones) {
       const ownerId = m.created_by_id;
-      if (!ownerId) continue;
+      if (!ownerId || ownerId.startsWith("service_")) continue;
       if (!usersToNotify[ownerId]) usersToNotify[ownerId] = { milestones: [], growth: [] };
       usersToNotify[ownerId].milestones.push(m);
     }
     for (const g of growthConcerns) {
       const ownerId = g.created_by_id;
-      if (!ownerId) continue;
+      if (!ownerId || ownerId.startsWith("service_")) continue;
       if (!usersToNotify[ownerId]) usersToNotify[ownerId] = { milestones: [], growth: [] };
       // Only add once per user
       if (usersToNotify[ownerId].growth.length === 0) {
@@ -66,7 +66,8 @@ Deno.serve(async (req) => {
     for (const userId of Object.keys(usersToNotify)) {
       const data = usersToNotify[userId];
       try {
-        const user = await base44.asServiceRole.entities.User.get(userId);
+        const users = await base44.asServiceRole.entities.User.filter({ id: userId });
+        const user = users[0];
         if (!user || !user.email) continue;
 
         let body = `Hello ${user.full_name ? user.full_name.split(' ')[0] : 'there'},\n\n`;

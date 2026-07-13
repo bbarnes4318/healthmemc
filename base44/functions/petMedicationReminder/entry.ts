@@ -22,6 +22,7 @@ Deno.serve(async (req) => {
     const usersToNotify = {};
     for (const med of dueMeds) {
       const ownerId = med.created_by_id;
+      if (!ownerId || ownerId.startsWith("service_")) continue;
       if (!usersToNotify[ownerId]) usersToNotify[ownerId] = { user: null, items: [] };
       usersToNotify[ownerId].items.push(med);
     }
@@ -29,7 +30,8 @@ Deno.serve(async (req) => {
     const emailsSent = [];
     for (const userId of Object.keys(usersToNotify)) {
       try {
-        const ownerUser = await base44.asServiceRole.entities.User.get(userId);
+        const users = await base44.asServiceRole.entities.User.filter({ id: userId });
+        const ownerUser = users[0];
         if (!ownerUser || !ownerUser.email) continue;
 
         const items = usersToNotify[userId].items;

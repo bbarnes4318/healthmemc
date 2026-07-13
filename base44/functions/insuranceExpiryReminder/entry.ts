@@ -22,7 +22,9 @@ Deno.serve(async (req) => {
 
     for (const card of expiringCards) {
       try {
-        const user = await base44.asServiceRole.entities.User.get(card.created_by_id);
+        if (!card.created_by_id || card.created_by_id.startsWith("service_")) continue;
+        const users = await base44.asServiceRole.entities.User.filter({ id: card.created_by_id });
+        const user = users[0];
         if (!user || !user.email) {
           results.push({ id: card.id, status: "no_email", provider: card.provider_name });
           continue;

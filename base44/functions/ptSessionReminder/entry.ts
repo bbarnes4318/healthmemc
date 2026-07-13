@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
     const usersWithPT = {};
     for (const log of allExercises) {
       const ownerId = log.created_by_id;
-      if (!ownerId) continue;
+      if (!ownerId || ownerId.startsWith("service_")) continue;
       if (!usersWithPT[ownerId]) usersWithPT[ownerId] = { exercises: [], recovery: [] };
       usersWithPT[ownerId].exercises.push(log);
     }
@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
     // Add recovery data to user groups
     for (const log of allRecovery) {
       const ownerId = log.created_by_id;
-      if (!ownerId) continue;
+      if (!ownerId || ownerId.startsWith("service_")) continue;
       if (!usersWithPT[ownerId]) usersWithPT[ownerId] = { exercises: [], recovery: [] };
       usersWithPT[ownerId].recovery.push(log);
     }
@@ -34,7 +34,8 @@ Deno.serve(async (req) => {
 
     for (const userId of Object.keys(usersWithPT)) {
       try {
-        const ownerUser = await base44.asServiceRole.entities.User.get(userId);
+        const users = await base44.asServiceRole.entities.User.filter({ id: userId });
+        const ownerUser = users[0];
         if (!ownerUser || !ownerUser.email) continue;
 
         const userData = usersWithPT[userId];

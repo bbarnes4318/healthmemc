@@ -85,13 +85,15 @@ Deno.serve(async (req) => {
     const alertsMarked = [];
 
     for (const userId of Object.keys(usersToNotify)) {
+      if (userId.startsWith("service_")) continue;
       const items = usersToNotify[userId].items;
 
       // Sort by days remaining (most urgent first)
       items.sort((a, b) => a.daysRemaining - b.daysRemaining);
 
       try {
-        const user = await base44.asServiceRole.entities.User.get(userId);
+        const users = await base44.asServiceRole.entities.User.filter({ id: userId });
+        const user = users[0];
         if (!user || !user.email) continue;
 
         const emailBody = buildEmailBody(items, user);

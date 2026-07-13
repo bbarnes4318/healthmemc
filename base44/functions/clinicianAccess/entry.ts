@@ -16,7 +16,9 @@ Deno.serve(async (req) => {
     if (grant.status === 'revoked') return Response.json({ error: 'Access has been revoked by the patient' }, { status: 403 });
     if (new Date(grant.expires_at) < new Date()) return Response.json({ error: 'Access has expired' }, { status: 403 });
 
-    const owner = await base44.asServiceRole.entities.User.get(grant.created_by_id);
+    const owners = await base44.asServiceRole.entities.User.filter({ id: grant.created_by_id });
+    const owner = owners[0];
+    if (!owner) return Response.json({ error: 'Patient account no longer exists' }, { status: 404 });
 
     const result = {
       patient_name: owner.full_name,

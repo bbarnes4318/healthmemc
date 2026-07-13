@@ -23,8 +23,10 @@ Deno.serve(async (req) => {
 
     for (const booster of dueBoosters) {
       try {
+        if (!booster.created_by_id || booster.created_by_id.startsWith("service_")) continue;
         // Get the user who owns this record
-        const user = await base44.asServiceRole.entities.User.get(booster.created_by_id);
+        const users = await base44.asServiceRole.entities.User.filter({ id: booster.created_by_id });
+        const user = users[0];
         if (!user || !user.email) {
           results.push({ id: booster.id, status: "no_email", vaccine: booster.vaccine_name });
           continue;

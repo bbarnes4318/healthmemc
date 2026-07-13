@@ -28,10 +28,11 @@ Deno.serve(async (req) => {
       usersToNotify[ownerId].items.push(item);
     }
 
-    const userIds = Object.keys(usersToNotify);
+    const userIds = Object.keys(usersToNotify).filter(uid => uid && !uid.startsWith("service_"));
     for (const userId of userIds) {
       try {
-        const ownerUser = await base44.asServiceRole.entities.User.get(userId);
+        const users = await base44.asServiceRole.entities.User.filter({ id: userId });
+        const ownerUser = users[0];
         if (!ownerUser || !ownerUser.email) continue;
 
         const items = usersToNotify[userId].items;

@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
     const byUser = {};
     for (const claim of changedClaims) {
       const userId = claim.created_by_id;
-      if (!userId) continue;
+      if (!userId || userId.startsWith("service_")) continue;
       if (!byUser[userId]) byUser[userId] = [];
       byUser[userId].push(claim);
     }
@@ -36,7 +36,8 @@ Deno.serve(async (req) => {
 
     for (const userId of Object.keys(byUser)) {
       try {
-        const user = await base44.asServiceRole.entities.User.get(userId);
+        const users = await base44.asServiceRole.entities.User.filter({ id: userId });
+        const user = users[0];
         if (!user || !user.email) {
           // Still mark as notified to avoid re-checking
           for (const claim of byUser[userId]) {
