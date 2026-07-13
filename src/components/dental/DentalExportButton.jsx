@@ -12,17 +12,18 @@ export default function DentalExportButton() {
   const handleExport = async () => {
     setLoading(true);
     try {
-      const [user, visitLogs, painLogs] = await Promise.all([
+      const [user, visitLogs, painLogs, oralCareLogs] = await Promise.all([
         base44.auth.me(),
         base44.entities.DentalVisitLog.list("-visit_date", 200),
         base44.entities.DentalPainLog.list("-created_date", 200),
+        base44.entities.OralCareLog.list("-date", 60),
       ]);
-      if (visitLogs.length === 0 && painLogs.length === 0) {
-        toast({ title: "No data to export", description: "Log dental visits or pain entries first.", variant: "destructive" });
+      if (visitLogs.length === 0 && painLogs.length === 0 && oralCareLogs.length === 0) {
+        toast({ title: "No data to export", description: "Log dental visits, pain entries, or oral care first.", variant: "destructive" });
         setLoading(false);
         return;
       }
-      generateDentalReportPdf({ user, visitLogs, painLogs });
+      generateDentalReportPdf({ user, visitLogs, painLogs, oralCareLogs });
       toast({ title: "PDF exported", description: "Your dental report is ready to print." });
     } catch (e) {
       console.error(e);

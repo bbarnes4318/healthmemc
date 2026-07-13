@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Plus, Apple, Trash2, Calendar } from "lucide-react";
+import { Loader2, Plus, Apple, Trash2, Calendar, Bookmark, BookmarkPlus } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 import { format } from "date-fns";
@@ -30,13 +30,21 @@ const emptyForm = {
   notes: "",
 };
 
+const emptyTemplateForm = {
+  template_name: "",
+};
+
 export default function PetNutritionLog() {
   const [pets, setPets] = useState([]);
   const [selectedPetId, setSelectedPetId] = useState("");
   const [logs, setLogs] = useState([]);
+  const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
+  const [templateForm, setTemplateForm] = useState(emptyTemplateForm);
+  const [savingTemplate, setSavingTemplate] = useState(false);
   const { toast } = useToast();
 
   const today = format(new Date(), "yyyy-MM-dd");
@@ -63,7 +71,14 @@ export default function PetNutritionLog() {
         setLogs(data);
       } catch (e) { console.error(e); }
     };
+    const loadTemplates = async () => {
+      try {
+        const data = await base44.entities.PetNutritionTemplate.filter({ pet_profile_id: selectedPetId }, "-created_date", 50);
+        setTemplates(data);
+      } catch (e) { console.error(e); }
+    };
     loadLogs();
+    loadTemplates();
   }, [selectedPetId]);
 
   const handleSave = async () => {
@@ -90,6 +105,52 @@ export default function PetNutritionLog() {
       toast({ title: "Failed to save", variant: "destructive" });
     }
     setSaving(false);
+  };
+
+  const handleApplyTemplate = (templateId) => {
+    if (!templateId) return;
+    const tpl = templates.find((t) => t.id === templateId);
+    if (!tpl) return;
+    setForm({
+      meal_type: tpl.meal_type || "dinner",
+      food_name: tpl.food_name || "",
+      portion_size: tpl.portion_size ? String(tpl.portion_size) : "",
+      portion_unit: tpl.portion_unit || "cups",
+      appetite: tpl.default_appetite || "good",
+      notes: tpl.notes || "",
+    });
+    toast({ title: `Template applied: ${tpl.template_name}`, description: "Adjust appetite if needed, then log." });
+  };
+
+  const handleSaveTemplate = async () => {
+    if (!selectedPetId || !form.food_name.trim() || !templateForm.template_name.trim()) return;
+    setSavingTemplate(true);
+    try {
+      await base44.entities.PetNutritionTemplate.create({
+        template_name: templateForm.template_name,
+        pet_profile_id: selectedPetId,
+        pet_name: selectedPet?.name,
+        meal_type: form.meal_type,
+        food_name: form.food_name,
+        portion_size: form.portion_size ? parseFloat(form.portion_size) : undefined,
+        portion_unit: form.portion_unit,
+        default_appetite: form.appetite,
+        notes: form.notes || undefined,
+      });
+      const data = await base44.entities.PetNutritionTemplate.filter({ pet_profile_id: selectedPetId }, "-created_date", 50);
+      setTemplates(data);
+      setTemplateForm(emptyTemplateForm);
+      setTemplateDialogOpen(false);
+      toast({ title: "Template saved", description: "Use it next time for quick logging." });
+    } catch (e) {
+      console.error(e);
+      toast({ title: "Failed to save template", variant: "destructive" });
+    }
+    setSavingTemplate(false);
+  };
+
+  const handleDeleteTemplate = async (id) => {
+    try { await base44.entities.PetNutritionTemplate.delete(id); setTemplates(templates.filter((t) => t.id !== id)); } catch (e) { console.error(e); }
   };
 
   const handleDelete = async (id) => {
@@ -146,9 +207,33 @@ export default function PetNutritionLog() {
         ))}
       </div>
 
+      {/* Quick Template Selector */}
+      {templates.length > 0 && (
+        <Card className="p-3 border-purple-200 bg-purple-50/30">
+          <div className="flex items-center gap-2">
+            <Bookmark className="w-4 h-4 text-purple-600 shrink-0" />
+            <Select onValueChange={handleApplyTemplate}>
+              <SelectTrigger className="flex-1 h-8 text-xs"><SelectValue placeholder="Quick log from saved template..." /></SelectTrigger>
+              <SelectContent>
+                {templates.map((t) => (
+                  <SelectItem key={t.id} value={t.id}>
+                    {mealTypeIcons[t.meal_type]} {t.template_name} — {t.food_name} ({t.portion_size} {t.portion_unit})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </Card>
+      )}
+
       {/* Log Form */}
       <Card className="p-4">
-        <h3 className="text-sm font-semibold mb-3">Log Meal — {format(new Date(), "MMM d, yyyy")}</h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold">Log Meal — {format(new Date(), "MMM d, yyyy")}</h3>
+          <Button size="sm" variant="outline" className="h-7 text-xs border-purple-300 text-purple-700 hover:bg-purple-50" onClick={() => setTemplateDialogOpen(true)} disabled={!form.food_name.trim()}>
+            <BookmarkPlus className="w-3.5 h-3.5 mr-1" /> Save as Template
+          </Button>
+        </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           <div>
             <Label className="text-xs">Meal Type</Label>
@@ -201,6 +286,31 @@ export default function PetNutritionLog() {
         </Button>
       </Card>
 
+      {/* Saved Templates List */}
+      {templates.length > 0 && (
+        <div>
+          <h3 className="text-xs font-semibold mb-2 flex items-center gap-1"><Bookmark className="w-3.5 h-3.5 text-purple-600" /> Saved Meal Templates ({templates.length})</h3>
+          <div className="space-y-1.5">
+            {templates.map((tpl, i) => (
+              <motion.div key={tpl.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.02 }}>
+                <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/30 text-xs">
+                  <span>{mealTypeIcons[tpl.meal_type]}</span>
+                  <div className="flex-1 min-w-0">
+                    <span className="font-medium">{tpl.template_name}</span>
+                    <span className="text-muted-foreground"> — {tpl.food_name}</span>
+                    {tpl.portion_size && <span className="text-[10px] text-muted-foreground"> ({tpl.portion_size} {tpl.portion_unit})</span>}
+                  </div>
+                  <Button size="sm" variant="ghost" className="h-6 text-xs" onClick={() => handleApplyTemplate(tpl.id)}>Use</Button>
+                  <Button size="icon" variant="ghost" className="h-6 w-6 text-red-400 hover:text-red-600" onClick={() => handleDeleteTemplate(tpl.id)}>
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Today's Meals */}
       {todayLogs.length > 0 && (
         <div>
@@ -252,6 +362,33 @@ export default function PetNutritionLog() {
           </div>
         )}
       </div>
+
+      {/* Save Template Dialog */}
+      {templateDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setTemplateDialogOpen(false)}>
+          <Card className="p-5 max-w-sm w-full mx-4" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-sm font-semibold mb-3 flex items-center gap-2"><BookmarkPlus className="w-4 h-4 text-purple-600" /> Save as Meal Template</h3>
+            <p className="text-[10px] text-muted-foreground mb-3">Save this meal combo for quick logging next time.</p>
+            <div className="space-y-3">
+              <div>
+                <Label className="text-xs">Template Name *</Label>
+                <Input placeholder="e.g., Buddy's Standard Dinner" value={templateForm.template_name} onChange={(e) => setTemplateForm({ ...templateForm, template_name: e.target.value })} className="mt-1" autoFocus />
+              </div>
+              <div className="p-2 rounded-lg bg-muted/30 text-[10px] text-muted-foreground">
+                <p>{mealTypeIcons[form.meal_type]} {form.food_name}</p>
+                {form.portion_size && <p>{form.portion_size} {form.portion_unit} · Appetite: {appetiteConfig[form.appetite].label}</p>}
+              </div>
+            </div>
+            <div className="flex gap-2 mt-4">
+              <Button variant="ghost" className="flex-1" onClick={() => setTemplateDialogOpen(false)}>Cancel</Button>
+              <Button className="flex-1 bg-purple-600 hover:bg-purple-700" onClick={handleSaveTemplate} disabled={!templateForm.template_name.trim() || savingTemplate}>
+                {savingTemplate ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <BookmarkPlus className="w-4 h-4 mr-2" />}
+                Save
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

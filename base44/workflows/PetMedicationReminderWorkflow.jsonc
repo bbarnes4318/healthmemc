@@ -1,0 +1,45 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 8 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Pet Medication Reminder Workflow",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "pet_medication_reminder_workflow",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "check_pet_medications": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "petMedicationReminder",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Check pet medication schedules",
+            "description": "Scan for active medications due today and email owners"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Daily check for pet medications due today \u2014 sends email alerts to pet owners to give and log doses"
+}

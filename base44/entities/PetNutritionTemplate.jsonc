@@ -1,0 +1,60 @@
+{
+  "name": "PetNutritionTemplate",
+  "type": "object",
+  "properties": {
+    "template_name": {
+      "type": "string"
+    },
+    "pet_profile_id": {
+      "type": "string"
+    },
+    "pet_name": {
+      "type": "string"
+    },
+    "meal_type": {
+      "type": "string",
+      "enum": [
+        "breakfast",
+        "lunch",
+        "dinner",
+        "snack"
+      ],
+      "default": "dinner"
+    },
+    "food_name": {
+      "type": "string"
+    },
+    "portion_size": {
+      "type": "number"
+    },
+    "portion_unit": {
+      "type": "string",
+      "enum": [
+        "cups",
+        "grams",
+        "oz",
+        "ml",
+        "can",
+        "treat"
+      ],
+      "default": "cups"
+    },
+    "default_appetite": {
+      "type": "string",
+      "enum": [
+        "good",
+        "fair",
+        "poor",
+        "refused"
+      ],
+      "default": "good"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "template_name",
+    "food_name"
+  ]
+}

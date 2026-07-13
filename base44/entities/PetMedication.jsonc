@@ -1,0 +1,70 @@
+{
+  "name": "PetMedication",
+  "type": "object",
+  "properties": {
+    "pet_name": {
+      "type": "string"
+    },
+    "pet_type": {
+      "type": "string",
+      "enum": [
+        "dog",
+        "cat",
+        "bird",
+        "rabbit",
+        "other"
+      ],
+      "default": "dog"
+    },
+    "medication_name": {
+      "type": "string"
+    },
+    "dosage": {
+      "type": "string"
+    },
+    "frequency": {
+      "type": "string"
+    },
+    "time_of_day": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "morning",
+          "afternoon",
+          "evening"
+        ]
+      }
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "prescribing_vet": {
+      "type": "string"
+    },
+    "supply_remaining": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "reminder_enabled": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "pet_name",
+    "medication_name",
+    "dosage"
+  ]
+}

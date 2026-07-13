@@ -1,0 +1,49 @@
+{
+  "name": "PetMedicationLog",
+  "type": "object",
+  "properties": {
+    "medication_id": {
+      "type": "string"
+    },
+    "medication_name": {
+      "type": "string"
+    },
+    "pet_name": {
+      "type": "string"
+    },
+    "scheduled_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "time_of_day": {
+      "type": "string",
+      "enum": [
+        "morning",
+        "afternoon",
+        "evening"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "given",
+        "missed",
+        "skipped"
+      ],
+      "default": "given"
+    },
+    "given_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "medication_name",
+    "pet_name",
+    "scheduled_date",
+    "status"
+  ]
+}

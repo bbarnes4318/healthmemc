@@ -20,8 +20,11 @@ const severityColors = {
   mild: [22, 163, 74], moderate: [234, 179, 8], severe: [239, 68, 68],
 };
 
+const breathLabels = { 1: "Fresh", 2: "Slight", 3: "Noticeable", 4: "Bad", 5: "Severe" };
+const gumLabels = { 1: "Healthy", 2: "Slight", 3: "Irritated", 4: "Inflamed", 5: "Severe" };
+
 export function generateDentalReportPdf(data) {
-  const { user, visitLogs, painLogs } = data;
+  const { user, visitLogs, painLogs, oralCareLogs } = data;
   const doc = new jsPDF();
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
@@ -149,6 +152,42 @@ export function generateDentalReportPdf(data) {
         noteLines.forEach((line) => { ensureSpace(5); doc.text(line, m, y); y += 5; });
       }
       y += 3;
+    });
+    y += 2;
+  }
+
+  // Oral Health Trends
+  if (oralCareLogs?.length > 0) {
+    addSectionTitle(`Oral Health Trends (${oralCareLogs.length} logs)`);
+    const recentLogs = oralCareLogs.slice(0, 30);
+    const validBreath = recentLogs.filter((l) => l.bad_breath_severity);
+    const validGum = recentLogs.filter((l) => l.gum_health);
+    const avgBreath = validBreath.length > 0 ? (validBreath.reduce((s, l) => s + l.bad_breath_severity, 0) / validBreath.length).toFixed(1) : null;
+    const avgGum = validGum.length > 0 ? (validGum.reduce((s, l) => s + l.gum_health, 0) / validGum.length).toFixed(1) : null;
+    const hygieneItems = ["brushed_morning", "brushed_evening", "flossed", "mouthwash", "tongue_cleaned"];
+    const logsHygiene = recentLogs.filter((l) => hygieneItems.some((h) => l[h]));
+    const hygieneCompliance = logsHygiene.length > 0
+      ? Math.round((logsHygiene.reduce((s, l) => s + hygieneItems.filter((h) => l[h]).length, 0) / (logsHygiene.length * hygieneItems.length)) * 100)
+      : 0;
+
+    if (avgBreath) addField("Avg Breath Severity (1-5)", `${avgBreath} — ${breathLabels[Math.round(parseFloat(avgBreath))] || ""}`);
+    if (avgGum) addField("Avg Gum Health (1-5)", `${avgGum} — ${gumLabels[Math.round(parseFloat(avgGum))] || ""}`);
+    addField("Hygiene Compliance", `${hygieneCompliance}%`);
+    addField("Oral Care Logs (last 30)", recentLogs.length);
+
+    const sortedOral = [...recentLogs].sort((a, b) => new Date(b.date) - new Date(a.date));
+    sortedOral.slice(0, 10).forEach((log, i) => {
+      ensureSpace(10);
+      const dateStr = log.date ? new Date(log.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "N/A";
+      const breathTxt = log.bad_breath_severity ? `Breath: ${log.bad_breath_severity}/5` : "";
+      const gumTxt = log.gum_health ? `Gum: ${log.gum_health}/5` : "";
+      const hygieneDone = hygieneItems.filter((h) => log[h]).length;
+      addText(`   ${dateStr} — ${breathTxt}${breathTxt && gumTxt ? "  |  " : ""}${gumTxt}  |  Hygiene: ${hygieneDone}/5`, 9, "normal", [80, 80, 80]);
+      if (log.notes) {
+        const noteLines = doc.splitTextToSize(`   Notes: ${log.notes}`, maxW);
+        noteLines.forEach((line) => { ensureSpace(5); doc.text(line, m, y); y += 5; });
+      }
+      y += 2;
     });
     y += 2;
   }
