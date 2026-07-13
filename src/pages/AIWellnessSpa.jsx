@@ -11,8 +11,12 @@ import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Shield } from "lucide-react";
 import {
   Flower2, Droplet, Flame, Sparkles, Moon, Wind, Leaf, Sun, Waves,
-  Hand, Music, Heart, Brain, Snowflake, Gem, Bath
+  Hand, Music, Heart, Brain, Snowflake, Gem, Bath, Calendar, BarChart3
 } from "lucide-react";
+import SpaScheduleBuilder from "@/components/spa/SpaScheduleBuilder";
+import WellnessSessionTracker from "@/components/spa/WellnessSessionTracker";
+import RecoveryMoodTracker from "@/components/spa/RecoveryMoodTracker";
+import SpaWellnessDashboard from "@/components/spa/SpaWellnessDashboard";
 
 const spaConfig = {
   title: "AI Wellness Spa",
@@ -244,8 +248,12 @@ export default function AIWellnessSpa() {
 
       <div className="sticky top-14 lg:top-0 z-10 bg-white border-b border-border px-4 py-2">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
-          <TabsList className="grid grid-cols-4 max-w-2xl mx-auto">
+          <TabsList className="grid grid-cols-4 max-w-3xl mx-auto">
             <TabsTrigger value="consult"><Flower2 className="w-3.5 h-3.5 mr-1.5" />AI Consult</TabsTrigger>
+            <TabsTrigger value="schedule"><Calendar className="w-3.5 h-3.5 mr-1.5" />Schedule</TabsTrigger>
+            <TabsTrigger value="sessions"><Brain className="w-3.5 h-3.5 mr-1.5" />Sessions</TabsTrigger>
+            <TabsTrigger value="mood"><Heart className="w-3.5 h-3.5 mr-1.5" />Mood</TabsTrigger>
+            <TabsTrigger value="dashboard"><BarChart3 className="w-3.5 h-3.5 mr-1.5" />Dashboard</TabsTrigger>
             <TabsTrigger value="treatments"><Hand className="w-3.5 h-3.5 mr-1.5" />Treatments</TabsTrigger>
             <TabsTrigger value="rituals"><Moon className="w-3.5 h-3.5 mr-1.5" />Rituals</TabsTrigger>
             <TabsTrigger value="plan"><Sparkles className="w-3.5 h-3.5 mr-1.5" />7-Day Plan</TabsTrigger>
@@ -255,6 +263,22 @@ export default function AIWellnessSpa() {
 
       {activeTab === "consult" ? (
         <AIServicePage config={spaConfig} />
+      ) : activeTab === "schedule" ? (
+        <div className="p-4 lg:p-8 max-w-4xl mx-auto">
+          <SpaScheduleBuilder />
+        </div>
+      ) : activeTab === "sessions" ? (
+        <div className="p-4 lg:p-8 max-w-4xl mx-auto">
+          <WellnessSessionTracker />
+        </div>
+      ) : activeTab === "mood" ? (
+        <div className="p-4 lg:p-8 max-w-4xl mx-auto">
+          <RecoveryMoodTracker />
+        </div>
+      ) : activeTab === "dashboard" ? (
+        <div className="p-4 lg:p-8 max-w-5xl mx-auto">
+          <SpaWellnessDashboard />
+        </div>
       ) : activeTab === "treatments" ? (
         <div className="p-4 lg:p-8 max-w-5xl mx-auto">
           <div className="mb-4">

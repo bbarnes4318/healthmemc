@@ -1,0 +1,40 @@
+{
+  "name": "SpaSchedule",
+  "type": "object",
+  "properties": {
+    "schedule_name": {
+      "type": "string"
+    },
+    "schedule_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "start_time": {
+      "type": "string"
+    },
+    "total_duration_minutes": {
+      "type": "number",
+      "default": 0
+    },
+    "activities_json": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "planned"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schedule_name",
+    "schedule_date"
+  ]
+}

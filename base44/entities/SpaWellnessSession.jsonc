@@ -1,0 +1,53 @@
+{
+  "name": "SpaWellnessSession",
+  "type": "object",
+  "properties": {
+    "session_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "session_category": {
+      "type": "string",
+      "enum": [
+        "spa_treatment",
+        "meditation",
+        "relaxation_ritual"
+      ],
+      "default": "spa_treatment"
+    },
+    "session_name": {
+      "type": "string"
+    },
+    "session_type": {
+      "type": "string"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 30
+    },
+    "mood_before_score": {
+      "type": "number",
+      "default": 3
+    },
+    "mood_after_score": {
+      "type": "number",
+      "default": 4
+    },
+    "stress_before_score": {
+      "type": "number",
+      "default": 3
+    },
+    "stress_after_score": {
+      "type": "number",
+      "default": 2
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "session_date",
+    "session_category",
+    "session_name"
+  ]
+}
