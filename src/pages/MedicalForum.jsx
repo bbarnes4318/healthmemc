@@ -9,11 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { Plus, Loader2, Pin, Eye, ArrowLeft, MessageSquare, ShieldCheck, Stethoscope, HeartPulse, UserCircle, Tag, Search, Download, PawPrint, Smile } from "lucide-react";
+import { Plus, Loader2, Pin, Eye, ArrowLeft, MessageSquare, ShieldCheck, Stethoscope, HeartPulse, UserCircle, Tag, Search, Download, PawPrint, Smile, GitCompare } from "lucide-react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import ReactMarkdown from "react-markdown";
 import generateForumReportPdf from "@/lib/generateForumReportPdf";
+import TreatmentPlanComparison from "@/components/forum/TreatmentPlanComparison";
 
 const categories = [
   { value: "surgery_options", label: "Surgery Options", icon: Stethoscope, color: "bg-sky-100 text-sky-700" },
@@ -83,6 +84,7 @@ export default function MedicalForum() {
   const [filterSpecialty, setFilterSpecialty] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [exporting, setExporting] = useState(false);
+  const [activeTab, setActiveTab] = useState("forum");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -301,6 +303,20 @@ export default function MedicalForum() {
           <p className="text-muted-foreground mt-1 text-sm">A secure space for doctors, specialists, nurses, dentists & veterinarians to discuss surgery options, treatment methods, and care plans</p>
         </div>
 
+        {/* Tab Selector */}
+        <div className="flex items-center gap-2 mb-4">
+          <button onClick={() => setActiveTab("forum")} className={`text-xs px-4 py-2 rounded-lg font-medium transition flex items-center gap-1.5 ${activeTab === "forum" ? "bg-sky-600 text-white" : "border border-border text-muted-foreground hover:bg-muted"}`}>
+            <MessageSquare className="w-3.5 h-3.5" /> Discussion Forum
+          </button>
+          <button onClick={() => setActiveTab("comparison")} className={`text-xs px-4 py-2 rounded-lg font-medium transition flex items-center gap-1.5 ${activeTab === "comparison" ? "bg-sky-600 text-white" : "border border-border text-muted-foreground hover:bg-muted"}`}>
+            <GitCompare className="w-3.5 h-3.5" /> Treatment Plan Comparison
+          </button>
+        </div>
+
+        {activeTab === "comparison" ? (
+          <TreatmentPlanComparison />
+        ) : (
+        <>
         {/* Role Selector + New Topic */}
         <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
           <div className="flex items-center gap-2">
@@ -441,6 +457,8 @@ export default function MedicalForum() {
               <TopicRow key={topic.id} topic={topic} onClick={() => openTopic(topic)} delay={(i + pinnedTopics.length) * 0.03} />
             ))}
           </div>
+        )}
+        </>
         )}
       </motion.div>
     </div>

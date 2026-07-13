@@ -13,6 +13,9 @@ import { useToast } from "@/components/ui/use-toast";
 const breathLabels = { 1: "Fresh", 2: "Slight", 3: "Noticeable", 4: "Bad", 5: "Severe" };
 const breathColors = { 1: "#22c55e", 2: "#84cc16", 3: "#fbbf24", 4: "#f97316", 5: "#ef4444" };
 
+const gumLabels = { 1: "Healthy", 2: "Slight", 3: "Irritated", 4: "Inflamed", 5: "Severe" };
+const gumColors = { 1: "#22c55e", 2: "#84cc16", 3: "#fbbf24", 4: "#f97316", 5: "#ef4444" };
+
 const hygieneItems = [
   { key: "brushed_morning", label: "Brush AM", icon: "🌅" },
   { key: "brushed_evening", label: "Brush PM", icon: "🌙" },
@@ -31,6 +34,7 @@ export default function OralCareChart() {
   const [form, setForm] = useState({
     date: today,
     bad_breath_severity: 1,
+    gum_health: 1,
     brushed_morning: false,
     brushed_evening: false,
     flossed: false,
@@ -57,6 +61,7 @@ export default function OralCareChart() {
       if (todayLog) {
         await base44.entities.OralCareLog.update(todayLog.id, {
           bad_breath_severity: form.bad_breath_severity,
+          gum_health: form.gum_health,
           brushed_morning: form.brushed_morning,
           brushed_evening: form.brushed_evening,
           flossed: form.flossed,
@@ -85,6 +90,7 @@ export default function OralCareChart() {
       setForm({
         date: today,
         bad_breath_severity: todayLog.bad_breath_severity || 1,
+        gum_health: todayLog.gum_health || 1,
         brushed_morning: todayLog.brushed_morning || false,
         brushed_evening: todayLog.brushed_evening || false,
         flossed: todayLog.flossed || false,
@@ -106,6 +112,7 @@ export default function OralCareChart() {
       return {
         date: format(date, "MMM d"),
         breath: log?.bad_breath_severity ?? null,
+        gum: log?.gum_health ?? null,
         hygiene: hygieneScore,
       };
     });
@@ -115,6 +122,12 @@ export default function OralCareChart() {
     const valid = chartData.filter((d) => d.breath !== null);
     if (valid.length === 0) return null;
     return (valid.reduce((s, d) => s + d.breath, 0) / valid.length).toFixed(1);
+  }, [chartData]);
+
+  const avgGum = useMemo(() => {
+    const valid = chartData.filter((d) => d.gum !== null);
+    if (valid.length === 0) return null;
+    return (valid.reduce((s, d) => s + d.gum, 0) / valid.length).toFixed(1);
   }, [chartData]);
 
   const hygieneCompliance = useMemo(() => {
@@ -160,6 +173,25 @@ export default function OralCareChart() {
           </div>
 
           <div>
+            <Label className="text-xs font-medium">Gum Health</Label>
+            <div className="flex gap-2 mt-1.5">
+              {[1, 2, 3, 4, 5].map((val) => (
+                <button
+                  key={val}
+                  onClick={() => setForm({ ...form, gum_health: val })}
+                  className={`flex-1 p-2 rounded-lg border-2 text-xs font-medium transition ${
+                    form.gum_health === val ? "border-current text-white" : "border-border text-muted-foreground"
+                  }`}
+                  style={form.gum_health === val ? { background: gumColors[val], color: "white", borderColor: gumColors[val] } : {}}
+                >
+                  {val}
+                  <span className="block text-[9px] mt-0.5">{gumLabels[val]}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
             <Label className="text-xs font-medium">Hygiene Activities</Label>
             <div className="flex flex-wrap gap-2 mt-1.5">
               {hygieneItems.map((h) => (
@@ -187,16 +219,26 @@ export default function OralCareChart() {
       </Card>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <Card className="p-4">
           <div className="flex items-center gap-2 mb-1">
             <TrendingDown className="w-3.5 h-3.5 text-cyan-600" />
-            <p className="text-[10px] text-muted-foreground font-medium">Avg Breath Severity</p>
+            <p className="text-[10px] text-muted-foreground font-medium">Avg Breath</p>
           </div>
           <p className="text-2xl font-bold" style={{ color: avgBreath ? breathColors[Math.round(parseFloat(avgBreath))] : "#94a3b8" }}>
             {avgBreath ?? "—"}
           </p>
-          <p className="text-[9px] text-muted-foreground">Lower is better · 30-day avg</p>
+          <p className="text-[9px] text-muted-foreground">Lower is better</p>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <TrendingDown className="w-3.5 h-3.5 text-pink-600" />
+            <p className="text-[10px] text-muted-foreground font-medium">Avg Gum Health</p>
+          </div>
+          <p className="text-2xl font-bold" style={{ color: avgGum ? gumColors[Math.round(parseFloat(avgGum))] : "#94a3b8" }}>
+            {avgGum ?? "—"}
+          </p>
+          <p className="text-[9px] text-muted-foreground">Lower is better</p>
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-2 mb-1">
@@ -208,11 +250,11 @@ export default function OralCareChart() {
         </Card>
       </div>
 
-      {/* Breath Severity Trend */}
+      {/* Breath & Gum Health Combined Trend */}
       <Card className="p-5">
-        <h3 className="text-sm font-semibold mb-1">Bad Breath Severity — 30 Day Trend</h3>
-        <p className="text-[10px] text-muted-foreground mb-3">Track how your breath quality changes over time</p>
-        <ResponsiveContainer width="100%" height={200}>
+        <h3 className="text-sm font-semibold mb-1">Breath & Gum Health — 30 Day Trend</h3>
+        <p className="text-[10px] text-muted-foreground mb-3">Track how your breath quality and gum health change over time</p>
+        <ResponsiveContainer width="100%" height={220}>
           <LineChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
             <XAxis dataKey="date" tick={{ fontSize: 8, fill: "hsl(var(--muted-foreground))" }} interval={5} />
@@ -222,12 +264,18 @@ export default function OralCareChart() {
               formatter={(v, name) => {
                 if (v === null) return ["No data", name];
                 if (name === "Breath Severity") return [`${v} — ${breathLabels[v]}`, name];
+                if (name === "Gum Health") return [`${v} — ${gumLabels[v]}`, name];
                 return [v, name];
               }}
             />
             <Line type="monotone" dataKey="breath" name="Breath Severity" stroke="#06b6d4" strokeWidth={2} dot={{ r: 3, fill: "#06b6d4" }} connectNulls />
+            <Line type="monotone" dataKey="gum" name="Gum Health" stroke="#ec4899" strokeWidth={2} strokeDasharray="5 3" dot={{ r: 3, fill: "#ec4899" }} connectNulls />
           </LineChart>
         </ResponsiveContainer>
+        <div className="flex items-center gap-3 mt-2 text-[9px] text-muted-foreground">
+          <span className="flex items-center gap-1"><div className="w-2.5 h-0.5 bg-cyan-500" /> Breath severity</span>
+          <span className="flex items-center gap-1"><div className="w-2.5 h-0.5 bg-pink-500 border-t border-dashed" /> Gum health</span>
+        </div>
       </Card>
 
       {/* Hygiene Activity Chart */}

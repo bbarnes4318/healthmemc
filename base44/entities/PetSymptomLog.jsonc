@@ -1,0 +1,63 @@
+{
+  "name": "PetSymptomLog",
+  "type": "object",
+  "properties": {
+    "pet_type": {
+      "type": "string"
+    },
+    "breed": {
+      "type": "string"
+    },
+    "body_region": {
+      "type": "string",
+      "enum": [
+        "head",
+        "neck",
+        "torso",
+        "front_left_leg",
+        "front_right_leg",
+        "back_left_leg",
+        "back_right_leg",
+        "tail",
+        "left_ear",
+        "right_ear",
+        "snout"
+      ]
+    },
+    "observation_type": {
+      "type": "string",
+      "enum": [
+        "pain",
+        "swelling",
+        "lesion",
+        "lameness",
+        "skin_issue",
+        "behavior",
+        "other"
+      ],
+      "default": "pain"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "mild",
+        "moderate",
+        "severe"
+      ],
+      "default": "mild"
+    },
+    "description": {
+      "type": "string"
+    },
+    "logged_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "pet_type",
+    "body_region",
+    "observation_type",
+    "severity"
+  ]
+}

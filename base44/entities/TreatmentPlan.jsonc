@@ -1,0 +1,108 @@
+{
+  "name": "TreatmentPlan",
+  "type": "object",
+  "properties": {
+    "plan_name": {
+      "type": "string"
+    },
+    "case_title": {
+      "type": "string"
+    },
+    "specialty": {
+      "type": "string",
+      "enum": [
+        "cardiology",
+        "orthopedics",
+        "neurology",
+        "oncology",
+        "pediatrics",
+        "surgery",
+        "internal_medicine",
+        "emergency_medicine",
+        "psychiatry",
+        "obstetrics_gynecology",
+        "dermatology",
+        "radiology",
+        "anesthesiology",
+        "ent",
+        "ophthalmology",
+        "urology",
+        "gastroenterology",
+        "endocrinology",
+        "nephrology",
+        "pulmonology",
+        "rheumatology",
+        "dentistry",
+        "veterinary_medicine",
+        "general"
+      ],
+      "default": "general"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_role": {
+      "type": "string",
+      "enum": [
+        "doctor",
+        "specialist",
+        "nurse",
+        "dentist",
+        "veterinarian"
+      ]
+    },
+    "approach_type": {
+      "type": "string",
+      "enum": [
+        "open",
+        "laparoscopic",
+        "robotic",
+        "endoscopic",
+        "minimally_invasive",
+        "other"
+      ]
+    },
+    "procedure_summary": {
+      "type": "string"
+    },
+    "expected_outcomes": {
+      "type": "string"
+    },
+    "recovery_time_weeks": {
+      "type": "number"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "moderate",
+        "high"
+      ],
+      "default": "moderate"
+    },
+    "risks": {
+      "type": "string"
+    },
+    "cost_estimate": {
+      "type": "number"
+    },
+    "support_votes": {
+      "type": "number",
+      "default": 0
+    },
+    "concern_votes": {
+      "type": "number",
+      "default": 0
+    },
+    "consensus_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "plan_name",
+    "case_title",
+    "approach_type",
+    "procedure_summary",
+    "author_role"
+  ]
+}

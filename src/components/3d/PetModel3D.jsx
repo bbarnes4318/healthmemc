@@ -3,9 +3,15 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PawPrint, RotateCcw, Info } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { PawPrint, RotateCcw, Activity, Loader2, Trash2, Calendar } from "lucide-react";
+import { motion } from "framer-motion";
+import { base44 } from "@/api/base44Client";
+import { format } from "date-fns";
 
 const petConfigs = {
   dog: {
@@ -103,59 +109,47 @@ function buildQuadruped(color, size, opts) {
   const bodyR = 0.28 * s * slenderness;
   const bodyLen = opts.bodyLength * s;
   const headR = (opts.headSize || 0.24) * s;
+  const parts = [];
 
   const body = new THREE.Mesh(new THREE.CapsuleGeometry(bodyR, bodyLen, 4, 8), mat);
   body.rotation.z = Math.PI / 2;
   body.position.set(0, 0.5 * s, 0);
-  group.add(body);
+  body.userData = { region: "torso" };
+  group.add(body); parts.push(body);
 
   const headX = bodyLen / 2 + headR * 0.6;
   const head = new THREE.Mesh(new THREE.SphereGeometry(headR, 12, 12), mat);
   head.position.set(headX, 0.55 * s, 0);
-  group.add(head);
+  head.userData = { region: "head" };
+  group.add(head); parts.push(head);
 
   if (opts.snoutLength > 0) {
     const snoutR = 0.09 * s;
     const snout = new THREE.Mesh(new THREE.CapsuleGeometry(snoutR, opts.snoutLength * s, 4, 8), mat);
     snout.rotation.z = Math.PI / 2;
     snout.position.set(headX + headR * 0.5 + opts.snoutLength * s * 0.5, 0.48 * s, 0);
-    group.add(snout);
+    snout.userData = { region: "snout" };
+    group.add(snout); parts.push(snout);
   }
 
   const earX = headX - headR * 0.3;
   const earY = 0.55 * s + headR * 0.7;
-  if (opts.earType === "floppy") {
+  const earConfigs = [
+    { type: "floppy", geo: () => new THREE.SphereGeometry(0.08 * s, 8, 8), scale: [0.4, 1.5, 0.3], yOffset: -0.05 * s, rot: true },
+    { type: "pointy", geo: () => new THREE.ConeGeometry(0.07 * s, 0.18 * s, 4), scale: null, yOffset: 0.05 * s, rot: true },
+    { type: "long", geo: () => new THREE.CapsuleGeometry(0.05 * s, 0.3 * s, 4, 8), scale: null, yOffset: 0.1 * s, rot: false },
+    { type: "tiny", geo: () => new THREE.SphereGeometry(0.04 * s, 6, 6), scale: null, yOffset: 0, rot: false },
+    { type: "small", geo: () => new THREE.ConeGeometry(0.05 * s, 0.1 * s, 4), scale: null, yOffset: 0, rot: false },
+  ];
+  const earConfig = earConfigs.find((e) => e.type === opts.earType);
+  if (earConfig) {
     for (const side of [-1, 1]) {
-      const ear = new THREE.Mesh(new THREE.SphereGeometry(0.08 * s, 8, 8), mat);
-      ear.scale.set(0.4, 1.5, 0.3);
-      ear.position.set(earX, earY - 0.05 * s, side * 0.12 * s);
-      ear.rotation.x = side * 0.3;
-      group.add(ear);
-    }
-  } else if (opts.earType === "pointy") {
-    for (const side of [-1, 1]) {
-      const ear = new THREE.Mesh(new THREE.ConeGeometry(0.07 * s, 0.18 * s, 4), mat);
-      ear.position.set(earX, earY + 0.05 * s, side * 0.1 * s);
-      ear.rotation.z = -side * 0.15;
-      group.add(ear);
-    }
-  } else if (opts.earType === "long") {
-    for (const side of [-1, 1]) {
-      const ear = new THREE.Mesh(new THREE.CapsuleGeometry(0.05 * s, 0.3 * s, 4, 8), mat);
-      ear.position.set(earX, earY + 0.1 * s, side * 0.07 * s);
-      group.add(ear);
-    }
-  } else if (opts.earType === "tiny") {
-    for (const side of [-1, 1]) {
-      const ear = new THREE.Mesh(new THREE.SphereGeometry(0.04 * s, 6, 6), mat);
-      ear.position.set(earX, earY, side * 0.08 * s);
-      group.add(ear);
-    }
-  } else if (opts.earType === "small") {
-    for (const side of [-1, 1]) {
-      const ear = new THREE.Mesh(new THREE.ConeGeometry(0.05 * s, 0.1 * s, 4), mat);
-      ear.position.set(earX, earY, side * 0.08 * s);
-      group.add(ear);
+      const ear = new THREE.Mesh(earConfig.geo(), mat);
+      if (earConfig.scale) ear.scale.set(...earConfig.scale);
+      ear.position.set(earX, earY + earConfig.yOffset, side * 0.12 * s);
+      if (earConfig.rot) ear.rotation.z = -side * 0.15;
+      ear.userData = { region: side === 1 ? "left_ear" : "right_ear" };
+      group.add(ear); parts.push(ear);
     }
   }
 
@@ -163,17 +157,25 @@ function buildQuadruped(color, size, opts) {
   const legH = 0.5 * s * (opts.legHeightRatio || 1);
   const legX = bodyLen * 0.3;
   const legZ = bodyR * 0.7;
-  [[legX, legZ], [legX, -legZ], [-legX, legZ], [-legX, -legZ]].forEach(([x, z]) => {
+  const legPositions = [
+    { x: legX, z: legZ, region: "front_right_leg" },
+    { x: legX, z: -legZ, region: "front_left_leg" },
+    { x: -legX, z: legZ, region: "back_right_leg" },
+    { x: -legX, z: -legZ, region: "back_left_leg" },
+  ];
+  legPositions.forEach(({ x, z, region }) => {
     const leg = new THREE.Mesh(new THREE.CylinderGeometry(legR, legR, legH, 6), mat);
     leg.position.set(x, legH / 2, z);
-    group.add(leg);
+    leg.userData = { region };
+    group.add(leg); parts.push(leg);
   });
 
   if (opts.tailLength > 0) {
     const tail = new THREE.Mesh(new THREE.CapsuleGeometry(0.05 * s, opts.tailLength * s, 4, 8), mat);
     tail.position.set(-bodyLen / 2 - opts.tailLength * s * 0.4, 0.55 * s, 0);
     tail.rotation.z = opts.tailAngle ?? -0.4;
-    group.add(tail);
+    tail.userData = { region: "tail" };
+    group.add(tail); parts.push(tail);
   }
 
   const eyeMat = new THREE.MeshPhongMaterial({ color: 0x111111 });
@@ -189,44 +191,51 @@ function buildQuadruped(color, size, opts) {
 
   // Center the model
   group.position.y = -0.2 * s;
-  return group;
+  return { group, parts };
 }
 
 function buildBird(color, size) {
   const group = new THREE.Group();
   const mat = new THREE.MeshPhongMaterial({ color });
   const s = size;
+  const parts = [];
 
   const body = new THREE.Mesh(new THREE.SphereGeometry(0.2 * s, 12, 12), mat);
   body.scale.set(1.3, 1, 1);
   body.position.set(0, 0.4 * s, 0);
-  group.add(body);
+  body.userData = { region: "torso" };
+  group.add(body); parts.push(body);
 
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.12 * s, 10, 10), mat);
   head.position.set(0.28 * s, 0.5 * s, 0);
-  group.add(head);
+  head.userData = { region: "head" };
+  group.add(head); parts.push(head);
 
   const beak = new THREE.Mesh(new THREE.ConeGeometry(0.05 * s, 0.15 * s, 4), new THREE.MeshPhongMaterial({ color: 0xff8800 }));
   beak.rotation.z = -Math.PI / 2;
   beak.position.set(0.42 * s, 0.48 * s, 0);
-  group.add(beak);
+  beak.userData = { region: "snout" };
+  group.add(beak); parts.push(beak);
 
   for (const side of [-1, 1]) {
     const wing = new THREE.Mesh(new THREE.SphereGeometry(0.15 * s, 8, 8), mat);
     wing.scale.set(0.3, 1, 1.5);
     wing.position.set(-0.05 * s, 0.4 * s, side * 0.12 * s);
-    group.add(wing);
+    wing.userData = { region: side === 1 ? "left_ear" : "right_ear" };
+    group.add(wing); parts.push(wing);
   }
 
   const tail = new THREE.Mesh(new THREE.ConeGeometry(0.1 * s, 0.25 * s, 4), mat);
   tail.rotation.z = Math.PI / 2;
   tail.position.set(-0.3 * s, 0.4 * s, 0);
-  group.add(tail);
+  tail.userData = { region: "tail" };
+  group.add(tail); parts.push(tail);
 
   for (const side of [-1, 1]) {
     const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.02 * s, 0.02 * s, 0.2 * s, 4), new THREE.MeshPhongMaterial({ color: 0xff8800 }));
     leg.position.set(0.05 * s, 0.15 * s, side * 0.05 * s);
-    group.add(leg);
+    leg.userData = { region: side === 1 ? "front_right_leg" : "front_left_leg" };
+    group.add(leg); parts.push(leg);
   }
 
   const eyeMat = new THREE.MeshPhongMaterial({ color: 0x111111 });
@@ -237,19 +246,53 @@ function buildBird(color, size) {
   }
 
   group.position.y = -0.1 * s;
-  return group;
+  return { group, parts };
 }
+
+const regionLabels = {
+  head: "Head", snout: "Snout/Muzzle", neck: "Neck", torso: "Torso/Body",
+  front_left_leg: "Front Left Leg", front_right_leg: "Front Right Leg",
+  back_left_leg: "Back Left Leg", back_right_leg: "Back Right Leg",
+  tail: "Tail", left_ear: "Left Ear/Wing", right_ear: "Right Ear/Wing",
+};
+
+const severityColors = {
+  mild: { hex: 0xfbbf24, css: "#fbbf24", bg: "bg-amber-100", text: "text-amber-700" },
+  moderate: { hex: 0xf97316, css: "#f97316", bg: "bg-orange-100", text: "text-orange-700" },
+  severe: { hex: 0xef4444, css: "#ef4444", bg: "bg-red-100", text: "text-red-700" },
+};
+
+const observationTypes = ["pain", "swelling", "lesion", "lameness", "skin_issue", "behavior", "other"];
 
 export default function PetModel3D({ onPetSelect }) {
   const mountRef = useRef(null);
   const sceneRef = useRef(null);
   const petGroupRef = useRef(null);
+  const partsRef = useRef([]);
   const controlsRef = useRef(null);
+  const cameraRef = useRef(null);
   const [petType, setPetType] = useState("dog");
   const [breedIdx, setBreedIdx] = useState(0);
   const [sceneReady, setSceneReady] = useState(false);
+  const [selectedRegion, setSelectedRegion] = useState(null);
+  const [hoveredRegion, setHoveredRegion] = useState(null);
+  const [symptoms, setSymptoms] = useState([]);
+  const [loadingSymptoms, setLoadingSymptoms] = useState(true);
+  const [form, setForm] = useState({ observation_type: "pain", severity: "mild", description: "" });
+  const [saving, setSaving] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   const currentBreed = petConfigs[petType].breeds[breedIdx];
+
+  const loadSymptoms = async () => {
+    try {
+      const data = await base44.entities.PetSymptomLog.list("-logged_at", 100);
+      setSymptoms(data);
+    } catch (e) { console.error(e); }
+    setLoadingSymptoms(false);
+  };
+
+  useEffect(() => { loadSymptoms(); }, []);
 
   // Scene setup (once)
   useEffect(() => {
@@ -264,6 +307,7 @@ export default function PetModel3D({ onPetSelect }) {
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
     camera.position.set(2, 1.5, 4);
+    cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(width, height);
@@ -307,10 +351,47 @@ export default function PetModel3D({ onPetSelect }) {
 
     setSceneReady(true);
 
+    // Click & hover handlers
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    const canvas = renderer.domElement;
+
+    const handleClick = (event) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(partsRef.current, false);
+      if (intersects.length > 0 && intersects[0].object.userData.region) {
+        setSelectedRegion(intersects[0].object.userData.region);
+        setForm({ observation_type: "pain", severity: "mild", description: "" });
+      }
+    };
+
+    const handleMove = (event) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(partsRef.current, false);
+      if (intersects.length > 0 && intersects[0].object.userData.region) {
+        setHoveredRegion(intersects[0].object.userData.region);
+        canvas.style.cursor = "pointer";
+      } else {
+        setHoveredRegion(null);
+        canvas.style.cursor = "grab";
+      }
+    };
+
+    canvas.addEventListener("click", handleClick);
+    canvas.addEventListener("mousemove", handleMove);
+
     return () => {
       cancelAnimationFrame(animationId);
       resizeObserver.disconnect();
       controls.dispose();
+      canvas.removeEventListener("click", handleClick);
+      canvas.removeEventListener("mousemove", handleMove);
       scene.traverse((obj) => {
         if (obj.geometry) obj.geometry.dispose();
         if (obj.material) { if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose()); else obj.material.dispose(); }
@@ -338,12 +419,68 @@ export default function PetModel3D({ onPetSelect }) {
     // Build new pet
     const config = petConfigs[petType];
     const breed = config.breeds[breedIdx];
-    const petGroup = config.build(breed.color, breed.size);
-    scene.add(petGroup);
-    petGroupRef.current = petGroup;
+    const result = config.build(breed.color, breed.size);
+    scene.add(result.group);
+    petGroupRef.current = result.group;
+    partsRef.current = result.parts;
 
     if (onPetSelect) onPetSelect({ type: petType, breed: breed.name });
   }, [sceneReady, petType, breedIdx]);
+
+  // Update part colors based on symptoms
+  useEffect(() => {
+    if (!sceneReady) return;
+    const latestByRegion = {};
+    symptoms.forEach((s) => {
+      if (!latestByRegion[s.body_region] || new Date(s.logged_at) > new Date(latestByRegion[s.body_region].logged_at)) {
+        latestByRegion[s.body_region] = s;
+      }
+    });
+    partsRef.current.forEach((mesh) => {
+      const region = mesh.userData.region;
+      if (!region) return;
+      const symptom = latestByRegion[region];
+      if (selectedRegion === region) {
+        mesh.material.color.setHex(0xef4444);
+      } else if (symptom) {
+        mesh.material.color.setHex(severityColors[symptom.severity].hex);
+      } else if (hoveredRegion === region) {
+        mesh.material.color.setHex(0xfbbf24);
+      } else {
+        mesh.material.color.setHex(currentBreed.color);
+      }
+    });
+  }, [sceneReady, selectedRegion, hoveredRegion, symptoms, currentBreed]);
+
+  const handleSaveSymptom = async () => {
+    if (!selectedRegion) return;
+    setSaving(true);
+    try {
+      await base44.entities.PetSymptomLog.create({
+        pet_type: petConfigs[petType].label,
+        breed: currentBreed.name,
+        body_region: selectedRegion,
+        observation_type: form.observation_type,
+        severity: form.severity,
+        description: form.description || undefined,
+        logged_at: new Date().toISOString(),
+      });
+      setSelectedRegion(null);
+      loadSymptoms();
+    } catch (e) { console.error(e); }
+    setSaving(false);
+  };
+
+  const handleDeleteSymptom = async (id) => {
+    try { await base44.entities.PetSymptomLog.delete(id); loadSymptoms(); } catch (e) { console.error(e); }
+  };
+
+  const latestByRegion = {};
+  symptoms.forEach((s) => {
+    if (!latestByRegion[s.body_region] || new Date(s.logged_at) > new Date(latestByRegion[s.body_region].logged_at)) {
+      latestByRegion[s.body_region] = s;
+    }
+  });
 
   const resetView = () => {
     if (controlsRef.current) {
@@ -356,7 +493,10 @@ export default function PetModel3D({ onPetSelect }) {
       <div className="flex items-center gap-2 mb-4">
         <PawPrint className="w-4 h-4 text-purple-600" />
         <h3 className="text-sm font-semibold">3D Pet Model</h3>
-        <span className="text-xs text-muted-foreground ml-auto">Drag to rotate 360°</span>
+        <span className="text-xs text-muted-foreground ml-auto">Drag to rotate 360° · Click body parts to log symptoms</span>
+        <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setShowHistory(!showHistory)}>
+          <Calendar className="w-3.5 h-3.5 mr-1" /> History
+        </Button>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-4">
@@ -395,24 +535,136 @@ export default function PetModel3D({ onPetSelect }) {
             </Select>
           </div>
 
-          <div className="p-3 bg-purple-50 rounded-lg">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-2xl">{petConfigs[petType].icon}</span>
-              <div>
-                <p className="text-sm font-semibold text-purple-800">{currentBreed.name}</p>
-                <p className="text-[10px] text-purple-600">{petConfigs[petType].label} · 360° Interactive Model</p>
-              </div>
+          {showHistory ? (
+            <div>
+              <h4 className="text-xs font-semibold mb-2 flex items-center gap-1"><Activity className="w-3.5 h-3.5 text-purple-600" /> Symptom History</h4>
+              {loadingSymptoms ? (
+                <div className="flex justify-center py-4"><Loader2 className="w-4 h-4 animate-spin text-purple-600" /></div>
+              ) : symptoms.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No symptoms logged yet. Click a body part on the 3D model to start.</p>
+              ) : (
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {symptoms.map((s, i) => (
+                    <motion.div key={s.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.02 }}>
+                      <div className="p-2.5 bg-muted/50 rounded-lg flex items-start gap-2">
+                        <div className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ background: severityColors[s.severity].css }} />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium">{regionLabels[s.body_region] || s.body_region}</span>
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${severityColors[s.severity].bg} ${severityColors[s.severity].text}`}>{s.severity}</span>
+                            <span className="text-[10px] text-muted-foreground capitalize">{s.observation_type.replace("_", " ")}</span>
+                          </div>
+                          {s.description && <p className="text-[10px] text-muted-foreground mt-0.5">{s.description}</p>}
+                          <span className="text-[9px] text-muted-foreground">{s.breed} · {format(new Date(s.logged_at), "MMM d, h:mm a")}</span>
+                        </div>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 text-red-400 hover:text-red-600 shrink-0" onClick={() => handleDeleteSymptom(s.id)}>
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
             </div>
-            <p className="text-[10px] text-purple-600 mt-1">
-              Rotate the model to examine your pet from all angles. This helps identify visible symptoms, skin conditions, and body condition.
-            </p>
-          </div>
+          ) : (
+            <>
+              {hoveredRegion && !selectedRegion && (
+                <div className="p-2 bg-purple-50 rounded-lg">
+                  <p className="text-xs text-purple-700 font-medium">{regionLabels[hoveredRegion] || hoveredRegion}</p>
+                </div>
+              )}
 
-          <Button variant="outline" size="sm" className="w-full" onClick={resetView}>
-            <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> Reset View
-          </Button>
+              <div className="flex items-center gap-2 flex-wrap">
+                {Object.entries(severityColors).map(([key, val]) => (
+                  <div key={key} className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded-full" style={{ background: val.css }} />
+                    <span className="text-[10px] text-muted-foreground capitalize">{key}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="p-3 bg-purple-50 rounded-lg">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-2xl">{petConfigs[petType].icon}</span>
+                  <div>
+                    <p className="text-sm font-semibold text-purple-800">{currentBreed.name}</p>
+                    <p className="text-[10px] text-purple-600">{petConfigs[petType].label} · Click body parts to log symptoms</p>
+                  </div>
+                </div>
+                <p className="text-[10px] text-purple-600 mt-1">
+                  Rotate to examine from all angles. Click any body region to log an observation — just like you do for your own body model.
+                </p>
+              </div>
+
+              {Object.keys(latestByRegion).length > 0 && (
+                <div>
+                  <h4 className="text-xs font-semibold mb-1.5">Active Symptoms</h4>
+                  <div className="space-y-1">
+                    {Object.entries(latestByRegion).map(([region, sym]) => (
+                      <div key={region} className="flex items-center gap-2 p-1.5 bg-muted/30 rounded-lg">
+                        <div className="w-2 h-2 rounded-full shrink-0" style={{ background: severityColors[sym.severity].css }} />
+                        <span className="text-xs font-medium flex-1">{regionLabels[region] || region}</span>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${severityColors[sym.severity].bg} ${severityColors[sym.severity].text}`}>{sym.severity}</span>
+                        <span className="text-[9px] text-muted-foreground">{format(new Date(sym.logged_at), "MMM d")}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <Button variant="outline" size="sm" className="w-full" onClick={resetView}>
+                <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> Reset View
+              </Button>
+            </>
+          )}
         </div>
       </div>
+
+      {/* Symptom Logging Dialog */}
+      <Dialog open={!!selectedRegion} onOpenChange={(v) => { if (!v) setSelectedRegion(null); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Log Observation: {selectedRegion && (regionLabels[selectedRegion] || selectedRegion)}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 mt-2">
+            <div className="p-2 bg-purple-50 rounded-lg text-xs text-purple-700">
+              <strong>{petConfigs[petType].label}</strong> · {currentBreed.name} · {regionLabels[selectedRegion] || selectedRegion}
+            </div>
+            <div>
+              <Label className="text-xs">Observation Type</Label>
+              <Select value={form.observation_type} onValueChange={(v) => setForm({ ...form, observation_type: v })}>
+                <SelectTrigger className="h-9 mt-1"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {observationTypes.map((t) => <SelectItem key={t} value={t} className="capitalize">{t.replace("_", " ")}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">Severity</Label>
+              <div className="grid grid-cols-3 gap-2 mt-1">
+                {Object.entries(severityColors).map(([key, val]) => (
+                  <button key={key} onClick={() => setForm({ ...form, severity: key })}
+                    className={`p-2 rounded-lg border-2 text-xs font-medium capitalize transition ${form.severity === key ? "border-current" : "border-border"}`}
+                    style={form.severity === key ? { color: val.css, background: val.bg } : {}}>
+                    {key}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">Description</Label>
+              <Textarea placeholder="Describe what you observe (e.g., limping on left front leg, swelling near snout...)" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} className="resize-none" />
+            </div>
+          </div>
+          <DialogFooter className="gap-2 mt-4">
+            <Button variant="ghost" onClick={() => setSelectedRegion(null)}>Cancel</Button>
+            <Button onClick={handleSaveSymptom} disabled={saving} className="bg-purple-600 hover:bg-purple-700">
+              {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Activity className="w-4 h-4 mr-2" />}
+              Save Observation
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

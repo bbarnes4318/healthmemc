@@ -10,6 +10,10 @@
       "type": "number",
       "default": 1
     },
+    "gum_health": {
+      "type": "number",
+      "default": 1
+    },
     "brushed_morning": {
       "type": "boolean",
       "default": false
