@@ -15,7 +15,8 @@ import {
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DoctorComparisonTable from "@/components/specialists/DoctorComparisonTable";
-import { GitCompare } from "lucide-react";
+import WaitTimeChart from "@/components/specialists/WaitTimeChart";
+import { GitCompare, Clock } from "lucide-react";
 
 const emptyForm = {
   doctor_name: "",
@@ -116,13 +117,16 @@ export default function DoctorDirectory() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-5">
-        <TabsList className="grid grid-cols-2 max-w-md">
+        <TabsList className="grid grid-cols-3 max-w-lg">
           <TabsTrigger value="directory"><Stethoscope className="w-3.5 h-3.5 mr-1.5" />Directory</TabsTrigger>
           <TabsTrigger value="compare"><GitCompare className="w-3.5 h-3.5 mr-1.5" />Compare</TabsTrigger>
+          <TabsTrigger value="waittimes"><Clock className="w-3.5 h-3.5 mr-1.5" />Wait Times</TabsTrigger>
         </TabsList>
       </Tabs>
 
       {activeTab === "compare" && <DoctorComparisonTable />}
+
+      {activeTab === "waittimes" && <WaitTimeChart />}
 
       {activeTab === "directory" && (
       <>

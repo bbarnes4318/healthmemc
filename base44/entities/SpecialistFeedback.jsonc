@@ -38,6 +38,9 @@
     },
     "visit_cost": {
       "type": "number"
+    },
+    "wait_time_days": {
+      "type": "number"
     }
   },
   "required": [

@@ -42,6 +42,7 @@ const emptyForm = {
   helpful_notes: [],
   tags: [],
   visit_cost: "",
+  wait_time_days: "",
 };
 
 export default function SpecialistFeedback() {
@@ -75,6 +76,7 @@ export default function SpecialistFeedback() {
       await base44.entities.SpecialistFeedback.create({
         ...form,
         visit_cost: form.visit_cost ? parseFloat(form.visit_cost) : undefined,
+        wait_time_days: form.wait_time_days ? parseFloat(form.wait_time_days) : undefined,
       });
       setForm(emptyForm);
       setDialogOpen(false);
@@ -251,9 +253,15 @@ export default function SpecialistFeedback() {
                   <Input placeholder="Annual checkup" value={form.visit_reason} onChange={(e) => setForm({ ...form, visit_reason: e.target.value })} />
                 </div>
               </div>
-              <div>
-                <Label className="text-xs">Visit Cost ($)</Label>
-                <Input type="number" placeholder="e.g., 150" value={form.visit_cost} onChange={(e) => setForm({ ...form, visit_cost: e.target.value })} />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs">Visit Cost ($)</Label>
+                  <Input type="number" placeholder="e.g., 150" value={form.visit_cost} onChange={(e) => setForm({ ...form, visit_cost: e.target.value })} />
+                </div>
+                <div>
+                  <Label className="text-xs">Wait Time (days)</Label>
+                  <Input type="number" placeholder="e.g., 7" value={form.wait_time_days} onChange={(e) => setForm({ ...form, wait_time_days: e.target.value })} />
+                </div>
               </div>
 
               {/* Star Rating */}
