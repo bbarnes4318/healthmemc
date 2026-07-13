@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Stethoscope, HeartPulse, Users, Pill, FileText, Sparkles,
   Calendar, Phone, TrendingUp, Clock, ChevronRight, Shield, Dumbbell, History, Home as HomeIcon, Scan, Info, Syringe, Activity as ActivityIcon, Ear, UserRound,
-  Video, Globe
+  Video, Globe, Smile
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
@@ -33,6 +33,7 @@ const quickActions = [
   { label: "Start AI Doctor Visit", icon: Stethoscope, path: "/ai-doctor", color: "from-sky-500 to-blue-600", desc: "Describe symptoms & get insights" },
   { label: "AI Personal Physician", icon: UserRound, path: "/personal-physician", color: "from-indigo-500 to-purple-600", desc: "Your personalized health companion" },
   { label: "Chat with AI Nurse", icon: HeartPulse, path: "/ai-nurse", color: "from-emerald-500 to-teal-600", desc: "Daily check-ins & wellness" },
+  { label: "AI Dentist", icon: Smile, path: "/dental-care", color: "from-teal-500 to-emerald-600", desc: "Oral health & dental care" },
   { label: "AI Specialists", icon: Users, path: "/specialists", color: "from-violet-500 to-purple-600", desc: "Cardiology, neuro & more" },
   { label: "AI Pharmacy", icon: Pill, path: "/pharmacy", color: "from-amber-500 to-orange-600", desc: "Medications & interactions" },
   { label: "Medical Records", icon: FileText, path: "/records", color: "from-rose-500 to-pink-600", desc: "View & manage records" },
