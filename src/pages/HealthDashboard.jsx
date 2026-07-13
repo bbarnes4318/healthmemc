@@ -24,6 +24,7 @@ import TreatmentCorrelationAnalyzer from "@/components/health/TreatmentCorrelati
 import LifestyleSymptomCorrelation from "@/components/health/LifestyleSymptomCorrelation";
 import CustomWellnessGoalTracker from "@/components/health/CustomWellnessGoalTracker";
 import WellnessGoalTrendsChart from "@/components/health/WellnessGoalTrendsChart";
+import MedicationSymptomOverlay from "@/components/health/MedicationSymptomOverlay";
 import { Download } from "lucide-react";
 
 const vitalTypes = [
@@ -252,6 +253,9 @@ export default function HealthDashboard() {
 
       {/* Wellness Goal Trends Chart */}
       <WellnessGoalTrendsChart />
+
+      {/* Medication Adherence vs Symptom Severity Overlay */}
+      <MedicationSymptomOverlay />
 
       {/* Treatment Correlation Analyzer */}
       <TreatmentCorrelationAnalyzer />

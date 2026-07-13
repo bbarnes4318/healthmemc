@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import WellnessCharts from "@/components/wellness/WellnessCharts";
 import NutritionLog from "@/components/wellness/NutritionLog";
+import NutritionGoalComparison from "@/components/wellness/NutritionGoalComparison";
 import NutritionTemplateAutoFill from "@/components/wellness/NutritionTemplateAutoFill";
 import RecipeSuggester from "@/components/wellness/RecipeSuggester";
 import StepTracker from "@/components/wellness/StepTracker";
@@ -118,6 +119,7 @@ export default function Wellness() {
 
         {activeTab === "nutrition" ? (
           <div className="space-y-4">
+            <NutritionGoalComparison />
             <NutritionTemplateAutoFill />
             <RecipeSuggester />
             <NutritionLog />
