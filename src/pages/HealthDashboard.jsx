@@ -20,6 +20,7 @@ import MedicationAdherenceTrend from "@/components/pharmacy/MedicationAdherenceT
 import MedicationAdherenceMonthly from "@/components/pharmacy/MedicationAdherenceMonthly";
 import MonthlyProgressReportButton from "@/components/health/MonthlyProgressReportButton";
 import CriticalRecordsBanner from "@/components/records/CriticalRecordsBanner";
+import TreatmentCorrelationAnalyzer from "@/components/health/TreatmentCorrelationAnalyzer";
 import { Download } from "lucide-react";
 
 const vitalTypes = [
@@ -242,6 +243,9 @@ export default function HealthDashboard() {
         <DermatologyTrendChart />
         <VisionTrendChart />
       </div>
+
+      {/* Treatment Correlation Analyzer */}
+      <TreatmentCorrelationAnalyzer />
     </div>
   );
 }

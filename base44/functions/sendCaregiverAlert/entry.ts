@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.38';
 
 Deno.serve(async (req) => {
   try {
@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
     // family_member_name: string
     // details: string (e.g., medication name, emergency description)
 
-    const contacts = await base44.asServiceRole.entities.TrustedContact.filter({ status: "active" });
+    const contacts = await base44.asServiceRole.entities.TrustedContact.filter({ created_by_id: user.id, status: "active" });
 
     const alertField = alert_type === "emergency" ? "alert_emergencies" : "alert_missed_medications";
     const recipients = contacts.filter((c) => c[alertField]);
