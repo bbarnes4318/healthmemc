@@ -9,6 +9,7 @@ import PetMedicationReminders from "@/components/veterinary/PetMedicationReminde
 import PetGroomingLog from "@/components/veterinary/PetGroomingLog";
 import PetWeightTracker from "@/components/veterinary/PetWeightTracker";
 import PetPharmacy from "@/components/veterinary/PetPharmacy";
+import PetMilestoneTimeline from "@/components/veterinary/PetMilestoneTimeline";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PawPrint, Stethoscope, Syringe, Apple, Brain, Shield, Box, Bell, HeartPulse, Utensils, ClipboardList, Pill, Scissors, Scale, ShoppingBag } from "lucide-react";
 
@@ -83,8 +84,9 @@ export default function AIVeterinary() {
           <PetWeightTracker />
         </div>
       ) : activeTab === "timeline" ? (
-        <div className="p-4 lg:p-8 max-w-3xl mx-auto">
+        <div className="p-4 lg:p-8 max-w-3xl mx-auto space-y-4">
           <PetHealthTimeline />
+          <PetMilestoneTimeline />
         </div>
       ) : (
         <div className="p-4 lg:p-8 max-w-3xl mx-auto">

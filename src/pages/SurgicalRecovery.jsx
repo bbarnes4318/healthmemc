@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Activity, ShieldAlert, LayoutDashboard, ListChecks, TrendingUp } from "lucide-react";
+import { Activity, ShieldAlert, LayoutDashboard, ListChecks, TrendingUp, Award } from "lucide-react";
 import SurgicalRecoveryTracker from "@/components/surgical/SurgicalRecoveryTracker";
+import RecoveryMilestoneTimeline from "@/components/surgical/RecoveryMilestoneTimeline";
 import SurgicalRecoveryDashboard from "@/components/surgical/SurgicalRecoveryDashboard";
 import SurgicalRecoveryTrends from "@/components/surgical/SurgicalRecoveryTrends";
 
@@ -52,9 +53,17 @@ export default function SurgicalRecoveryPage() {
           >
             <TrendingUp className="w-4 h-4" /> Trends
           </button>
+          <button
+            onClick={() => setActiveTab("timeline")}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition ${
+              activeTab === "timeline" ? "bg-background shadow-sm text-rose-700" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Award className="w-4 h-4" /> Timeline
+          </button>
         </div>
 
-        {activeTab === "dashboard" ? <SurgicalRecoveryDashboard /> : activeTab === "log" ? <SurgicalRecoveryTracker /> : <SurgicalRecoveryTrends />}
+        {activeTab === "dashboard" ? <SurgicalRecoveryDashboard /> : activeTab === "log" ? <SurgicalRecoveryTracker /> : activeTab === "trends" ? <SurgicalRecoveryTrends /> : <RecoveryMilestoneTimeline />}
       </motion.div>
     </div>
   );

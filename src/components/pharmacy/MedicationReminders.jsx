@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,8 @@ export default function MedicationReminders() {
   }, []);
 
   const remindersEnabled = profile?.notification_medications ?? false;
-  const { permission, todayReminders, requestPermission } = useMedicationReminders(remindersEnabled);
+  const confirmRef = useRef(null);
+  const { permission, todayReminders, requestPermission } = useMedicationReminders(remindersEnabled, (r) => confirmRef.current?.(r, "taken"));
   const [todayLogs, setTodayLogs] = useState([]);
   const [actionLoading, setActionLoading] = useState(null);
 
@@ -66,6 +67,8 @@ export default function MedicationReminders() {
     } catch (e) { console.error(e); }
     setActionLoading(null);
   };
+
+  confirmRef.current = markDose;
 
   const toggleReminders = async () => {
     const newValue = !remindersEnabled;

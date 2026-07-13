@@ -3,10 +3,11 @@ import AIServicePage from "@/components/services/AIServicePage";
 import ExerciseTracker from "@/components/pt/ExerciseTracker";
 import PTSummary from "@/components/pt/PTSummary";
 import PTGoals from "@/components/pt/PTGoals";
+import PTMilestoneTimeline from "@/components/pt/PTMilestoneTimeline";
 import BodyDiagram from "@/components/consultations/BodyDiagram";
 import BodyModel3D from "@/components/3d/BodyModel3D";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dumbbell, Bone, Activity, Move, Stethoscope, AlignCenter, ClipboardList, BarChart3, PersonStanding, Box } from "lucide-react";
+import { Dumbbell, Bone, Activity, Move, Stethoscope, AlignCenter, ClipboardList, BarChart3, PersonStanding, Box, Award } from "lucide-react";
 
 const config = {
   title: "AI Physical Therapy",
@@ -34,12 +35,13 @@ export default function AIPhysicalTherapy() {
     <div>
       <div className="sticky top-14 lg:top-0 z-10 bg-white border-b border-border px-4 py-2">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-5 max-w-xl mx-auto">
+          <TabsList className="grid grid-cols-6 max-w-2xl mx-auto">
             <TabsTrigger value="consult"><Dumbbell className="w-3.5 h-3.5 mr-1.5" />AI Consult</TabsTrigger>
             <TabsTrigger value="bodymap"><PersonStanding className="w-3.5 h-3.5 mr-1.5" />Body Map</TabsTrigger>
             <TabsTrigger value="3dbody"><Box className="w-3.5 h-3.5 mr-1.5" />3D Body</TabsTrigger>
             <TabsTrigger value="tracker"><ClipboardList className="w-3.5 h-3.5 mr-1.5" />Tracker</TabsTrigger>
             <TabsTrigger value="summary"><BarChart3 className="w-3.5 h-3.5 mr-1.5" />Summary</TabsTrigger>
+            <TabsTrigger value="milestones"><Award className="w-3.5 h-3.5 mr-1.5" />Milestones</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -57,10 +59,14 @@ export default function AIPhysicalTherapy() {
         <div className="p-4 lg:p-8 max-w-3xl mx-auto">
           <ExerciseTracker />
         </div>
-      ) : (
+      ) : activeTab === "summary" ? (
         <div className="p-4 lg:p-8 max-w-3xl mx-auto">
           <PTGoals />
           <PTSummary />
+        </div>
+      ) : (
+        <div className="p-4 lg:p-8 max-w-3xl mx-auto">
+          <PTMilestoneTimeline />
         </div>
       )}
     </div>

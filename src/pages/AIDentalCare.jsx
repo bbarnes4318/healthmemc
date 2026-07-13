@@ -8,6 +8,7 @@ import DentalDashboard from "@/components/dental/DentalDashboard";
 import DentalPainLogSection from "@/components/dental/DentalPainLogSection";
 import DentalExportButton from "@/components/dental/DentalExportButton";
 import NextCleaningScheduler from "@/components/dental/NextCleaningScheduler";
+import DentalMilestoneTimeline from "@/components/dental/DentalMilestoneTimeline";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Smile, AlertCircle, Droplet, Sparkles, AlertTriangle, Star, Bone as ToothIcon, ClipboardList, BarChart3, Activity, Box } from "lucide-react";
 
@@ -71,6 +72,7 @@ export default function AIDentalCare() {
           <NextCleaningScheduler />
           <DentalDashboard />
           <OralCareChart />
+          <DentalMilestoneTimeline />
         </div>
       )}
     </div>

@@ -21,13 +21,15 @@ function parseTime(timeStr) {
   return null;
 }
 
-export function useMedicationReminders(enabled) {
+export function useMedicationReminders(enabled, onConfirmDose) {
   const [medications, setMedications] = useState([]);
   const [permission, setPermission] = useState(
     typeof Notification !== "undefined" ? Notification.permission : "unsupported"
   );
   const [todayReminders, setTodayReminders] = useState([]);
   const sentRef = useRef(new Set());
+  const onConfirmRef = useRef(onConfirmDose);
+  useEffect(() => { onConfirmRef.current = onConfirmDose; }, [onConfirmDose]);
 
   useEffect(() => {
     const load = async () => {
@@ -93,10 +95,15 @@ export function useMedicationReminders(enabled) {
         if (diff >= 0 && diff < 60000 && !sentRef.current.has(r.key)) {
           sentRef.current.add(r.key);
           try {
-            new Notification(`💊 ${r.medName} — ${r.dosage || "Time to take medication"}`, {
-              body: `Scheduled for ${r.time}. Tap to log in the Pharmacy section.`,
+            const notif = new Notification(`💊 ${r.medName} — ${r.dosage || "Time to take medication"}`, {
+              body: `Scheduled for ${r.time}. Click to confirm you've taken this dose.`,
               tag: r.key,
             });
+            notif.onclick = () => {
+              window.focus();
+              if (onConfirmRef.current) onConfirmRef.current(r);
+              notif.close();
+            };
           } catch (e) { console.error(e); }
         }
       });
