@@ -51,6 +51,10 @@
     },
     "family_member_id": {
       "type": "string"
+    },
+    "last_refill_alert_date": {
+      "type": "string",
+      "format": "date"
     }
   },
   "required": [

@@ -11,6 +11,7 @@ import {
 import VoiceInputButton from "@/components/voice/VoiceInputButton";
 import ResponseActions from "@/components/voice/ResponseActions";
 import PrimaryCareDoctors from "@/components/physician/PrimaryCareDoctors";
+import DoctorMessageInbox from "@/components/physician/DoctorMessageInbox";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 
@@ -280,6 +281,10 @@ Provide your independent second opinion:`,
 
               <div className="mt-4">
                 <PrimaryCareDoctors />
+              </div>
+
+              <div className="mt-4">
+                <DoctorMessageInbox />
               </div>
 
               <div className="flex items-start gap-2 p-4 bg-amber-50 rounded-xl border border-amber-200 mt-4">

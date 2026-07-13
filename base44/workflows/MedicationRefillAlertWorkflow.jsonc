@@ -1,0 +1,45 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 8 * * *",
+      "one_time_date": null,
+      "timezone": "America/New_York",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Medication Refill Alert Workflow",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "medication_refill_alert_workflow",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "check_refills": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "medicationRefillAlert",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Check medication supply levels",
+            "description": "Email users when medications are running low"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Daily check of medication inventory levels \u2014 emails users when any medication has 7 or fewer days of supply remaining, prompting them to request a refill from their doctor"
+}

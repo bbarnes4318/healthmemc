@@ -1,0 +1,49 @@
+{
+  "name": "DoctorMessage",
+  "type": "object",
+  "properties": {
+    "conversation_id": {
+      "type": "string"
+    },
+    "doctor_id": {
+      "type": "string"
+    },
+    "doctor_name": {
+      "type": "string"
+    },
+    "specialty": {
+      "type": "string"
+    },
+    "sender_role": {
+      "type": "string",
+      "enum": [
+        "patient",
+        "doctor"
+      ]
+    },
+    "subject": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string"
+    },
+    "care_instructions": {
+      "type": "string"
+    },
+    "read": {
+      "type": "boolean",
+      "default": false
+    },
+    "attachment_url": {
+      "type": "string"
+    },
+    "family_member_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "conversation_id",
+    "sender_role",
+    "body"
+  ]
+}
