@@ -10,7 +10,7 @@ import {
   Share2, TrendingUp, Contact, Star, Info, Syringe,
   Activity as ActivityIcon, ClipboardList, MessagesSquare, Trophy,
   Flower2, Video, Globe, CalendarDays, FileBadge, Boxes, Tent,
-  Baby, Watch, ChevronDown, Calendar, ShieldAlert,
+  Baby, Watch, ChevronDown, Calendar, ShieldAlert, Building2,
 } from "lucide-react";
 
 const navGroups = [
@@ -96,6 +96,7 @@ const navGroups = [
       { path: "/clinician-dashboard", label: "Clinician Access", icon: KeyRound },
       { path: "/doctor-records", label: "Doctor Records", icon: Share2 },
       { path: "/doctor-directory", label: "Doctor Directory", icon: Contact },
+      { path: "/specialist-clinics", label: "Specialist Clinics", icon: Building2 },
       { path: "/medical-forum", label: "Pro Forum", icon: MessagesSquare },
       { path: "/specialist-feedback", label: "Specialist Feedback", icon: Star },
       { path: "/primary-doctor-report", label: "Doctor Report", icon: FileBadge },

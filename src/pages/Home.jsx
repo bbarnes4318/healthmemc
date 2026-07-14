@@ -28,6 +28,7 @@ import VirtualVisitSection from "@/components/home/VirtualVisitSection";
 import HeroCommercial from "@/components/home/HeroCommercial";
 import MembershipComparisonTable from "@/components/home/MembershipComparisonTable";
 import QuickActionsGrid from "@/components/home/QuickActionsGrid";
+import QuickIntakeForm from "@/components/health/QuickIntakeForm";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a4dfc16013374d3269a9096/3f23b1c41_generated_image.png";
 
@@ -163,6 +164,9 @@ export default function Home() {
 
       {/* Quick Actions Grid — grouped by category */}
       <QuickActionsGrid />
+
+      {/* Quick Intake Form */}
+      <QuickIntakeForm />
 
       {/* Today's Info Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

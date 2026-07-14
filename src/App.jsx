@@ -75,6 +75,7 @@ import VitalThresholdSettings from '@/pages/VitalThresholdSettings';
 import WearableSync from '@/pages/WearableSync';
 import AlertHistory from '@/pages/AlertHistory';
 import FamilyHealthHub from '@/pages/FamilyHealthHub';
+import SpecialistClinics from '@/pages/SpecialistClinics';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -157,6 +158,7 @@ const AuthenticatedApp = () => {
           <Route path="/wearable-sync" element={<WearableSync />} />
           <Route path="/alert-history" element={<AlertHistory />} />
           <Route path="/family-health-hub" element={<FamilyHealthHub />} />
+          <Route path="/specialist-clinics" element={<SpecialistClinics />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />
