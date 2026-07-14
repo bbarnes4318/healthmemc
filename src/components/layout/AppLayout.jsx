@@ -89,22 +89,22 @@ export default function AppLayout() {
       {/* Mobile Menu Overlay */}
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50 bg-black/40" onClick={() => setMobileOpen(false)}>
-          <div className="absolute left-0 top-0 bottom-0 w-72 bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <div className="p-6 border-b border-border flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center">
-                  <Activity className="w-8 h-8 text-white" />
+          <div className="absolute left-0 top-0 bottom-0 w-[85vw] max-w-[300px] bg-white shadow-xl flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="p-4 border-b border-border flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center shrink-0">
+                  <Activity className="w-6 h-6 text-white" />
                 </div>
-                <h1 className="font-display font-bold">Health Me Medical Center</h1>
+                <h1 className="font-display font-bold text-sm truncate">Health Me Medical</h1>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => setMobileOpen(false)}>
+              <Button variant="ghost" size="icon" className="shrink-0" onClick={() => setMobileOpen(false)}>
                 <X className="w-5 h-5" />
               </Button>
             </div>
-            <div className="px-3 pt-3">
+            <div className="px-3 pt-3 shrink-0">
               <ProfileSwitcher />
             </div>
-            <div className="overflow-y-auto">
+            <div className="flex-1 overflow-y-auto">
               <SidebarNavigation location={location} onNavigate={() => setMobileOpen(false)} />
               <Link
                 to="/emergency"
