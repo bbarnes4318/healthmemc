@@ -27,6 +27,7 @@ import CriticalRecordsBanner from "@/components/records/CriticalRecordsBanner";
 import QuickActionOverlay from "@/components/home/QuickActionOverlay";
 import VirtualVisitSection from "@/components/home/VirtualVisitSection";
 import HeroCommercial from "@/components/home/HeroCommercial";
+import MembershipComparisonTable from "@/components/home/MembershipComparisonTable";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a4dfc16013374d3269a9096/3f23b1c41_generated_image.png";
 
@@ -361,6 +362,9 @@ export default function Home() {
 
       {/* Membership Plans */}
       <PricingPlans currentTier={profile?.membership_tier || "free"} />
+
+      {/* Membership Comparison Table */}
+      <MembershipComparisonTable />
 
       {/* FAQ */}
       <FAQSection />
