@@ -89,17 +89,17 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           className="flex-1"
         >
-          <Card className="p-6 bg-gradient-to-br from-sky-500 to-blue-600 text-white border-0 relative overflow-hidden">
+          <Card className="p-4 sm:p-6 bg-gradient-to-br from-sky-500 to-blue-600 text-white border-0 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="relative">
               <div className="flex items-center gap-2 mb-3">
-                <img src={LOGO_URL} alt="Health Me Medical Center" className="w-24 h-24 rounded-lg object-cover ring-1 ring-white/30" />
+                <img src={LOGO_URL} alt="Health Me Medical Center" className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-lg object-cover ring-1 ring-white/30 shrink-0" />
                 <span className="text-[10px] text-sky-100 font-semibold uppercase tracking-wide">Health Me Medical Center</span>
               </div>
               <p className="text-sky-100 text-sm font-medium">Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 17 ? "afternoon" : "evening"},</p>
               <h1 className="text-2xl lg:text-3xl font-display font-bold mt-1">{firstName} 👋</h1>
               <p className="text-sky-100 text-sm mt-2">Smarter Healthcare. Anytime. Anywhere.</p>
-              <div className="flex gap-3 mt-5 flex-wrap">
+              <div className="flex gap-2 sm:gap-3 mt-5 flex-wrap">
                 <CheckInButton />
                 <Link to="/ai-doctor">
                   <Button className="bg-white text-sky-700 hover:bg-sky-50 font-semibold shadow-lg shadow-sky-700/20">
@@ -130,9 +130,9 @@ export default function Home() {
           transition={{ delay: 0.1 }}
           className="lg:w-56"
         >
-          <Card className="p-6 h-full flex flex-col items-center justify-center text-center">
-            <div className="relative w-24 h-24">
-              <svg className="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
+          <Card className="p-4 sm:p-6 h-full flex flex-col items-center justify-center text-center">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24">
+              <svg className="w-20 h-20 sm:w-24 sm:h-24 -rotate-90" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="42" fill="none" stroke="hsl(var(--border))" strokeWidth="8" />
                 <circle
                   cx="50" cy="50" r="42" fill="none"
@@ -142,7 +142,7 @@ export default function Home() {
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-2xl font-display font-bold">{healthScore}</span>
+                <span className="text-xl sm:text-2xl font-display font-bold">{healthScore}</span>
               </div>
             </div>
             <p className="text-sm font-semibold mt-2">Health Score</p>

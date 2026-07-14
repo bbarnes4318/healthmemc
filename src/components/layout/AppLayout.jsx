@@ -138,7 +138,7 @@ export default function AppLayout() {
           </div>
         )}
         <div className="pt-14 lg:pt-0">
-          <div className="sticky top-14 lg:top-0 z-20 bg-white border-b border-border px-4 py-2.5 flex items-center justify-between gap-3">
+          <div className="lg:sticky lg:top-0 z-20 bg-white border-b border-border px-4 py-2 flex items-center justify-between gap-3">
             <div className="flex-1 max-w-xl">
               <GlobalSearch />
             </div>
