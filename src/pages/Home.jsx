@@ -30,6 +30,7 @@ import MembershipComparisonTable from "@/components/home/MembershipComparisonTab
 import QuickActionsGrid from "@/components/home/QuickActionsGrid";
 import QuickIntakeForm from "@/components/health/QuickIntakeForm";
 import CompactHealthSummary from "@/components/home/CompactHealthSummary";
+import MedicationTimelineChart from "@/components/home/MedicationTimelineChart";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a4dfc16013374d3269a9096/3f23b1c41_generated_image.png";
 
@@ -156,6 +157,9 @@ export default function Home() {
 
       {/* Compact Prescriptions & Vitals Summary */}
       <CompactHealthSummary medications={medications} vitals={vitals} />
+
+      {/* Medication Dosage Timeline */}
+      <MedicationTimelineChart />
 
       {/* Virtual Visits & Services */}
       <VirtualVisitSection />
