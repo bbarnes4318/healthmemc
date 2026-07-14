@@ -157,7 +157,7 @@ export default function HeroCommercial() {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative w-full rounded-2xl overflow-hidden shadow-xl aspect-video bg-slate-900"
+        className="relative w-full rounded-2xl overflow-hidden shadow-xl aspect-video max-h-[180px] sm:max-h-none bg-slate-900"
       >
         <video ref={videoRef} autoPlay muted loop playsInline className="w-full h-full object-cover">
           <source src={VIDEO_URL} type="video/mp4" />
