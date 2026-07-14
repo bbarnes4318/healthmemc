@@ -76,6 +76,7 @@ import WearableSync from '@/pages/WearableSync';
 import AlertHistory from '@/pages/AlertHistory';
 import FamilyHealthHub from '@/pages/FamilyHealthHub';
 import SpecialistClinics from '@/pages/SpecialistClinics';
+import SharedRecordsView from '@/pages/SharedRecordsView';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -104,6 +105,7 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/clinician-view" element={<ClinicianView />} />
+      <Route path="/shared-records" element={<SharedRecordsView />} />
       <Route path="/thank-you" element={<ThankYou />} />
 
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>

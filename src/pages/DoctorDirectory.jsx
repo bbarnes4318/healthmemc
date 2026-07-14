@@ -10,13 +10,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from "@/components/ui/use-toast";
 import {
   Stethoscope, Plus, Loader2, Trash2, Phone, Mail, MapPin, Link2,
-  Copy, Check, ExternalLink, Search, ChevronRight
+  Copy, Check, ExternalLink, Search, ChevronRight, Share2
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DoctorComparisonTable from "@/components/specialists/DoctorComparisonTable";
 import WaitTimeChart from "@/components/specialists/WaitTimeChart";
 import { GitCompare, Clock } from "lucide-react";
+import RecordShareDialog from "@/components/records/RecordShareDialog";
 
 const emptyForm = {
   doctor_name: "",
@@ -40,6 +41,7 @@ export default function DoctorDirectory() {
   const [search, setSearch] = useState("");
   const [copiedId, setCopiedId] = useState(null);
   const [activeTab, setActiveTab] = useState("directory");
+  const [shareDoctor, setShareDoctor] = useState(null);
   const { toast } = useToast();
 
   const loadData = async () => {
@@ -282,6 +284,18 @@ export default function DoctorDirectory() {
                   )}
                 </div>
 
+                <div className="mt-3 pt-3 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full h-9 text-xs"
+                    onClick={() => setShareDoctor(doc)}
+                  >
+                    <Share2 className="w-3.5 h-3.5 mr-1.5" />
+                    Share Records
+                  </Button>
+                </div>
+
                 {doc.access_link && (
                   <div className="mt-3 pt-3 border-t flex items-center gap-2">
                     <Button
@@ -308,6 +322,10 @@ export default function DoctorDirectory() {
         </div>
       )}
       </>
+      )}
+
+      {shareDoctor && (
+        <RecordShareDialog doctor={shareDoctor} onClose={() => setShareDoctor(null)} />
       )}
     </div>
   );

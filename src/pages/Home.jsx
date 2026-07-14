@@ -35,6 +35,8 @@ import LabResultsTrendTable from "@/components/home/LabResultsTrendTable";
 import LifestyleSymptomCorrelation from "@/components/health/LifestyleSymptomCorrelation";
 import InsuranceSummaryCard from "@/components/home/InsuranceSummaryCard";
 import EmergencyLockCard from "@/components/home/EmergencyLockCard";
+import VitalAlertBanner from "@/components/home/VitalAlertBanner";
+import VeteranDiscountBanner from "@/components/home/VeteranDiscountBanner";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a4dfc16013374d3269a9096/3f23b1c41_generated_image.png";
 
@@ -169,6 +171,9 @@ export default function Home() {
         <span className="text-sm sm:text-base">Emergency Medical Card</span>
         <span className="text-xs font-normal text-red-100 hidden sm:inline">— One tap access</span>
       </button>
+
+      {/* Vital Threshold Alert Banner */}
+      <VitalAlertBanner />
 
       {/* Compact Prescriptions & Vitals Summary */}
       <CompactHealthSummary medications={medications} vitals={vitals} />
@@ -349,6 +354,9 @@ export default function Home() {
 
       {/* Membership Plans */}
       <PricingPlans currentTier={profile?.membership_tier || "free"} />
+
+      {/* Military & Veteran Discount */}
+      <VeteranDiscountBanner />
 
       {/* Membership Comparison Table */}
       <MembershipComparisonTable />
