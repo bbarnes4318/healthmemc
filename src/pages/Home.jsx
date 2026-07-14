@@ -4,9 +4,8 @@ import { base44 } from "@/api/base44Client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  Stethoscope, HeartPulse, Users, Pill, FileText, Sparkles,
-  Calendar, Phone, TrendingUp, Clock, ChevronRight, Shield, Dumbbell, History, Home as HomeIcon, Scan, Info, Syringe, Activity as ActivityIcon, Ear, UserRound,
-  Video, Globe, Smile, Eye, Baby, Bell, Watch
+  Stethoscope, Pill, FileText, Calendar, Phone, TrendingUp,
+  Clock, ChevronRight, Shield, Info,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
@@ -28,35 +27,9 @@ import QuickActionOverlay from "@/components/home/QuickActionOverlay";
 import VirtualVisitSection from "@/components/home/VirtualVisitSection";
 import HeroCommercial from "@/components/home/HeroCommercial";
 import MembershipComparisonTable from "@/components/home/MembershipComparisonTable";
+import QuickActionsGrid from "@/components/home/QuickActionsGrid";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a4dfc16013374d3269a9096/3f23b1c41_generated_image.png";
-
-const quickActions = [
-  { label: "Start AI Doctor Visit", icon: Stethoscope, path: "/ai-doctor", color: "from-sky-500 to-blue-600", desc: "Describe symptoms & get insights" },
-  { label: "AI Personal Physician", icon: UserRound, path: "/personal-physician", color: "from-indigo-500 to-purple-600", desc: "Your personalized health companion" },
-  { label: "Chat with AI Nurse", icon: HeartPulse, path: "/ai-nurse", color: "from-emerald-500 to-teal-600", desc: "Daily check-ins & wellness" },
-  { label: "AI Dentist", icon: Smile, path: "/dental-care", color: "from-teal-500 to-emerald-600", desc: "Oral health & dental care" },
-  { label: "AI Specialists", icon: Users, path: "/specialists", color: "from-violet-500 to-purple-600", desc: "Cardiology, neuro & more" },
-  { label: "AI Pharmacy", icon: Pill, path: "/pharmacy", color: "from-amber-500 to-orange-600", desc: "Medications & interactions" },
-  { label: "Medical Records", icon: FileText, path: "/records", color: "from-rose-500 to-pink-600", desc: "View & manage records" },
-  { label: "Visit History", icon: History, path: "/appointment-history", color: "from-indigo-500 to-blue-600", desc: "Past consultations & reports" },
-  { label: "Wellness Center", icon: Sparkles, path: "/wellness", color: "from-cyan-500 to-sky-600", desc: "Nutrition, exercise & more" },
-  { label: "AI Pro Sports Medicine", icon: Dumbbell, path: "/sports-medicine", color: "from-orange-500 to-red-600", desc: "Injury, recovery & performance" },
-  { label: "Home Doctor Visit", icon: HomeIcon, path: "/home-doctor-visit", color: "from-sky-600 to-blue-700", desc: "A physician comes to you" },
-  { label: "Eye Care", icon: Eye, path: "/eye-doctor", color: "from-blue-500 to-cyan-600", desc: "Vision health & eye exams" },
-  { label: "AI Dermatology", icon: Scan, path: "/dermatology", color: "from-teal-500 to-cyan-600", desc: "Track moles, rashes & skin changes" },
-  { label: "Ear Care", icon: Ear, path: "/ear-care", color: "from-purple-500 to-fuchsia-600", desc: "Hearing tests & ear health" },
-  { label: "Baby Medical Care", icon: Baby, path: "/newborn-care", color: "from-pink-500 to-rose-600", desc: "Newborn health, growth & milestones" },
-  { label: "Vital Sign Alerts", icon: Bell, path: "/vital-thresholds", color: "from-rose-500 to-orange-600", desc: "Set thresholds & get notified" },
-  { label: "Immunization History", icon: Syringe, path: "/immunization", color: "from-emerald-500 to-teal-600", desc: "Vaccines & booster reminders" },
-  { label: "Surgical Recovery", icon: ActivityIcon, path: "/surgical-recovery", color: "from-rose-500 to-pink-600", desc: "Post-op healing & wound tracking" },
-  { label: "Privacy Dashboard", icon: Shield, path: "/privacy-dashboard", color: "from-blue-500 to-indigo-600", desc: "Access logs & security status" },
-  { label: "Insurance Tracker", icon: Shield, path: "/insurance-tracker", color: "from-indigo-500 to-blue-600", desc: "Policies, deductibles & claims" },
-  { label: "Master Wellness", icon: TrendingUp, path: "/master-wellness", color: "from-violet-500 to-purple-600", desc: "All health trends in one place" },
-  { label: "Virtual Consultations", icon: Video, path: "/virtual-consultations", color: "from-sky-500 to-indigo-600", desc: "Speak with AI health pros" },
-  { label: "Language Directory", icon: Globe, path: "/language-directory", color: "from-emerald-500 to-teal-600", desc: "Medical phrases in 24+ languages" },
-  { label: "Wearable Sync", icon: Watch, path: "/wearable-sync", color: "from-cyan-500 to-blue-600", desc: "Auto-sync fitness device data" },
-];
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -188,30 +161,8 @@ export default function Home() {
         <QuickActionOverlay />
       </div>
 
-      {/* Quick Actions Grid */}
-      <div>
-        <h2 className="text-lg font-display font-semibold mb-3">Quick Actions</h2>
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-          {quickActions.map((action, i) => (
-            <motion.div
-              key={action.path}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 * i }}
-            >
-              <Link to={action.path}>
-                <Card className="p-4 hover:shadow-md transition-all hover:-translate-y-0.5 cursor-pointer group h-full">
-                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-3`}>
-                    <action.icon className="w-5 h-5 text-white" />
-                  </div>
-                  <h3 className="font-semibold text-sm">{action.label}</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">{action.desc}</p>
-                </Card>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </div>
+      {/* Quick Actions Grid — grouped by category */}
+      <QuickActionsGrid />
 
       {/* Today's Info Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
