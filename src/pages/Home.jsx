@@ -31,6 +31,8 @@ import QuickActionsGrid from "@/components/home/QuickActionsGrid";
 import QuickIntakeForm from "@/components/health/QuickIntakeForm";
 import CompactHealthSummary from "@/components/home/CompactHealthSummary";
 import MedicationTimelineChart from "@/components/home/MedicationTimelineChart";
+import LabResultsTrendTable from "@/components/home/LabResultsTrendTable";
+import LifestyleSymptomCorrelation from "@/components/health/LifestyleSymptomCorrelation";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a4dfc16013374d3269a9096/3f23b1c41_generated_image.png";
 
@@ -291,6 +293,12 @@ export default function Home() {
           })()}
         </div>
       </Card>
+
+      {/* Lab Results Table with Trend */}
+      <LabResultsTrendTable />
+
+      {/* Symptom × Activity Analytics */}
+      <LifestyleSymptomCorrelation />
 
       {/* Exercise vs Pain Trend Report */}
       <ExercisePainTrendReport />
