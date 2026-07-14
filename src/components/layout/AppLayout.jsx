@@ -120,7 +120,7 @@ export default function AppLayout() {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 lg:ml-64 min-h-screen">
+      <main className="flex-1 lg:ml-64 min-h-screen overflow-x-hidden">
         {showBanner && (
           <div className="fixed top-14 lg:top-0 left-0 right-0 lg:left-64 z-20 bg-sky-600 text-white px-4 py-2.5 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">

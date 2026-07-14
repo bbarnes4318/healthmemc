@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Stethoscope, Pill, FileText, Calendar, Phone, TrendingUp,
-  Clock, ChevronRight, Shield, Info,
+  Clock, ChevronRight, Shield, Info, HeartPulse,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
@@ -34,6 +34,7 @@ import MedicationTimelineChart from "@/components/home/MedicationTimelineChart";
 import LabResultsTrendTable from "@/components/home/LabResultsTrendTable";
 import LifestyleSymptomCorrelation from "@/components/health/LifestyleSymptomCorrelation";
 import InsuranceSummaryCard from "@/components/home/InsuranceSummaryCard";
+import EmergencyLockCard from "@/components/home/EmergencyLockCard";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a4dfc16013374d3269a9096/3f23b1c41_generated_image.png";
 
@@ -44,6 +45,7 @@ export default function Home() {
   const [medications, setMedications] = useState([]);
   const [vitals, setVitals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showEmergencyCard, setShowEmergencyCard] = useState(false);
   const { currentMemberId, currentMemberName } = useFamilyMember();
 
   useEffect(() => {
@@ -157,6 +159,16 @@ export default function Home() {
           </Card>
         </motion.div>
       </div>
+
+      {/* Emergency Medical Card — One Tap Access */}
+      <button
+        onClick={() => setShowEmergencyCard(true)}
+        className="w-full bg-red-600 hover:bg-red-700 text-white rounded-xl p-3.5 sm:p-4 flex items-center justify-center gap-2 font-bold shadow-lg shadow-red-600/20 transition-colors"
+      >
+        <HeartPulse className="w-5 h-5 shrink-0" />
+        <span className="text-sm sm:text-base">Emergency Medical Card</span>
+        <span className="text-xs font-normal text-red-100 hidden sm:inline">— One tap access</span>
+      </button>
 
       {/* Compact Prescriptions & Vitals Summary */}
       <CompactHealthSummary medications={medications} vitals={vitals} />
@@ -343,6 +355,9 @@ export default function Home() {
 
       {/* FAQ */}
       <FAQSection />
+
+      {/* Emergency Lock Card Modal */}
+      <EmergencyLockCard open={showEmergencyCard} onClose={() => setShowEmergencyCard(false)} />
     </div>
   );
 }

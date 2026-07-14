@@ -87,9 +87,9 @@ export default function QuickActionsGrid() {
                   transition={{ delay: 0.04 * i }}
                 >
                   <Link to={action.path}>
-                    <Card className="p-4 hover:shadow-md transition-all hover:-translate-y-0.5 cursor-pointer group h-full">
-                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-3`}>
-                        <action.icon className="w-5 h-5 text-white" />
+                    <Card className="p-4 sm:p-5 hover:shadow-md transition-all hover:-translate-y-0.5 cursor-pointer group h-full">
+                      <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-3`}>
+                        <action.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                       </div>
                       <h3 className="font-semibold text-sm">{action.label}</h3>
                       <p className="text-xs text-muted-foreground mt-0.5">{action.desc}</p>
