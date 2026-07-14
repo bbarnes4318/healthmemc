@@ -73,6 +73,8 @@ import NewbornBabyCare from '@/pages/NewbornBabyCare';
 import HealthTrendsExplorer from '@/pages/HealthTrendsExplorer';
 import VitalThresholdSettings from '@/pages/VitalThresholdSettings';
 import WearableSync from '@/pages/WearableSync';
+import AlertHistory from '@/pages/AlertHistory';
+import FamilyHealthHub from '@/pages/FamilyHealthHub';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -153,6 +155,8 @@ const AuthenticatedApp = () => {
           <Route path="/health-trends-explorer" element={<HealthTrendsExplorer />} />
           <Route path="/vital-thresholds" element={<VitalThresholdSettings />} />
           <Route path="/wearable-sync" element={<WearableSync />} />
+          <Route path="/alert-history" element={<AlertHistory />} />
+          <Route path="/family-health-hub" element={<FamilyHealthHub />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pharmacy" element={<Pharmacy />} />
           <Route path="/records" element={<MedicalRecords />} />

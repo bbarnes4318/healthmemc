@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import LabMarkerTrend from "@/components/health/LabMarkerTrend";
 import DermatologyTrendChart from "@/components/health/DermatologyTrendChart";
 import VisionTrendChart from "@/components/health/VisionTrendChart";
 import { generateHealthDashboardPdf } from "@/lib/generateHealthDashboardPdf";
+import ComprehensiveReportButton from "@/components/health/ComprehensiveReportButton";
 import MedicationAdherenceTrend from "@/components/pharmacy/MedicationAdherenceTrend";
 import MedicationAdherenceMonthly from "@/components/pharmacy/MedicationAdherenceMonthly";
 import MonthlyProgressReportButton from "@/components/health/MonthlyProgressReportButton";
@@ -27,7 +29,7 @@ import WellnessGoalTrendsChart from "@/components/health/WellnessGoalTrendsChart
 import MedicationSymptomOverlay from "@/components/health/MedicationSymptomOverlay";
 import VoiceVitalsLogger from "@/components/health/VoiceVitalsLogger";
 import PainMedicationTrends from "@/components/health/PainMedicationTrends";
-import { Download } from "lucide-react";
+import { Download, ShieldAlert } from "lucide-react";
 
 const vitalTypes = [
   { value: "heart_rate", label: "Heart Rate", icon: Heart, unit: "bpm", color: "#ef4444", bg: "bg-red-50" },
@@ -119,8 +121,14 @@ export default function HealthDashboard() {
           <p className="text-sm text-muted-foreground mt-0.5">Track and monitor your vitals</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => generateHealthDashboardPdf(vitals)} title="Download PDF report">
-            <Download className="w-4 h-4 mr-2" /> PDF
+          <Link to="/alert-history">
+            <Button variant="outline" title="View triggered alert history">
+              <ShieldAlert className="w-4 h-4 mr-2" /> Alerts
+            </Button>
+          </Link>
+          <ComprehensiveReportButton />
+          <Button variant="outline" onClick={() => generateHealthDashboardPdf(vitals)} title="Download vitals PDF">
+            <Download className="w-4 h-4 mr-2" /> Vitals PDF
           </Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>

@@ -10,7 +10,7 @@ import {
   Share2, TrendingUp, Contact, Star, Info, Syringe,
   Activity as ActivityIcon, ClipboardList, MessagesSquare, Trophy,
   Flower2, Video, Globe, CalendarDays, FileBadge, Boxes, Tent,
-  Baby, Watch, ChevronDown, Calendar,
+  Baby, Watch, ChevronDown, Calendar, ShieldAlert,
 } from "lucide-react";
 
 const navGroups = [
@@ -45,6 +45,7 @@ const navGroups = [
       { path: "/assisted-living", label: "Assisted Living", icon: LifeBuoy },
       { path: "/family-management", label: "Family", icon: UsersIcon },
       { path: "/caregiver-dashboard", label: "Caregiver", icon: UsersIcon },
+      { path: "/family-health-hub", label: "Family Health Hub", icon: Users },
       { path: "/pet-care", label: "Pet Care", icon: PawPrint },
     ],
   },
@@ -66,6 +67,7 @@ const navGroups = [
       { path: "/master-wellness", label: "Master Wellness", icon: TrendingUp },
       { path: "/health-trends-explorer", label: "Trends Explorer", icon: Activity },
       { path: "/vital-thresholds", label: "Vital Alerts", icon: BellRing },
+      { path: "/alert-history", label: "Alert History", icon: ShieldAlert },
       { path: "/wearable-sync", label: "Wearable Sync", icon: Watch },
     ],
   },
