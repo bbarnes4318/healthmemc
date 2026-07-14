@@ -174,7 +174,7 @@ export default function QuickIntakeForm() {
           <Button
             onClick={handleSaveSymptom}
             disabled={!symptomForm.description.trim() || saving}
-            className="w-full bg-sky-600 hover:bg-sky-700 h-9"
+            className="w-full bg-sky-600 hover:bg-sky-700 h-10 sm:h-9"
           >
             {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle2 className="w-4 h-4 mr-2" />}
             Save to Records
@@ -204,7 +204,7 @@ export default function QuickIntakeForm() {
           <Button
             onClick={handleSaveMedication}
             disabled={!medForm.medication_name.trim() || !medForm.details.trim() || saving}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 h-9"
+            className="w-full bg-emerald-600 hover:bg-emerald-700 h-10 sm:h-9"
           >
             {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle2 className="w-4 h-4 mr-2" />}
             Save to Records

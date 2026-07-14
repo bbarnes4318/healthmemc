@@ -2,9 +2,10 @@ import React, { useState, useEffect, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ShieldCheck, DollarSign, Receipt } from "lucide-react";
+import { Loader2, ShieldCheck, DollarSign, Receipt, FileDown } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { Link } from "react-router-dom";
+import { generateInsuranceClaimsPdf } from "@/lib/generateInsuranceClaimsPdf";
 
 const STATUS_STYLES = {
   paid: { bg: "bg-emerald-100", text: "text-emerald-700", label: "Paid" },
@@ -24,6 +25,16 @@ export default function InsuranceSummaryCard() {
   const [card, setCard] = useState(null);
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const user = await base44.auth.me();
+      generateInsuranceClaimsPdf({ card, claims, user });
+    } catch (e) { console.error(e); }
+    setExporting(false);
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -96,7 +107,17 @@ export default function InsuranceSummaryCard() {
             <span className="text-xs text-muted-foreground truncate">· {card.provider_name}</span>
           )}
         </div>
-        <Link to="/insurance-tracker" className="text-xs text-sky-600 hover:underline shrink-0">View all</Link>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={handleExport}
+            disabled={exporting || claims.length === 0}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 disabled:opacity-50 transition-colors"
+          >
+            {exporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileDown className="w-3.5 h-3.5" />}
+            <span className="hidden sm:inline">Export PDF</span>
+          </button>
+          <Link to="/insurance-tracker" className="text-xs text-sky-600 hover:underline">View all</Link>
+        </div>
       </div>
 
       {/* Deductible & Out-of-Pocket Progress */}
@@ -167,7 +188,7 @@ export default function InsuranceSummaryCard() {
             {claims.slice(0, 5).map((claim) => {
               const sStyle = STATUS_STYLES[claim.status] || STATUS_STYLES.pending;
               return (
-                <div key={claim.id} className="flex items-center gap-2 p-2.5 rounded-lg bg-muted/30">
+                <div key={claim.id} className="flex items-center gap-2 p-3 rounded-lg bg-muted/30">
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium truncate">{claim.service_description}</p>
                     <p className="text-[10px] text-muted-foreground">
