@@ -139,7 +139,7 @@ export default function LabResultsTrendTable() {
 
       {/* Results Table */}
       <div className="overflow-x-auto -mx-1">
-        <table className="w-full text-sm min-w-[300px]">
+        <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border">
               <th className="text-left py-2 px-1 text-[10px] font-medium text-muted-foreground uppercase">Test</th>

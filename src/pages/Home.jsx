@@ -33,6 +33,7 @@ import CompactHealthSummary from "@/components/home/CompactHealthSummary";
 import MedicationTimelineChart from "@/components/home/MedicationTimelineChart";
 import LabResultsTrendTable from "@/components/home/LabResultsTrendTable";
 import LifestyleSymptomCorrelation from "@/components/health/LifestyleSymptomCorrelation";
+import InsuranceSummaryCard from "@/components/home/InsuranceSummaryCard";
 
 const LOGO_URL = "https://media.base44.com/images/public/6a4dfc16013374d3269a9096/3f23b1c41_generated_image.png";
 
@@ -82,7 +83,7 @@ export default function Home() {
   const firstName = currentMemberName !== "You" ? currentMemberName : (user?.full_name?.split(" ")[0] || "there");
 
   return (
-    <div className="p-4 lg:p-8 max-w-6xl mx-auto space-y-6">
+    <div className="p-4 lg:p-8 max-w-6xl mx-auto space-y-6 overflow-x-hidden">
       <VoiceGreeting userName={user?.full_name} />
       <HeroCommercial />
       <CriticalRecordsBanner />
@@ -238,6 +239,9 @@ export default function Home() {
           )}
         </Card>
       </div>
+
+      {/* Insurance Summary: Deductible & Claims */}
+      <InsuranceSummaryCard />
 
       {/* Pharmacy Inventory Tracker */}
       <PharmacyInventoryTracker />
