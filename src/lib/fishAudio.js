@@ -182,20 +182,37 @@ class FishAudioEngine {
         let blobUrl = this.audioCache.get(cacheKey);
 
         if (!blobUrl) {
-          // Fish Audio WebSocket / REST endpoint payload format
-          const response = await fetch("https://api.fish.audio/v1/tts", {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${apiKey.trim()}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              text: cleanedText.slice(0, 2000),
-              reference_id: voice.referenceId || null,
-              format: "mp3",
-              normalize: true,
-            }),
-          });
+          // Send request through /api/fish-tts serverless proxy to bypass browser CORS blocks
+          let response;
+          try {
+            response = await fetch("/api/fish-tts", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${apiKey.trim()}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                text: cleanedText.slice(0, 2000),
+                reference_id: voice.referenceId || null,
+                format: "mp3",
+              }),
+            });
+          } catch (netErr) {
+            // Direct fallback if proxy is unavailable
+            response = await fetch("https://api.fish.audio/v1/tts", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${apiKey.trim()}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                text: cleanedText.slice(0, 2000),
+                reference_id: voice.referenceId || null,
+                format: "mp3",
+                normalize: true,
+              }),
+            });
+          }
 
           if (!response.ok) {
             const errBody = await response.text().catch(() => "");
