@@ -182,23 +182,25 @@ class FishAudioEngine {
         let blobUrl = this.audioCache.get(cacheKey);
 
         if (!blobUrl) {
+          // Fish Audio WebSocket / REST endpoint payload format
           const response = await fetch("https://api.fish.audio/v1/tts", {
             method: "POST",
             headers: {
-              "Authorization": `Bearer ${apiKey}`,
+              "Authorization": `Bearer ${apiKey.trim()}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
               text: cleanedText.slice(0, 2000),
-              reference_id: voice.referenceId,
+              reference_id: voice.referenceId || null,
               format: "mp3",
               normalize: true,
-              latency: "normal",
             }),
           });
 
           if (!response.ok) {
-            throw new Error(`Fish Audio API error ${response.status}`);
+            const errBody = await response.text().catch(() => "");
+            console.error(`Fish Audio API HTTP ${response.status}:`, errBody);
+            throw new Error(`Fish Audio API error ${response.status}: ${errBody}`);
           }
 
           const audioBlob = await response.blob();
@@ -227,14 +229,14 @@ class FishAudioEngine {
         };
 
         audio.onerror = (err) => {
-          console.warn("Fish Audio audio playback error, falling back:", err);
+          console.warn("Fish Audio audio element playback error, falling back:", err);
           this.fallbackSpeak(cleanedText, voice, rate, options);
         };
 
         await audio.play();
         return;
       } catch (err) {
-        console.warn("Fish Audio API request failed, using synthesized voice fallback:", err.message);
+        console.error("Fish Audio API request failed. Falling back to browser speech synthesis:", err);
       }
     }
 
