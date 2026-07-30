@@ -44,8 +44,9 @@ export const AuthProvider = ({ children }) => {
       if (appParams.token) {
         await checkUserAuth();
       } else {
+        setUser(DEMO_USER);
+        setIsAuthenticated(true);
         setIsLoadingAuth(false);
-        setIsAuthenticated(false);
         setAuthChecked(true);
       }
       setIsLoadingPublicSettings(false);
@@ -57,28 +58,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const DEMO_USER = {
+    id: "guest_patient",
+    full_name: "Valued Patient",
+    email: "patient@healthmemc.org",
+    role: "patient",
+  };
+
   const checkUserAuth = async () => {
     try {
-      // Now check if the user is authenticated
       setIsLoadingAuth(true);
       const currentUser = await base44.auth.me();
-      setUser(currentUser);
+      setUser(currentUser || DEMO_USER);
       setIsAuthenticated(true);
       setIsLoadingAuth(false);
       setAuthChecked(true);
     } catch (error) {
-      console.error('User auth check failed:', error);
+      console.warn("User auth check failed, using demo patient mode:", error);
+      setUser(DEMO_USER);
+      setIsAuthenticated(true);
       setIsLoadingAuth(false);
-      setIsAuthenticated(false);
       setAuthChecked(true);
-      
-      // If user auth fails, it might be an expired token
-      if (error.status === 401 || error.status === 403) {
-        setAuthError({
-          type: 'auth_required',
-          message: 'Authentication required'
-        });
-      }
     }
   };
 
