@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import FormattedAIResponse from "@/components/ui/FormattedAIResponse";
 import { motion } from "framer-motion";
 import { format, subDays, parseISO, isAfter } from "date-fns";
+import { Wind, Brain, Heart, Moon, Sparkles, Loader2, Play, Calendar, CheckCircle2 } from "lucide-react";
 
 const programTypes = [
   { key: "relaxation", label: "Guided Relaxation", icon: Wind, color: "from-teal-400 to-cyan-500", desc: "Deep breathing & progressive muscle relaxation" },
