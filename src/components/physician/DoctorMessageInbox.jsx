@@ -11,7 +11,7 @@ import {
   ArrowLeft, Mail, Shield, CheckCircle, Clock
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import ReactMarkdown from "react-markdown";
+import FormattedAIResponse from "@/components/ui/FormattedAIResponse";
 import { format } from "date-fns";
 
 export default function DoctorMessageInbox() {
@@ -296,7 +296,7 @@ Respond as their personal doctor would via a secure patient portal message:
                         {isPatient ? (
                           <p className="whitespace-pre-wrap">{msg.body}</p>
                         ) : (
-                          <ReactMarkdown className="prose prose-sm max-w-none">{msg.body}</ReactMarkdown>
+                          <FormattedAIResponse content={msg.body} theme="indigo" />
                         )}
                         <p className={`text-[9px] mt-1.5 ${isPatient ? "text-indigo-200" : "text-muted-foreground"}`}>
                           {format(new Date(msg.created_date), "MMM d, h:mm a")}

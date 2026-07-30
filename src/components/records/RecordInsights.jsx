@@ -4,7 +4,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Loader2, TrendingUp, AlertTriangle, ArrowUp, ArrowDown, Minus } from "lucide-react";
 import { motion } from "framer-motion";
-import ReactMarkdown from "react-markdown";
 
 export default function RecordInsights({ records }) {
   const [insights, setInsights] = useState(null);

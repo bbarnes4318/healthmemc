@@ -13,7 +13,7 @@ import ResponseActions from "@/components/voice/ResponseActions";
 import PrimaryCareDoctors from "@/components/physician/PrimaryCareDoctors";
 import DoctorMessageInbox from "@/components/physician/DoctorMessageInbox";
 import { motion, AnimatePresence } from "framer-motion";
-import ReactMarkdown from "react-markdown";
+import FormattedAIResponse from "@/components/ui/FormattedAIResponse";
 
 const topics = [
   { label: "Medication Review", icon: Pill, prompt: "Review all my current medications. Are there any interactions, timing issues, or concerns I should discuss with my doctor?" },
@@ -350,7 +350,7 @@ Provide your independent second opinion:`,
               }`}>
                 {msg.role === "user"
                   ? <p>{msg.content}</p>
-                  : <ReactMarkdown className="prose prose-sm max-w-none">{msg.content}</ReactMarkdown>}
+                  : <FormattedAIResponse content={msg.content} theme="indigo" />}
                 {msg.role === "assistant" && msg.content && (
                   <ResponseActions content={msg.content} label="personal-physician-response" />
                 )}

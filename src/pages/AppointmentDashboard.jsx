@@ -55,19 +55,24 @@ export default function AppointmentDashboard() {
         base44.entities.Appointment.filter(filter, "date", 100),
         base44.entities.DoctorDirectory.list("-created_date", 100),
       ]);
-      setAppointments(appts);
-      setDoctors(docs);
-    } catch (e) { console.error(e); }
+      setAppointments(Array.isArray(appts) ? appts : []);
+      setDoctors(Array.isArray(docs) ? docs : []);
+    } catch (e) {
+      console.error(e);
+      setAppointments([]);
+      setDoctors([]);
+    }
     setLoading(false);
   }, [currentMemberId]);
 
   useEffect(() => { load(); }, [load]);
 
+  const validAppts = Array.isArray(appointments) ? appointments : [];
   const now = new Date();
-  const upcoming = appointments.filter((a) => {
+  const upcoming = validAppts.filter((a) => {
     try { return isAfter(parseISO(a.date), now) || isToday(parseISO(a.date)); } catch { return false; }
   }).filter((a) => a.status !== "cancelled" && a.status !== "completed");
-  const past = appointments.filter((a) => {
+  const past = validAppts.filter((a) => {
     try { return !isAfter(parseISO(a.date), now) && !isToday(parseISO(a.date)); } catch { return false; }
   }).filter((a) => a.status !== "cancelled").slice(0, 5);
 

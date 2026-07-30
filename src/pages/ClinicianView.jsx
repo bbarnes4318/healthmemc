@@ -3,7 +3,6 @@ import { base44 } from "@/api/base44Client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Activity, ShieldCheck, AlertCircle, Loader2, FileText, Stethoscope, Pill, HeartPulse, Lock } from "lucide-react";
-import ReactMarkdown from "react-markdown";
 
 export default function ClinicianView() {
   const [data, setData] = useState(null);

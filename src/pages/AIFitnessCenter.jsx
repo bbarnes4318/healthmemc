@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Dumbbell, Heart, Flame, Wind, Zap, PersonStanding, Bike, Activity, Loader2, Check, Clock, Users, Flame as CalIcon, Shield, Sparkles, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
-import ReactMarkdown from "react-markdown";
+import FormattedAIResponse from "@/components/ui/FormattedAIResponse";
 import VoiceInputButton from "@/components/voice/VoiceInputButton";
 import AIFitnessPlanner from "@/components/fitness/AIFitnessPlanner";
 import VirtualAvatarSelector from "@/components/shared/VirtualAvatarSelector";
@@ -178,7 +178,7 @@ function TrainerChat({ trainer, avatar, onBack }) {
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
             <div className={`max-w-[80%] p-3 rounded-xl text-sm ${msg.role === "user" ? "bg-sky-600 text-white" : "bg-muted"}`}>
-              {msg.role === "assistant" ? <ReactMarkdown className="prose prose-sm max-w-none">{msg.content}</ReactMarkdown> : msg.content}
+              {msg.role === "assistant" ? <FormattedAIResponse content={msg.content} theme="amber" /> : msg.content}
             </div>
           </div>
         ))}

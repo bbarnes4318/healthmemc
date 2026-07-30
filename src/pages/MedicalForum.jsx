@@ -12,7 +12,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Plus, Loader2, Pin, Eye, ArrowLeft, MessageSquare, ShieldCheck, Stethoscope, HeartPulse, UserCircle, Tag, Search, Download, PawPrint, Smile, GitCompare } from "lucide-react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
-import ReactMarkdown from "react-markdown";
+import FormattedAIResponse from "@/components/ui/FormattedAIResponse";
 import generateForumReportPdf from "@/lib/generateForumReportPdf";
 import TreatmentPlanComparison from "@/components/forum/TreatmentPlanComparison";
 
@@ -215,7 +215,7 @@ export default function MedicalForum() {
             <span>· {format(new Date(selectedTopic.created_date), "MMM d, yyyy 'at' h:mm a")}</span>
             <span className="flex items-center gap-0.5"><Eye className="w-3 h-3" />{selectedTopic.views || 0}</span>
           </div>
-          <ReactMarkdown className="prose prose-sm max-w-none">{selectedTopic.content}</ReactMarkdown>
+          <FormattedAIResponse content={selectedTopic.content} theme="sky" />
           {selectedTopic.tags?.length > 0 && (
             <div className="flex items-center gap-1.5 mt-4 flex-wrap">
               {selectedTopic.tags.map((tag) => (
@@ -255,7 +255,7 @@ export default function MedicalForum() {
                       )}
                       <span className="text-[10px] text-muted-foreground ml-auto">{format(new Date(reply.created_date), "MMM d, h:mm a")}</span>
                     </div>
-                    <ReactMarkdown className="prose prose-sm max-w-none">{reply.content}</ReactMarkdown>
+                    <FormattedAIResponse content={reply.content} theme="sky" />
                   </Card>
                 </motion.div>
               );

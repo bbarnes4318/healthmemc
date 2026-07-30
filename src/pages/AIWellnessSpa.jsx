@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-import ReactMarkdown from "react-markdown";
+import FormattedAIResponse from "@/components/ui/FormattedAIResponse";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Shield } from "lucide-react";
@@ -212,7 +212,7 @@ Format the response as a clear day-by-day plan (Day 1 through Day 7) with practi
       )}
       {plan && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <ReactMarkdown className="prose prose-sm max-w-none">{plan}</ReactMarkdown>
+          <FormattedAIResponse content={plan} theme="emerald" />
           <Button variant="outline" size="sm" className="mt-3" onClick={generatePlan} disabled={loading}>
             <Sparkles className="w-3.5 h-3.5 mr-1.5" />Regenerate Plan
           </Button>

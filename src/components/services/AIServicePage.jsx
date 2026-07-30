@@ -9,7 +9,7 @@ import VoiceInputButton from "@/components/voice/VoiceInputButton";
 import ResponseActions from "@/components/voice/ResponseActions";
 import VirtualAvatarSelector from "@/components/shared/VirtualAvatarSelector";
 import { motion, AnimatePresence } from "framer-motion";
-import ReactMarkdown from "react-markdown";
+import FormattedAIResponse from "@/components/ui/FormattedAIResponse";
 
 const REALISTIC_PROMPT_SUFFIX = `
 
@@ -389,7 +389,7 @@ Provide your independent second opinion:`,
               }`}>
                 {msg.role === "user"
                   ? <p>{msg.content}</p>
-                  : <ReactMarkdown className="prose prose-sm max-w-none">{msg.content}</ReactMarkdown>}
+                  : <FormattedAIResponse content={msg.content} />}
                 {msg.role === "assistant" && msg.content && (
                   <ResponseActions content={msg.content} label={`${title}-response`} />
                 )}

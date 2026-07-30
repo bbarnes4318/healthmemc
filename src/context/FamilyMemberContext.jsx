@@ -11,8 +11,11 @@ export function FamilyMemberProvider({ children }) {
   const loadMembers = async () => {
     try {
       const data = await base44.entities.FamilyMember.list("-created_date", 50);
-      setMembers(data);
-    } catch (e) { console.error(e); }
+      setMembers(Array.isArray(data) ? data : []);
+    } catch (e) {
+      console.error(e);
+      setMembers([]);
+    }
     setLoading(false);
   };
 
@@ -27,7 +30,8 @@ export function FamilyMemberProvider({ children }) {
     localStorage.setItem("current_family_member", id || "self");
   };
 
-  const currentMember = members.find((m) => m.id === currentMemberId);
+  const safeMembers = Array.isArray(members) ? members : [];
+  const currentMember = safeMembers.find((m) => m?.id === currentMemberId);
 
   return (
     <FamilyMemberContext.Provider value={{

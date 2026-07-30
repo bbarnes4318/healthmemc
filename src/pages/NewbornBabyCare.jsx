@@ -10,7 +10,7 @@ import {
   Droplets, Activity, BookOpen, Stethoscope, Sparkles, AlertCircle, Users, Syringe, TrendingUp
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import ReactMarkdown from "react-markdown";
+import FormattedAIResponse from "@/components/ui/FormattedAIResponse";
 import VoiceInputButton from "@/components/voice/VoiceInputButton";
 import ResponseActions from "@/components/voice/ResponseActions";
 import NewbornSpecialistDirectory from "@/components/newborn/NewbornSpecialistDirectory";
@@ -64,6 +64,23 @@ export default function NewbornBabyCare() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const fetchBabyContext = async () => {
+    try {
+      const [growth, journal, vaccines] = await Promise.all([
+        base44.entities.BabyGrowthLog.list("-date", 3).catch(() => []),
+        base44.entities.BabyJournalEntry.list("-date", 5).catch(() => []),
+        base44.entities.BabyVaccineLog.list("-administered_date", 10).catch(() => []),
+      ]);
+      return {
+        recentGrowth: Array.isArray(growth) ? growth.map((g) => `${g.date}: ${g.weight_kg ? g.weight_kg + "kg" : ""} ${g.length_cm ? g.length_cm + "cm" : ""}`.trim()).join("; ") : "",
+        recentJournal: Array.isArray(journal) ? journal.map((j) => `${j.entry_type}: ${j.notes || ""}`).join("; ") : "",
+        vaccines: Array.isArray(vaccines) ? vaccines.map((v) => `${v.vaccine_name} (${v.status})`).join(", ") : "",
+      };
+    } catch (e) {
+      return {};
+    }
+  };
+
   const startChat = async (initialPrompt) => {
     setStarted(true);
     setLoading(true);
@@ -71,8 +88,13 @@ export default function NewbornBabyCare() {
     setMessages([userMsg]);
 
     try {
+      const babyContext = await fetchBabyContext();
+      const contextStr = babyContext.recentGrowth || babyContext.recentJournal || babyContext.vaccines
+        ? `\n\nBABY RECENT DATA:\n- Growth Logs: ${babyContext.recentGrowth || "None"}\n- Journal Activity: ${babyContext.recentJournal || "None"}\n- Vaccines: ${babyContext.vaccines || "None"}`
+        : "";
+
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `${SYSTEM_PROMPT}\n\nA new parent asks: ${initialPrompt}\n\nRespond as Nurse Sarah would — warm, practical, and safety-focused.`,
+        prompt: `${SYSTEM_PROMPT}${contextStr}\n\nA new parent asks: ${initialPrompt}\n\nRespond as Nurse Sarah would — warm, practical, and safety-focused. Reference the baby's recent records if relevant.`,
       });
       setMessages([userMsg, { role: "assistant", content: response }]);
     } catch (err) { console.error(err); }
@@ -201,7 +223,7 @@ export default function NewbornBabyCare() {
                         }`}>
                           {msg.role === "user"
                             ? <p className="whitespace-pre-wrap">{msg.content}</p>
-                            : <ReactMarkdown className="prose prose-sm max-w-none">{msg.content}</ReactMarkdown>}
+                            : <FormattedAIResponse content={msg.content} theme="rose" />}
                           {msg.role === "assistant" && msg.content && (
                             <ResponseActions content={msg.content} label="newborn-care-response" />
                           )}

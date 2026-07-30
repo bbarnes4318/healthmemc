@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Clock, Loader2, Calendar, Moon, Utensils, Pill, Sparkles, AlertCircle } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import FormattedAIResponse from "@/components/ui/FormattedAIResponse";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 import { format } from "date-fns";
 
@@ -163,7 +163,7 @@ Format your response in clear markdown with headers and a timeline table.`,
             <Calendar className="w-4 h-4 text-amber-600" />
             <h4 className="text-sm font-semibold">Your Personalized Medication Schedule</h4>
           </div>
-          <ReactMarkdown className="prose prose-sm max-w-none">{result}</ReactMarkdown>
+          <FormattedAIResponse content={result} theme="amber" />
           <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-lg border border-amber-200 mt-4">
             <AlertCircle className="w-3.5 h-3.5 text-amber-600 mt-0.5 shrink-0" />
             <p className="text-xs text-amber-800">

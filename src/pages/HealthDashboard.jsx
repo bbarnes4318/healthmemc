@@ -28,6 +28,7 @@ import CustomWellnessGoalTracker from "@/components/health/CustomWellnessGoalTra
 import WellnessGoalTrendsChart from "@/components/health/WellnessGoalTrendsChart";
 import MedicationSymptomOverlay from "@/components/health/MedicationSymptomOverlay";
 import VoiceVitalsLogger from "@/components/health/VoiceVitalsLogger";
+import EarlyWarningScoreWidget from "@/components/home/EarlyWarningScoreWidget";
 import PainMedicationTrends from "@/components/health/PainMedicationTrends";
 import { Download, ShieldAlert } from "lucide-react";
 
@@ -198,6 +199,9 @@ export default function HealthDashboard() {
           );
         })}
       </div>
+
+      {/* Early Warning Score Widget */}
+      <EarlyWarningScoreWidget vitals={vitals} />
 
       {/* Voice Vitals Logger */}
       <VoiceVitalsLogger onSaved={loadVitals} />

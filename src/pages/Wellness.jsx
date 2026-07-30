@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import BodyDiagram from "@/components/consultations/BodyDiagram";
 import { motion } from "framer-motion";
-import ReactMarkdown from "react-markdown";
+import FormattedAIResponse from "@/components/ui/FormattedAIResponse";
 import WellnessCharts from "@/components/wellness/WellnessCharts";
 import NutritionLog from "@/components/wellness/NutritionLog";
 import NutritionGoalComparison from "@/components/wellness/NutritionGoalComparison";
@@ -82,7 +82,7 @@ export default function Wellness() {
         ) : content ? (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
             <Card className="p-6">
-              <ReactMarkdown className="prose prose-sm max-w-none">{content}</ReactMarkdown>
+              <FormattedAIResponse content={content} theme="sky" />
             </Card>
             <div className="flex items-start gap-2 p-4 bg-amber-50 rounded-xl border border-amber-200 mt-4">
               <Shield className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />

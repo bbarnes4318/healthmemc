@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 import { useToast } from "@/components/ui/use-toast";
 import { format, differenceInDays } from "date-fns";
+import { fishAudio } from "@/lib/fishAudio";
 
 const woundStatusConfig = {
   clean_healing: "Clean & Healing", redness: "Redness", swelling: "Swelling",
@@ -135,9 +136,8 @@ export default function RecoveryLogTemplateManager() {
   };
 
   const speak = (template) => {
-    if (!window.speechSynthesis) return;
-    if (speakingId) {
-      window.speechSynthesis.cancel();
+    if (speakingId === template.id) {
+      fishAudio.stop();
       setSpeakingId(null);
       return;
     }
@@ -153,10 +153,13 @@ export default function RecoveryLogTemplateManager() {
       template.medications_taken ? `Medications: ${template.medications_taken}` : "",
       template.notes || "",
     ].filter(Boolean);
-    const utterance = new SpeechSynthesisUtterance(parts.join(". "));
-    utterance.onend = () => setSpeakingId(null);
-    window.speechSynthesis.speak(utterance);
+
     setSpeakingId(template.id);
+    fishAudio.speak(parts.join(". "), {
+      voiceId: "nurse-serena",
+      onEnd: () => setSpeakingId(null),
+      onError: () => setSpeakingId(null),
+    });
   };
 
   if (loading) {

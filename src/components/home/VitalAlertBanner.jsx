@@ -39,17 +39,23 @@ export default function VitalAlertBanner() {
             ? base44.entities.VitalRecord.filter({ family_member_id: currentMemberId }, "-recorded_at", 50)
             : base44.entities.VitalRecord.list("-recorded_at", 50),
         ]);
-        setThresholds(tData);
-        setVitals(vData);
-      } catch (e) { console.error(e); }
+        setThresholds(Array.isArray(tData) ? tData : []);
+        setVitals(Array.isArray(vData) ? vData : []);
+      } catch (e) {
+        console.error(e);
+        setThresholds([]);
+        setVitals([]);
+      }
       setLoading(false);
     };
     load();
   }, [currentMemberId]);
 
   const breaches = [];
-  for (const threshold of thresholds) {
-    const vital = vitals.find((v) => v.type === threshold.vital_type);
+  const safeThresholds = Array.isArray(thresholds) ? thresholds : [];
+  const safeVitals = Array.isArray(vitals) ? vitals : [];
+  for (const threshold of safeThresholds) {
+    const vital = safeVitals.find((v) => v.type === threshold.vital_type);
     if (!vital) continue;
 
     const vitalDate = vital.recorded_at ? new Date(vital.recorded_at) : new Date(vital.created_date);

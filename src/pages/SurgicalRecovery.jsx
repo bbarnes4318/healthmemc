@@ -9,6 +9,7 @@ import RecoveryLogTemplateManager from "@/components/surgical/RecoveryLogTemplat
 import IncisionCheckIn from "@/components/surgical/IncisionCheckIn";
 import RecoveryPlanTracker from "@/components/surgical/RecoveryPlanTracker";
 import QuickDailyCheckIn from "@/components/surgical/QuickDailyCheckIn";
+import SurgicalRecoveryEvaluator from "@/components/surgical/SurgicalRecoveryEvaluator";
 
 export default function SurgicalRecoveryPage() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -95,6 +96,7 @@ export default function SurgicalRecoveryPage() {
         {activeTab === "dashboard" ? (
           <div className="space-y-4">
             <QuickDailyCheckIn />
+            <SurgicalRecoveryEvaluator />
             <SurgicalRecoveryDashboard />
           </div>
         ) : activeTab === "log" ? <SurgicalRecoveryTracker /> : activeTab === "trends" ? <SurgicalRecoveryTrends /> : activeTab === "templates" ? <RecoveryLogTemplateManager /> : activeTab === "incision" ? <IncisionCheckIn /> : activeTab === "plan" ? <RecoveryPlanTracker /> : <RecoveryMilestoneTimeline />}

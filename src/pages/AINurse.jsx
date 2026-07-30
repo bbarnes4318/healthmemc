@@ -8,9 +8,10 @@ import {
   Calendar, Syringe, Shield, Dumbbell
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import ReactMarkdown from "react-markdown";
+import FormattedAIResponse from "@/components/ui/FormattedAIResponse";
 import VoiceInputButton from "@/components/voice/VoiceInputButton";
 import ResponseActions from "@/components/voice/ResponseActions";
+import { useFamilyMember } from "@/context/FamilyMemberContext";
 
 const nurseTopics = [
   { label: "Daily Check-in", icon: HeartPulse, prompt: "I'd like to do my daily health check-in", color: "from-emerald-500 to-teal-600" },
@@ -32,21 +33,54 @@ export default function AINurse() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const { currentMemberId } = useFamilyMember();
+
+  const fetchPatientContext = async () => {
+    try {
+      const medFilter = currentMemberId ? { family_member_id: currentMemberId, active: true } : { active: true };
+      const [meds, vitals, records] = await Promise.all([
+        base44.entities.Medication.filter(medFilter).catch(() => []),
+        currentMemberId
+          ? base44.entities.VitalRecord.filter({ family_member_id: currentMemberId }, "-recorded_at", 5).catch(() => [])
+          : base44.entities.VitalRecord.list("-recorded_at", 5).catch(() => []),
+        currentMemberId
+          ? base44.entities.MedicalRecord.filter({ family_member_id: currentMemberId }, "-date", 3).catch(() => [])
+          : base44.entities.MedicalRecord.list("-date", 3).catch(() => []),
+      ]);
+      return {
+        activeMedications: Array.isArray(meds) ? meds.map((m) => `${m.name} ${m.dosage || ""}`.trim()) : [],
+        recentVitals: Array.isArray(vitals) ? vitals.map((v) => `${v.type?.replace(/_/g, " ")}: ${v.value}${v.unit ? " " + v.unit : ""}`) : [],
+        medicalRecords: Array.isArray(records) ? records.map((r) => r.title) : [],
+      };
+    } catch (e) {
+      return {};
+    }
+  };
+
   const startChat = async (initialPrompt) => {
+    if (!initialPrompt.trim()) return;
     setStarted(true);
     setLoading(true);
     const userMsg = { role: "user", content: initialPrompt };
     setMessages([userMsg]);
 
     try {
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an AI Nurse assistant — warm, empathetic, and professional. You provide daily check-ins, recovery monitoring, medication reminders, wellness coaching, chronic disease support, surgery preparation guidance, post-discharge follow-up, and vaccination reminders.
+      const patientContext = await fetchPatientContext();
 
-You do NOT diagnose conditions. For medical concerns, recommend consulting the AI Doctor or a healthcare provider. Be supportive and caring.
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are an AI Nurse assistant — warm, empathetic, highly attentive, and professional. You provide personalized daily check-ins, recovery monitoring, medication reminders, wellness coaching, and supportive guidance.
+
+PATIENT MEDICAL CONTEXT:
+- Active Medications: ${patientContext.activeMedications?.join(", ") || "None listed"}
+- Recent Vitals: ${patientContext.recentVitals?.join("; ") || "None logged"}
+- Medical History: ${patientContext.medicalRecords?.join("; ") || "None logged"}
 
 Patient says: ${initialPrompt}
 
-Respond helpfully and ask follow-up questions to provide personalized guidance.`
+INSTRUCTIONS:
+1. Reference their actual medications, vitals, or history when relevant to provide personalized nursing care.
+2. You do not formally diagnose conditions. For new or worsening symptoms, guide them to consult the AI Doctor or physician.
+3. Be encouraging, thorough, and ask supportive follow-up questions.`
       });
       setMessages([userMsg, { role: "assistant", content: response }]);
     } catch (err) { console.error(err); }
@@ -63,11 +97,12 @@ Respond helpfully and ask follow-up questions to provide personalized guidance.`
     try {
       const conversationText = newMessages.map((m) => `${m.role === "user" ? "Patient" : "AI Nurse"}: ${m.content}`).join("\n\n");
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an AI Nurse assistant. Continue this conversation with empathy and care. Don't diagnose. For medical issues, refer to the AI Doctor.
+        prompt: `You are an AI Nurse assistant continuing a nursing consultation. Maintain empathy and high clinical care standards.
 
+Conversation so far:
 ${conversationText}
 
-Respond helpfully.`
+Respond helpfully and provide actionable nursing recommendations.`
       });
       setMessages([...newMessages, { role: "assistant", content: response }]);
     } catch (err) { console.error(err); }
@@ -152,7 +187,7 @@ Respond helpfully.`
                   <p>{msg.content}</p>
                 ) : (
                   <>
-                    <ReactMarkdown className="prose prose-sm max-w-none">{msg.content}</ReactMarkdown>
+                    <FormattedAIResponse content={msg.content} theme="emerald" />
                     <ResponseActions content={msg.content} label="ai-nurse-response" />
                   </>
                 )}

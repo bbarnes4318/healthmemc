@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calculator, Loader2, AlertCircle, Weight } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import FormattedAIResponse from "@/components/ui/FormattedAIResponse";
 import { motion } from "framer-motion";
 
 const medicationTypes = [
@@ -43,15 +42,64 @@ export default function WeightBasedDosageCalculator() {
   const [weightUnit, setWeightUnit] = useState("kg");
   const [medType, setMedType] = useState("");
   const [ageGroup, setAgeGroup] = useState("adult");
-  const [calculating, setCalculating] = useState(false);
-  const [result, setResult] = useState(null);
+  const [exactMath, setExactMath] = useState(null);
+
+  const calculateExactDose = (med, weightKg) => {
+    if (!weightKg || weightKg <= 0) return null;
+    switch (med) {
+      case "acetaminophen": {
+        const minDose = (weightKg * 10).toFixed(0);
+        const maxDose = (weightKg * 15).toFixed(0);
+        const liquidMlMin = (minDose / 32).toFixed(1);
+        const liquidMlMax = (maxDose / 32).toFixed(1);
+        return {
+          title: "Acetaminophen Exact Clinical Calculation",
+          doseMg: `${minDose} mg – ${maxDose} mg per dose`,
+          frequency: "Every 4 to 6 hours as needed",
+          liquidDose: `${liquidMlMin} mL – ${liquidMlMax} mL (Children's 160 mg / 5 mL Liquid)`,
+          maxDaily: `${Math.min(weightKg * 75, 4000).toFixed(0)} mg / day`,
+        };
+      }
+      case "ibuprofen": {
+        const minDose = (weightKg * 5).toFixed(0);
+        const maxDose = (weightKg * 10).toFixed(0);
+        const liquidMlMin = (minDose / 20).toFixed(1);
+        const liquidMlMax = (maxDose / 20).toFixed(1);
+        return {
+          title: "Ibuprofen Exact Clinical Calculation",
+          doseMg: `${minDose} mg – ${maxDose} mg per dose`,
+          frequency: "Every 6 to 8 hours with food as needed",
+          liquidDose: `${liquidMlMin} mL – ${liquidMlMax} mL (Children's 100 mg / 5 mL Liquid)`,
+          maxDaily: `${Math.min(weightKg * 40, 2400).toFixed(0)} mg / day`,
+        };
+      }
+      case "amoxicillin": {
+        const lowDose = ((weightKg * 25) / 2).toFixed(0);
+        const highDose = ((weightKg * 90) / 2).toFixed(0);
+        return {
+          title: "Amoxicillin Pediatric Calculation",
+          doseMg: `${lowDose} mg to ${highDose} mg per dose (BID)`,
+          frequency: "Twice daily (every 12 hours)",
+          liquidDose: "Check bottle concentration (250mg/5mL or 400mg/5mL)",
+          maxDaily: `${Math.min(weightKg * 90, 2000).toFixed(0)} mg / day`,
+        };
+      }
+      default:
+        return null;
+    }
+  };
 
   const calculate = async () => {
     if (!weight || !medType) return;
     setCalculating(true);
     setResult(null);
+    setExactMath(null);
+
+    const weightKg = weightUnit === "lb" ? parseFloat(weight) / 2.2046 : parseFloat(weight);
+    const mathRes = calculateExactDose(medType, weightKg);
+    setExactMath(mathRes);
+
     try {
-      const weightKg = weightUnit === "lb" ? parseFloat(weight) / 2.2046 : parseFloat(weight);
       const medLabel = medicationTypes.find((m) => m.value === medType)?.label || medType;
 
       const response = await base44.integrations.Core.InvokeLLM({
@@ -68,15 +116,8 @@ Based on standard clinical dosing guidelines and FDA-approved dosing, provide:
 3. **Frequency**: How often the dose should be administered.
 4. **Maximum Daily Dose**: The maximum safe daily limit.
 5. **Route**: Standard route of administration (oral, IV, etc.)
-6. **Pediatric Considerations**: If applicable, note any pediatric-specific dosing.
-7. **Elderly Considerations**: If applicable, note dose adjustments for elderly patients.
-8. **Key Warnings**: Important contraindications or safety notes.
-
-Present the calculated dose clearly. If the medication does not use weight-based dosing, state the standard dose and explain why weight-based dosing is not applicable.
-
-Include a prominent disclaimer that this is for educational purposes only and the patient must consult their healthcare provider before taking any medication.`,
-        add_context_from_internet: true,
-        model: "gemini_3_flash",
+6. **Key Warnings**: Important contraindications or safety notes.`,
+        model: "claude_sonnet_4_6",
       });
       setResult(response);
     } catch (e) { console.error(e); }
@@ -154,11 +195,39 @@ Include a prominent disclaimer that this is for educational purposes only and th
         </Button>
       </Card>
 
-      {result && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <Card className="p-5">
-            <ReactMarkdown className="prose prose-sm max-w-none">{result}</ReactMarkdown>
-          </Card>
+      {(exactMath || result) && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+          {exactMath && (
+            <Card className="p-5 border-emerald-300 bg-emerald-50/60">
+              <h4 className="text-sm font-bold text-emerald-950 mb-2 font-display flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500"></span> {exactMath.title}
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="p-2.5 bg-white rounded-lg border border-emerald-200">
+                  <span className="text-muted-foreground block text-[10px] uppercase font-bold">Calculated Dose</span>
+                  <span className="font-bold text-emerald-800 text-sm">{exactMath.doseMg}</span>
+                </div>
+                <div className="p-2.5 bg-white rounded-lg border border-emerald-200">
+                  <span className="text-muted-foreground block text-[10px] uppercase font-bold">Liquid Volume (mL)</span>
+                  <span className="font-bold text-emerald-800 text-sm">{exactMath.liquidDose}</span>
+                </div>
+                <div className="p-2.5 bg-white rounded-lg border border-emerald-200">
+                  <span className="text-muted-foreground block text-[10px] uppercase font-bold">Dosing Frequency</span>
+                  <span className="font-medium text-slate-800">{exactMath.frequency}</span>
+                </div>
+                <div className="p-2.5 bg-white rounded-lg border border-emerald-200">
+                  <span className="text-muted-foreground block text-[10px] uppercase font-bold">Max Safe Daily Limit</span>
+                  <span className="font-medium text-slate-800">{exactMath.maxDaily}</span>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {result && (
+            <Card className="p-5">
+              <FormattedAIResponse content={result} theme="sky" />
+            </Card>
+          )}
           <div className="flex items-start gap-2 p-4 bg-red-50 rounded-xl border border-red-200 mt-4">
             <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
             <p className="text-xs text-red-800">

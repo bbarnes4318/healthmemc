@@ -12,6 +12,7 @@ import RefillAlertBanner from "@/components/pharmacy/RefillAlertBanner";
 import EmergencyCallBar from "@/components/layout/EmergencyCallBar";
 import VoiceCommandMode from "@/components/layout/VoiceCommandMode";
 import SidebarNavigation from "@/components/layout/SidebarNavigation";
+import VoiceSelectorButton from "@/components/voice/VoiceSelectorButton";
 import { useRecordNotifications } from "@/hooks/useRecordNotifications";
 
 
@@ -142,7 +143,10 @@ export default function AppLayout() {
             <div className="flex-1 max-w-xl">
               <GlobalSearch />
             </div>
-            <ProfileSwitcher />
+            <div className="flex items-center gap-2">
+              <VoiceSelectorButton />
+              <ProfileSwitcher />
+            </div>
           </div>
           <EmergencyCallBar />
           <div className="px-4 pt-3">

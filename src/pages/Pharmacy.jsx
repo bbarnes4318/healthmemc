@@ -9,7 +9,7 @@ import {
   Shield, Activity, Bell, Package, BarChart3, Receipt, FileText
 } from "lucide-react";
 import { motion } from "framer-motion";
-import ReactMarkdown from "react-markdown";
+import FormattedAIResponse from "@/components/ui/FormattedAIResponse";
 import AdherenceTracker from "@/components/pharmacy/AdherenceTracker";
 import AdherenceAnalytics from "@/components/pharmacy/AdherenceAnalytics";
 import MedicationSupplyAlert from "@/components/pharmacy/MedicationSupplyAlert";
@@ -25,7 +25,8 @@ import MedicationSafetyScanner from "@/components/pharmacy/MedicationSafetyScann
 import TreatmentCorrelationAnalyzer from "@/components/health/TreatmentCorrelationAnalyzer";
 import DosageTimingCalculator from "@/components/pharmacy/DosageTimingCalculator";
 import WeightBasedDosageCalculator from "@/components/pharmacy/WeightBasedDosageCalculator";
-import { GitCompare, Clock, Calculator } from "lucide-react";
+import MedicationInteractionChecker from "@/components/pharmacy/MedicationInteractionChecker";
+import { GitCompare, Clock, Calculator, ShieldAlert } from "lucide-react";
 
 export default function Pharmacy() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -136,6 +137,10 @@ export default function Pharmacy() {
             <WeightBasedDosageCalculator />
           </TabsContent>
 
+          <TabsContent value="interactions">
+            <MedicationInteractionChecker />
+          </TabsContent>
+
           <TabsContent value="lookup">
             <Card className="p-5">
               <h3 className="font-semibold text-sm mb-3">Search for a medication</h3>
@@ -200,7 +205,7 @@ export default function Pharmacy() {
         {result && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
             <Card className="p-5 mt-6">
-              <ReactMarkdown className="prose prose-sm max-w-none">{result}</ReactMarkdown>
+              <FormattedAIResponse content={result} theme="amber" />
             </Card>
             <div className="flex items-start gap-2 p-4 bg-amber-50 rounded-xl border border-amber-200 mt-4">
               <Shield className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Volume2, VolumeX, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
+import { fishAudio } from "@/lib/fishAudio";
 
 const STORAGE_KEY = "voice_greeting_dismissed";
 
@@ -82,18 +83,16 @@ Respond with ONLY the spoken greeting text, no markdown, no headers. Keep it und
         setSummary(greetingText);
         setState("speaking");
 
-        // Speak the greeting
-        if (!window.speechSynthesis || spokenRef.current) {
+        if (spokenRef.current) {
           setState("done");
           return;
         }
         spokenRef.current = true;
-        const utterance = new SpeechSynthesisUtterance(greetingText);
-        utterance.rate = 0.95;
-        utterance.pitch = 1.0;
-        utterance.onend = () => !cancelled && setState("done");
-        utterance.onerror = () => !cancelled && setState("done");
-        window.speechSynthesis.speak(utterance);
+
+        fishAudio.speak(greetingText, {
+          onEnd: () => !cancelled && setState("done"),
+          onError: () => !cancelled && setState("done"),
+        });
       } catch (err) {
         console.error("Voice greeting error:", err);
         if (!cancelled) setState("done");
@@ -105,12 +104,12 @@ Respond with ONLY the spoken greeting text, no markdown, no headers. Keep it und
     return () => {
       cancelled = true;
       clearTimeout(timer);
-      if (window.speechSynthesis) window.speechSynthesis.cancel();
+      fishAudio.stop();
     };
   }, [userName]);
 
   const handleDismiss = () => {
-    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    fishAudio.stop();
     sessionStorage.setItem(STORAGE_KEY, "true");
     setState("done");
   };

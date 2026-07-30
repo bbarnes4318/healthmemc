@@ -38,7 +38,7 @@ export default function ProfileSwitcher() {
             <span className="text-sm flex-1">You</span>
             {!currentMemberId && <Check className="w-3.5 h-3.5 text-sky-600" />}
           </DropdownMenuItem>
-          {members.map((m) => (
+          {(Array.isArray(members) ? members : []).map((m) => (
             <DropdownMenuItem key={m.id} className="flex items-center gap-2" onClick={() => switchMember(m.id)}>
               {m.photo_url ? (
                 <img src={m.photo_url} alt="" className="w-7 h-7 rounded-full object-cover" />

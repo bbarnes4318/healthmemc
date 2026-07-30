@@ -35,14 +35,19 @@ function MemberCard({ member, isSelf, alwaysExpanded }) {
     const load = async () => {
       try {
         const filter = isSelf ? {} : { family_member_id: member.id };
-        const [meds, logs, appts, vitals] = await Promise.all([
-          base44.entities.Medication.filter({ ...filter, active: true }),
-          base44.entities.MedicationLog.filter(filter),
-          base44.entities.Appointment.filter({ ...filter, status: "scheduled" }, "-date", 5),
+        const [medsRes, logsRes, apptsRes, vitalsRes] = await Promise.all([
+          base44.entities.Medication.filter({ ...filter, active: true }).catch(() => []),
+          base44.entities.MedicationLog.filter(filter).catch(() => []),
+          base44.entities.Appointment.filter({ ...filter, status: "scheduled" }, "-date", 5).catch(() => []),
           isSelf
-            ? base44.entities.VitalRecord.list("-recorded_at", 20)
-            : base44.entities.VitalRecord.filter({ family_member_id: member.id }, "-recorded_at", 20),
+            ? base44.entities.VitalRecord.list("-recorded_at", 20).catch(() => [])
+            : base44.entities.VitalRecord.filter({ family_member_id: member.id }, "-recorded_at", 20).catch(() => []),
         ]);
+
+        const meds = Array.isArray(medsRes) ? medsRes : [];
+        const logs = Array.isArray(logsRes) ? logsRes : [];
+        const appts = Array.isArray(apptsRes) ? apptsRes : [];
+        const vitals = Array.isArray(vitalsRes) ? vitalsRes : [];
 
         const today = format(new Date(), "yyyy-MM-dd");
         const last7 = Array.from({ length: 7 }).map((_, i) => {

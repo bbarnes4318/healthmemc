@@ -9,11 +9,13 @@ import {
 } from "lucide-react";
 import VoiceInputButton from "@/components/voice/VoiceInputButton";
 import ResponseActions from "@/components/voice/ResponseActions";
+import { fishAudio } from "@/lib/fishAudio";
 import { motion, AnimatePresence } from "framer-motion";
-import ReactMarkdown from "react-markdown";
+import FormattedAIResponse from "@/components/ui/FormattedAIResponse";
 import { generateReportPdf } from "@/lib/generateReportPdf";
 import SymptomTimeline from "@/components/consultations/SymptomTimeline";
 import BodyDiagram from "@/components/consultations/BodyDiagram";
+import { useFamilyMember } from "@/context/FamilyMemberContext";
 
 export default function AIDoctor() {
   const [step, setStep] = useState("input"); // input, consulting, report
@@ -54,6 +56,35 @@ export default function AIDoctor() {
     setUploading(false);
   };
 
+  const { currentMemberId } = useFamilyMember();
+
+  const fetchPatientContext = async () => {
+    try {
+      const medFilter = currentMemberId ? { family_member_id: currentMemberId, active: true } : { active: true };
+      const vitalFilter = currentMemberId ? { family_member_id: currentMemberId } : {};
+      const recordFilter = currentMemberId ? { family_member_id: currentMemberId } : {};
+
+      const [meds, vitals, records, profile] = await Promise.all([
+        base44.entities.Medication.filter(medFilter).catch(() => []),
+        currentMemberId
+          ? base44.entities.VitalRecord.filter(vitalFilter, "-recorded_at", 10).catch(() => [])
+          : base44.entities.VitalRecord.list("-recorded_at", 10).catch(() => []),
+        currentMemberId
+          ? base44.entities.MedicalRecord.filter(recordFilter, "-date", 5).catch(() => [])
+          : base44.entities.MedicalRecord.list("-date", 5).catch(() => []),
+        base44.entities.HealthProfile.list("-created_date", 1).catch(() => []),
+      ]);
+      return {
+        activeMedications: Array.isArray(meds) ? meds.map((m) => `${m.name} ${m.dosage || ""}`.trim()) : [],
+        recentVitals: Array.isArray(vitals) ? vitals.map((v) => `${v.type?.replace(/_/g, " ")}: ${v.value}${v.secondary_value ? "/" + v.secondary_value : ""}${v.unit ? " " + v.unit : ""}`) : [],
+        medicalRecords: Array.isArray(records) ? records.map((r) => `${r.title}: ${r.notes || ""}`) : [],
+        healthProfile: profile[0] || null,
+      };
+    } catch (e) {
+      return {};
+    }
+  };
+
   const startConsultation = async () => {
     if (!symptoms.trim()) return;
     setStep("consulting");
@@ -63,14 +94,23 @@ export default function AIDoctor() {
     setMessages([userMsg]);
 
     try {
+      const patientContext = await fetchPatientContext();
+
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an AI medical consultation assistant. A patient has described their symptoms. Ask 3-5 focused follow-up questions to better understand their condition. Be empathetic and professional. Ask one question at a time or group related questions.
+        prompt: `You are a Senior Board-Certified Medical Consultation Assistant. A patient has presented with symptoms. Conduct a clinical diagnostic intake.
 
-Patient's symptoms: ${symptoms}
-${fileUrl ? `The patient has also uploaded a document for reference.` : ""}
-${insuranceCard ? `Patient's insurance: ${insuranceCard.provider_name} (${insuranceCard.plan_type?.toUpperCase() || "Unknown"} plan). Policy #: ${insuranceCard.policy_number}. Copay: $${insuranceCard.copay_amount || "N/A"}. This information helps you understand the patient's coverage and access to care — factor this into any care recommendations later (e.g., in-network providers, covered treatments).` : ""}
+PATIENT MEDICAL CONTEXT:
+- Symptoms: ${symptoms}
+- Active Medications: ${patientContext.activeMedications?.join(", ") || "None listed"}
+- Recent Vitals: ${patientContext.recentVitals?.join("; ") || "None logged"}
+- Medical Records: ${patientContext.medicalRecords?.join("; ") || "None logged"}
+${fileUrl ? `Patient document attached: ${fileUrl}` : ""}
+${insuranceCard ? `Insurance: ${insuranceCard.provider_name} (${insuranceCard.plan_type || "Standard"})` : ""}
 
-Important: You are gathering information only. Do not diagnose yet. Ask about duration, severity, triggers, related symptoms, medical history, and current medications.`,
+INSTRUCTIONS:
+1. Ask 2 to 4 focused, highly specific clinical follow-up questions to clarify symptom onset, location, duration, character, aggravating/relieving factors, and associated symptoms (OLD CARTS framework).
+2. Maintain a warm, reassuring, highly professional medical tone.
+3. Do not diagnose yet. Focus on gathering key clinical details.`,
         model: "claude_sonnet_4_6"
       });
 
@@ -85,7 +125,7 @@ Important: You are gathering information only. Do not diagnose yet. Ask about du
       });
       setConsultation(consult);
     } catch (err) {
-      console.error(err);
+      console.error("Start consultation error:", err);
     }
     setLoading(false);
   };
@@ -104,12 +144,14 @@ Important: You are gathering information only. Do not diagnose yet. Ask about du
         .join("\n\n");
 
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an AI medical consultation assistant continuing a conversation. Based on the patient's responses, either ask more clarifying questions or if you have enough information, say "I have enough information to provide my assessment. Let me generate your health report now." and nothing else after that statement.
+        prompt: `You are an AI medical consultation assistant continuing a clinical intake conversation.
 
 Conversation so far:
 ${conversationText}
 
-Be empathetic, professional, and thorough.`,
+INSTRUCTIONS:
+- If key details are still missing, ask concise targeted follow-up questions.
+- If you have gathered sufficient clinical details regarding symptom history, duration, and severity, state: "I have enough information to provide my clinical assessment. Let me generate your health report now." and outline key next steps.`,
         model: "claude_sonnet_4_6"
       });
 
@@ -123,7 +165,7 @@ Be empathetic, professional, and thorough.`,
       }
 
       if (response.toLowerCase().includes("generate your health report") || response.toLowerCase().includes("enough information")) {
-        setTimeout(() => generateReport(updatedMessages), 1500);
+        setTimeout(() => generateReport(updatedMessages), 1200);
       }
     } catch (err) {
       console.error(err);
@@ -134,17 +176,32 @@ Be empathetic, professional, and thorough.`,
   const generateReport = async (msgs) => {
     setLoading(true);
     try {
+      const patientContext = await fetchPatientContext();
       const conversationText = msgs
         .map((m) => `${m.role === "user" ? "Patient" : "AI Doctor"}: ${m.content}`)
         .join("\n\n");
 
       const reportData = await base44.integrations.Core.InvokeLLM({
-        prompt: `Based on the following medical consultation, generate a comprehensive health report. Be thorough but clear. Use evidence-based medicine principles.
+        prompt: `You are a Senior Board-Certified Medical Specialist formulating a comprehensive Clinical Diagnostic Health Report.
 
-Consultation:
+PATIENT CLINICAL CONTEXT & HISTORY:
+- Chief Complaint: ${symptoms}
+- Active Medications: ${patientContext.activeMedications?.join(", ") || "None listed"}
+- Recent Vitals: ${patientContext.recentVitals?.join("; ") || "None logged"}
+- Medical Records & History: ${patientContext.medicalRecords?.join("; ") || "None logged"}
+${patientContext.healthProfile ? `- Known Allergies: ${patientContext.healthProfile.allergies || "None"}; Blood Type: ${patientContext.healthProfile.blood_type || "N/A"}` : ""}
+${insuranceCard ? `- Insurance Coverage: ${insuranceCard.provider_name} (${insuranceCard.plan_type})` : ""}
+
+FULL CONSULTATION DIALOGUE:
 ${conversationText}
 
-IMPORTANT: Include appropriate disclaimers that this is AI-generated and should be verified by a healthcare professional.`,
+CLINICAL EVALUATION GUIDELINES:
+1. SUMMARY: Synthesize the clinical presentation clearly and professionally.
+2. DIAGNOSES: Formulate 2 to 4 evidence-based differential diagnoses ranked by clinical likelihood (Confidence: High, Moderate, Low). Include clinical descriptions explaining rationale.
+3. RECOMMENDED TESTS: Suggest relevant diagnostic lab tests or imaging (e.g. CBC, CMP, MRI, X-ray, ECG).
+4. RECOMMENDED TREATMENTS & LIFESTYLE: Provide evidence-based care options and supportive self-care steps.
+5. MEDICATION REVIEW: Evaluate active medications for potential interactions or dosing alignment.
+6. EMERGENCY WARNINGS: Identify any red-flag symptoms requiring immediate emergency care.`,
         model: "claude_sonnet_4_6",
         response_json_schema: {
           type: "object",
@@ -173,20 +230,33 @@ IMPORTANT: Include appropriate disclaimers that this is AI-generated and should 
         },
       });
 
-      const severityLevel = reportData.emergency_warnings?.length > 0 ? "high" : "low";
+      const safeReport = {
+        summary: reportData?.summary || "Clinical assessment completed based on reported symptoms.",
+        diagnoses: Array.isArray(reportData?.diagnoses) ? reportData.diagnoses : [],
+        recommended_tests: Array.isArray(reportData?.recommended_tests) ? reportData.recommended_tests : [],
+        recommended_treatments: Array.isArray(reportData?.recommended_treatments) ? reportData.recommended_treatments : [],
+        medication_review: reportData?.medication_review || "",
+        lifestyle_recommendations: Array.isArray(reportData?.lifestyle_recommendations) ? reportData.lifestyle_recommendations : [],
+        complementary_care: Array.isArray(reportData?.complementary_care) ? reportData.complementary_care : [],
+        follow_up_plan: reportData?.follow_up_plan || "Schedule a follow-up consultation with your primary physician.",
+        emergency_warnings: Array.isArray(reportData?.emergency_warnings) ? reportData.emergency_warnings : [],
+        references: Array.isArray(reportData?.references) ? reportData.references : [],
+      };
+
+      const severityLevel = safeReport.emergency_warnings.length > 0 ? "high" : "low";
       setSeverity(severityLevel);
-      setReport(reportData);
+      setReport(safeReport);
       setStep("report");
 
       if (consultation) {
         await base44.entities.Consultation.update(consultation.id, {
           status: "completed",
-          report: reportData,
+          report: safeReport,
           severity: severityLevel,
         });
       }
     } catch (err) {
-      console.error(err);
+      console.error("Generate report error:", err);
     }
     setLoading(false);
   };
@@ -275,13 +345,8 @@ IMPORTANT: Include appropriate disclaimers that this is AI-generated and should 
                 <Button
                   variant="secondary"
                   className="bg-white/20 text-white hover:bg-white/30 border-0"
-                  onClick={() => {
-                    const text = report.summary || "";
-                    const utterance = new SpeechSynthesisUtterance(text);
-                    window.speechSynthesis.cancel();
-                    window.speechSynthesis.speak(utterance);
-                  }}
-                  title="Listen to report summary"
+                  onClick={() => fishAudio.speak(report.summary || "", { voiceId: "dr-alex" })}
+                  title="Listen to report summary with Fish Audio voice"
                 >
                   <Volume2 className="w-4 h-4 mr-2" />
                   Listen
@@ -467,7 +532,9 @@ IMPORTANT: Include appropriate disclaimers that this is AI-generated and should 
                   ? "bg-sky-600 text-white rounded-br-md"
                   : "bg-white border rounded-bl-md shadow-sm"
               }`}>
-                <ReactMarkdown className="prose prose-sm max-w-none">{msg.content}</ReactMarkdown>
+                {msg.role === "user"
+                  ? <p>{msg.content}</p>
+                  : <FormattedAIResponse content={msg.content} theme="sky" />}
                 {msg.role === "assistant" && msg.content && (
                   <ResponseActions content={msg.content} label="ai-doctor-response" />
                 )}

@@ -81,9 +81,13 @@ export default function MedicalRecords() {
   const loadRecords = async () => {
     try {
       const data = await base44.entities.MedicalRecord.list("-date", 100);
-      const filtered = currentMemberId ? data.filter((r) => r.family_member_id === currentMemberId) : data;
+      const dataArray = Array.isArray(data) ? data : [];
+      const filtered = currentMemberId ? dataArray.filter((r) => r.family_member_id === currentMemberId) : dataArray;
       setRecords(filtered);
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+      setRecords([]);
+    }
     setLoading(false);
   };
 
@@ -122,7 +126,8 @@ export default function MedicalRecords() {
     } catch (err) { console.error(err); }
   };
 
-  const filtered = records.filter((r) => {
+  const validRecords = Array.isArray(records) ? records : [];
+  const filtered = validRecords.filter((r) => {
     if (filterCat !== "all" && r.category !== filterCat) return false;
     if (searchTerm) {
       const q = searchTerm.toLowerCase();

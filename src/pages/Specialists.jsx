@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
-import ReactMarkdown from "react-markdown";
+import FormattedAIResponse from "@/components/ui/FormattedAIResponse";
 import AppointmentCalendar from "@/components/specialists/AppointmentCalendar";
 import IntakeFormModal from "@/components/specialists/IntakeFormModal";
 import { generateClinicalSummaryPdf } from "@/lib/generateClinicalSummaryPdf";
@@ -130,14 +130,28 @@ export default function Specialists() {
     setInput("");
 
     try {
+      let patientContextStr = "";
+      if (intakeData) {
+        patientContextStr = `\n\nPatient pre-consultation intake:\n- Chief Complaint: ${intakeData.chief_complaint}\n- Duration: ${intakeData.symptom_duration || "N/A"}\n- Severity: ${intakeData.symptom_severity || "N/A"}\n- Current Medications: ${intakeData.current_medications || "N/A"}\n- Allergies: ${intakeData.allergies || "N/A"}\n- Medical History: ${intakeData.medical_history || "N/A"}\n`;
+      } else {
+        try {
+          const [meds, vitals] = await Promise.all([
+            base44.entities.Medication.filter({ active: true }).catch(() => []),
+            base44.entities.VitalRecord.list("-recorded_at", 5).catch(() => []),
+          ]);
+          const medList = Array.isArray(meds) ? meds.map((m) => `${m.name} ${m.dosage || ""}`).join(", ") : "";
+          const vitalList = Array.isArray(vitals) ? vitals.map((v) => `${v.type}: ${v.value}`).join("; ") : "";
+          patientContextStr = `\n\nPatient Health Context:\n- Active Medications: ${medList || "None listed"}\n- Recent Vitals: ${vitalList || "None logged"}\n`;
+        } catch (e) {}
+      }
+
       const conversationText = newMessages.map((m) => `${m.role === "user" ? "Patient" : `AI ${selectedSpecialty.name} Specialist`}: ${m.content}`).join("\n\n");
-      const intakeContext = intakeData ? `\n\nPatient pre-consultation intake:\n- Chief Complaint: ${intakeData.chief_complaint}\n- Duration: ${intakeData.symptom_duration || "N/A"}\n- Severity: ${intakeData.symptom_severity || "N/A"}\n- Current Medications: ${intakeData.current_medications || "N/A"}\n- Allergies: ${intakeData.allergies || "N/A"}\n- Medical History: ${intakeData.medical_history || "N/A"}\n` : "";
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an AI ${selectedSpecialty.name} specialist. Use focused clinical pathways for ${selectedSpecialty.name}. Be thorough but accessible. Recommend referral to a human specialist when appropriate. Do not provide definitive diagnoses.${intakeContext}
+        prompt: `You are a Senior Board-Certified AI ${selectedSpecialty.name} Specialist. Use focused evidence-based clinical pathways for ${selectedSpecialty.name}. Be thorough, empathetic, and professional. Recommend in-person specialist referral when clinically indicated.${patientContextStr}
 
 ${conversationText}
 
-Continue the conversation as a ${selectedSpecialty.name} specialist.`
+Continue the consultation as a ${selectedSpecialty.name} specialist.`
       });
       setMessages([...newMessages, { role: "assistant", content: response }]);
     } catch (err) { console.error(err); }
@@ -246,7 +260,7 @@ Continue the conversation as a ${selectedSpecialty.name} specialist.`
               }`}>
                 {msg.role === "user" ? <p>{msg.content}</p> : (
                   <>
-                    <ReactMarkdown className="prose prose-sm max-w-none">{msg.content}</ReactMarkdown>
+                    <FormattedAIResponse content={msg.content} theme="indigo" />
                     <ResponseActions content={msg.content} label={`ai-${selectedSpecialty.name}-response`} />
                   </>
                 )}

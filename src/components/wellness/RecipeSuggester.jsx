@@ -4,7 +4,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChefHat, Loader2, Sparkles, Flame, Beef, Wheat, Droplet } from "lucide-react";
 import { motion } from "framer-motion";
-import ReactMarkdown from "react-markdown";
 import { useFamilyMember } from "@/context/FamilyMemberContext";
 import { format } from "date-fns";
 

@@ -4,8 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Sparkles, Brain, Moon, Wind, Heart, Shield, TrendingDown, TrendingUp, RefreshCw } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import FormattedAIResponse from "@/components/ui/FormattedAIResponse";
 import { motion } from "framer-motion";
 import { format, subDays, parseISO, isAfter } from "date-fns";
 
@@ -212,7 +211,7 @@ Keep the tone warm, calming, and encouraging. Be specific and actionable — no 
                 <RefreshCw className="w-3 h-3 mr-1.5" />Regenerate
               </Button>
             </div>
-            <ReactMarkdown className="prose prose-sm max-w-none">{program}</ReactMarkdown>
+            <FormattedAIResponse content={program} theme="emerald" />
           </Card>
         </motion.div>
       )}
