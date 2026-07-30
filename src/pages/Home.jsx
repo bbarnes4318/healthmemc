@@ -53,23 +53,27 @@ export default function Home() {
   useEffect(() => {
     const load = async () => {
       try {
-        const u = await base44.auth.me();
-        setUser(u);
+        const u = await base44.auth.me().catch(() => null);
+        const demoUser = u || { id: "guest_patient", full_name: "Valued Patient", email: "patient@healthmemc.org" };
+        setUser(demoUser);
+
         const apptFilter = currentMemberId ? { family_member_id: currentMemberId, status: "scheduled" } : { status: "scheduled" };
         const medFilter = currentMemberId ? { family_member_id: currentMemberId, active: true } : { active: true };
         const [profiles, appts, meds, vitalData] = await Promise.all([
-          base44.entities.HealthProfile.filter({ created_by_id: u.id }),
-          base44.entities.Appointment.filter(apptFilter, "-date", 3),
-          base44.entities.Medication.filter(medFilter),
+          demoUser?.id ? base44.entities.HealthProfile.filter({ created_by_id: demoUser.id }).catch(() => []) : [],
+          base44.entities.Appointment.filter(apptFilter, "-date", 3).catch(() => []),
+          base44.entities.Medication.filter(medFilter).catch(() => []),
           currentMemberId
-            ? base44.entities.VitalRecord.filter({ family_member_id: currentMemberId }, "-recorded_at", 50)
-            : base44.entities.VitalRecord.list("-recorded_at", 50),
+            ? base44.entities.VitalRecord.filter({ family_member_id: currentMemberId }, "-recorded_at", 50).catch(() => [])
+            : base44.entities.VitalRecord.list("-recorded_at", 50).catch(() => []),
         ]);
-        if (profiles.length > 0) setProfile(profiles[0]);
-        setAppointments(appts);
-        setMedications(meds);
-        setVitals(vitalData);
-      } catch (e) { console.error(e); }
+        if (Array.isArray(profiles) && profiles.length > 0) setProfile(profiles[0]);
+        setAppointments(Array.isArray(appts) ? appts : []);
+        setMedications(Array.isArray(meds) ? meds : []);
+        setVitals(Array.isArray(vitalData) ? vitalData : []);
+      } catch (e) {
+        console.error("Error loading home data:", e);
+      }
       setLoading(false);
     };
     load();
