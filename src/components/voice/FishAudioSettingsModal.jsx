@@ -183,20 +183,34 @@ export default function FishAudioSettingsModal({ open, onOpenChange }) {
                 <Key className="w-3.5 h-3.5 text-indigo-600" /> Fish Audio API Key
               </Label>
               <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-600">
-                Optional
+                Required for Fish.Audio
               </Badge>
             </div>
-            <Input
-              id="fish-api-key"
-              type="password"
-              placeholder="Paste your Fish Audio API Key (or leave empty for fallback)"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              className="text-xs font-mono"
-            />
+            <div className="flex gap-2">
+              <Input
+                id="fish-api-key"
+                type="password"
+                placeholder="Paste your Fish.Audio API Key here..."
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                className="text-xs font-mono flex-1"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="text-xs shrink-0"
+                onClick={() => {
+                  fishAudio.setApiKey(apiKey.trim());
+                  handlePreview(FISH_AUDIO_VOICES[0]);
+                }}
+              >
+                <Sparkles className="w-3.5 h-3.5 mr-1 text-sky-600" /> Test Key
+              </Button>
+            </div>
             <p className="text-[11px] text-muted-foreground flex items-center gap-1 mt-1">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              If empty or offline, speech requests use calibrated system voice personas.
+              Your API key is saved locally in your browser to authorize direct Fish.Audio TTS synthesis.
             </p>
           </div>
         </div>

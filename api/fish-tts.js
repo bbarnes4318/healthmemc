@@ -26,6 +26,16 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing text parameter" });
     }
 
+    const payload = {
+      text: text.slice(0, 2000),
+      format: format || "mp3",
+      normalize: true,
+    };
+
+    if (reference_id && typeof reference_id === "string" && reference_id.length > 5) {
+      payload.reference_id = reference_id;
+    }
+
     // Server-to-server request to Fish Audio (Node.js has NO CORS restrictions)
     const fishResponse = await fetch("https://api.fish.audio/v1/tts", {
       method: "POST",
@@ -33,12 +43,7 @@ export default async function handler(req, res) {
         "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        text: text.slice(0, 2000),
-        reference_id: reference_id || null,
-        format: format,
-        normalize: true,
-      }),
+      body: JSON.stringify(payload),
     });
 
     if (!fishResponse.ok) {
