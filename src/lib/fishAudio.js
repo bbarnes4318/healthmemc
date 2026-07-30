@@ -275,16 +275,36 @@ class FishAudioEngine {
     utterance.rate = (voice.fallbackRate || 1.0) * rate;
     utterance.pitch = voice.fallbackPitch || 1.0;
 
-    // Pick best matching system voice based on gender/preference if available
     const voices = window.speechSynthesis.getVoices();
     if (voices.length > 0) {
-      const preferred = voices.find(
+      const englishVoices = voices.filter((v) => v.lang.startsWith("en"));
+      
+      // Prioritize modern Neural, Natural, Google, and Apple high-fidelity voices
+      const premiumVoices = englishVoices.filter(
         (v) =>
-          v.lang.startsWith("en") &&
-          (voice.gender === "male"
-            ? v.name.toLowerCase().includes("male") || v.name.toLowerCase().includes("david") || v.name.toLowerCase().includes("alex") || v.name.toLowerCase().includes("george")
-            : v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("zira") || v.name.toLowerCase().includes("samantha") || v.name.toLowerCase().includes("victoria"))
+          v.name.includes("Natural") ||
+          v.name.includes("Neural") ||
+          v.name.includes("Google") ||
+          v.name.includes("Online") ||
+          v.name.includes("Samantha") ||
+          v.name.includes("Daniel") ||
+          v.name.includes("Karen")
       );
+
+      // Exclude legacy robotic voices (Microsoft David, Zira, Mark) if better voices exist
+      const nonRoboticVoices = (premiumVoices.length > 0 ? premiumVoices : englishVoices).filter(
+        (v) => !v.name.includes("David") && !v.name.includes("Zira") && !v.name.includes("Mark")
+      );
+
+      const candidateList = nonRoboticVoices.length > 0 ? nonRoboticVoices : englishVoices;
+
+      const preferred = candidateList.find(
+        (v) =>
+          voice.gender === "male"
+            ? v.name.toLowerCase().includes("male") || v.name.toLowerCase().includes("guy") || v.name.toLowerCase().includes("george") || v.name.toLowerCase().includes("google us english")
+            : v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("aria") || v.name.toLowerCase().includes("jenny") || v.name.toLowerCase().includes("samantha")
+      ) || candidateList[0];
+
       if (preferred) utterance.voice = preferred;
     }
 
