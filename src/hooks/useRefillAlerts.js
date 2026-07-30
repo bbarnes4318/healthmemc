@@ -27,12 +27,15 @@ export function useRefillAlerts(enabled = true) {
   const load = useCallback(async () => {
     try {
       const [meds, medLogs] = await Promise.all([
-        base44.entities.Medication.filter({ active: true }),
-        base44.entities.MedicationLog.filter({ status: "taken" }),
+        base44.entities.Medication.filter({ active: true }).catch(() => []),
+        base44.entities.MedicationLog.filter({ status: "taken" }).catch(() => []),
       ]);
-      setMedications(meds);
-      setLogs(medLogs);
-    } catch (e) { console.error(e); }
+      setMedications(Array.isArray(meds) ? meds : []);
+      setLogs(Array.isArray(medLogs) ? medLogs : []);
+    } catch (e) {
+      setMedications([]);
+      setLogs([]);
+    }
     setLoading(false);
   }, []);
 
@@ -41,8 +44,11 @@ export function useRefillAlerts(enabled = true) {
   }, [enabled, load]);
 
   const refillAlerts = useMemo(() => {
-    return medications
-      .filter((m) => m.supply_quantity != null && m.supply_quantity > 0)
+    const safeMeds = Array.isArray(medications) ? medications : [];
+    const safeLogs = Array.isArray(logs) ? logs : [];
+
+    return safeMeds
+      .filter((m) => m && m.supply_quantity != null && m.supply_quantity > 0)
       .map((med) => {
         const dosesPerDay = parseDosesPerDay(med.frequency, med.time_of_day);
         const refDate = med.refill_date
@@ -50,7 +56,7 @@ export function useRefillAlerts(enabled = true) {
           : med.start_date
           ? new Date(med.start_date)
           : null;
-        const takenCount = logs.filter((l) => {
+        const takenCount = safeLogs.filter((l) => {
           if (l.medication_name !== med.name) return false;
           if (refDate) {
             const logDate = new Date(l.scheduled_date || l.taken_at || l.created_date);
@@ -70,7 +76,7 @@ export function useRefillAlerts(enabled = true) {
 
   // Fire browser notifications for critical refills (once per medication per session)
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || !Array.isArray(refillAlerts)) return;
     if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
 
     refillAlerts.forEach((med) => {

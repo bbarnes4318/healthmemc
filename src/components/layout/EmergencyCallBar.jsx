@@ -12,13 +12,16 @@ export default function EmergencyCallBar() {
   const load = useCallback(async () => {
     try {
       const [trusted, doctors] = await Promise.all([
-        base44.entities.TrustedContact.filter({ status: "active" }, "-created_date", 20),
-        base44.entities.DoctorDirectory.list("-created_date", 20),
+        base44.entities.TrustedContact.filter({ status: "active" }, "-created_date", 20).catch(() => []),
+        base44.entities.DoctorDirectory.list("-created_date", 20).catch(() => []),
       ]);
 
+      const safeDoctors = Array.isArray(doctors) ? doctors : [];
+      const safeTrusted = Array.isArray(trusted) ? trusted : [];
+
       const phoneContacts = [
-        ...doctors
-          .filter((d) => d.phone)
+        ...safeDoctors
+          .filter((d) => d && d.phone)
           .map((d) => ({
             id: d.id,
             name: d.doctor_name,
@@ -26,8 +29,8 @@ export default function EmergencyCallBar() {
             phone: d.phone,
             type: "doctor",
           })),
-        ...trusted
-          .filter((t) => t.phone && t.alert_emergencies)
+        ...safeTrusted
+          .filter((t) => t && t.phone && t.alert_emergencies)
           .map((t) => ({
             id: t.id,
             name: t.name,
@@ -39,6 +42,7 @@ export default function EmergencyCallBar() {
       setContacts(phoneContacts);
     } catch (e) {
       console.error("EmergencyCallBar load error:", e);
+      setContacts([]);
     }
     setLoading(false);
   }, []);
