@@ -1,49 +1,48 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { ChevronDown, HelpCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const faqs = [
   {
-    q: "Is Health Me Medical Center a replacement for my regular doctor?",
-    a: "No — Health Me Medical Center is a complementary health intelligence platform. Our AI professionals provide 24/7 guidance, symptom triage, wellness coaching, and health monitoring. For diagnoses, prescriptions, and procedures, we bridge you to licensed physical providers in our specialist directory. Many users use AI for 80%+ of their day-to-day health questions and see their doctor for hands-on care.",
+    q: "What can I use Health Me for?",
+    a: "Health Me combines AI-guided health visits with tools for medications, medical records, lab trends, vitals, appointments, family health, caregiver coordination, recovery tracking, wellness, and emergency preparedness. The goal is to keep the information and follow-through around your health in one connected workspace.",
   },
   {
-    q: "How accurate are the AI consultations?",
-    a: "Our AI medical professionals are trained on clinical guidelines, peer-reviewed research, and real-world case data. They provide evidence-based guidance and triage recommendations. However, AI consultations are informational — not a definitive diagnosis. Every consultation includes a 'Get a 2nd Opinion' button and recommendations to confirm with a licensed provider when needed. All AI consultations are saved and can be shared with your doctor via the Doctor Records Portal.",
+    q: "Does Health Me replace my doctor?",
+    a: "No. Health Me provides AI-assisted health guidance, organization, tracking, and triage support. It is not a substitute for hands-on examination, emergency services, or care from a qualified healthcare professional when those are needed.",
   },
   {
-    q: "Can I share my AI consultation reports with my real doctor?",
-    a: "Absolutely. Every AI consultation generates a structured clinical summary (diagnoses considered, recommended tests, treatments, and follow-up plans) that can be exported as a professional PDF. You can also grant your doctor secure access to your health dashboard through the Clinician Access feature, so they see your vitals, medications, lab trends, and AI consultation history in real time.",
+    q: "What happens during an AI-guided visit?",
+    a: "You can describe what is happening, provide relevant health context, and use the appropriate AI care workflow for your concern. Health Me includes general AI doctor and nurse experiences as well as specialty-focused channels. Consultation information can remain connected to the rest of your health workspace for future reference.",
   },
   {
-    q: "How does the lab results parser work?",
-    a: "Upload any lab report PDF or image to Medical Records. Our OCR-powered parser automatically extracts key health markers (glucose, cholesterol, A1c, thyroid, vitamins, and 20+ more) and plots them on an interactive trend chart. You can see at a glance whether your numbers are improving over time, with reference ranges shown so you know what's normal. The more lab reports you upload, the richer your trend data becomes.",
+    q: "Can Health Me organize my medical records and lab results?",
+    a: "Yes. The application includes medical-record storage, OCR-assisted document workflows, supported lab-value extraction, and trend views. That means you can keep source records together while also following supported values over time instead of treating every report as an isolated document.",
   },
   {
-    q: "Is my health data secure and private?",
-    a: "Yes. Health Me Medical Center uses bank-grade encryption for all data at rest and in transit. You control who sees your records through the Privacy Dashboard — grant and revoke clinician access at any time, view a full access log of who viewed your data and when, and share specific records with trusted contacts via time-limited secure links. We never sell your data to third parties.",
+    q: "Can I manage medications in Health Me?",
+    a: "Yes. Health Me includes a pharmacy and medication workspace for active medications, dosage schedules, reminders, adherence logs, refill tracking, inventory, and supported medication-safety information such as interaction checks.",
   },
   {
-    q: "Can I manage my whole family's health on one account?",
-    a: "Yes. The Family plan supports up to 5 family member profiles, each with its own health profile, medications, vitals, appointments, and AI consultations. A built-in profile switcher lets you move between members instantly. The Caregiver Dashboard provides alerts, shared activity feeds, and visit logs for those caring for elderly parents, children, or dependents.",
+    q: "Can I manage health information for my family?",
+    a: "Yes. Health Me supports family profiles and caregiver workflows so household members can have their own health information, medications, vitals, appointments, and activity. The application also includes caregiver tools such as shared activity, alerts, visit logs, and care coordination features.",
   },
   {
-    q: "What happens in a medical emergency?",
-    a: "The Emergency page provides one-tap access to your emergency medical ID (allergies, medications, blood type, conditions), an emergency preparedness checklist, and a printable vitals card for first responders. The AI ER module helps you triage symptoms to determine if you need to call 911, visit urgent care, or monitor at home — guiding you to the right level of care.",
+    q: "Does Health Me track vitals and health trends?",
+    a: "Yes. You can record supported vitals, view trends over time, configure threshold-based alerts, and use supported wearable connections to bring additional health data into your longitudinal view.",
   },
   {
-    q: "Does my insurance cover the cost of the platform?",
-    a: "Health Me Medical Center is a subscription service, not billed through insurance. However, many users find that using the AI platform reduces their overall healthcare spending by 90%+ (fewer unnecessary doctor visits, earlier intervention, better medication management). Some employers and HSA/FSA programs may reimburse wellness platform subscriptions — check with your benefits administrator.",
+    q: "What recovery tools are included?",
+    a: "Health Me includes physical-therapy and surgical-recovery workflows with tools for exercises, pain and mobility tracking, milestones, check-ins, and progress monitoring. These features are designed to help you stay organized between clinical visits.",
   },
   {
-    q: "Can I get prescriptions through the platform?",
-    a: "The AI Pharmacy module provides medication information, interaction checking, dosage calculators, and refill tracking. AI consultations can recommend medications, but actual prescriptions must be issued by a licensed provider. Our platform connects you to in-network providers who can issue prescriptions when clinically appropriate, and tracks all your medications in one place.",
+    q: "What should I do in a medical emergency?",
+    a: "If you believe you are experiencing a medical emergency, call 911 or your local emergency number immediately. Health Me includes emergency profile, medical ID, preparedness, vitals, and AI-assisted triage tools, but those tools do not replace emergency medical services.",
   },
   {
-    q: "What devices and platforms are supported?",
-    a: "Health Me Medical Center works on any web browser (desktop, tablet, mobile) and publishes as a native app for iOS and Android from the same codebase. Voice input and text-to-speech are built in for accessibility. The platform integrates with browser-based biometric authentication on supported devices.",
+    q: "Can I share information with a clinician or caregiver?",
+    a: "Health Me includes record-sharing and clinician-access workflows along with consultation history and health reports. You can use those tools to bring relevant records, medications, vitals, and tracked health context into conversations with the people involved in your care.",
   },
 ];
 
@@ -55,9 +54,11 @@ export default function FAQSection() {
       <div className="text-center mb-8">
         <div className="flex items-center justify-center gap-2 mb-2">
           <HelpCircle className="w-6 h-6 text-sky-600" />
-          <h2 className="text-2xl font-display font-bold">Frequently Asked Questions</h2>
+          <h2 className="text-2xl font-display font-bold">Questions, answered clearly</h2>
         </div>
-        <p className="text-sm text-muted-foreground">Everything you need to know about Health Me Medical Center</p>
+        <p className="text-sm text-muted-foreground max-w-xl mx-auto">
+          What Health Me does, how it fits alongside professional care, and how your health information stays connected across the platform.
+        </p>
       </div>
 
       <div className="space-y-2">
